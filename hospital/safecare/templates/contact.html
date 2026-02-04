@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% load static %}
+<title>{% block title %}Contact{% endblock %}</title>
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'contact.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="container my-5">
+  <h2>Contact Us</h2>
+  <form class="row g-3">
+    <div class="col-md-6">
+      <input type="text" class="form-control" placeholder="Your Name">
+    </div>
+    <div class="col-md-6">
+      <input type="email" class="form-control" placeholder="Your Email">
+    </div>
+    <div class="col-12">
+      <textarea class="form-control" rows="4" placeholder="Message"></textarea>
+    </div>
+    <div class="col-12">
+      <button class="btn btn-primary">Send Message</button>
+    </div>
+  </form>
+</section>
+{% endblock %}

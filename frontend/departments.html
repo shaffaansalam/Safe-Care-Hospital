@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Departments</title>
+
+
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+
+
+<link rel="stylesheet" href="navbar.css">
+<link rel="stylesheet" href="footer.css">
+<link rel="stylesheet" href="departments.css">
+</head>
+<body>
+
+
+<header class="navbar fixed-top px-5">
+<div class="left-logo">SAFE CARE<div class="down">Hospital</div></div>
+<nav>
+<ul class="nav-links">
+<li><a href="{% url 'home' %}">Home</a></li>
+<li><a href="{% url 'about' %}">About</a></li>
+<li><a href="{% url 'departments' %}">Departments</a></li>
+<li><a href="{% url 'contact' %}">Contact</a></li>
+<li><a href="{% url 'login' %}">Login</a></li>
+<li><a href="{% url 'authentication:register' %}" class="btn btn-primary btn-sm text-white text-sm">Register</a></li>
+</ul>
+</nav>
+</header>
+<div class="navbar-space"></div>
+
+
+<section class="container my-5">
+<h2 class="text-center mb-4">Our Departments</h2>
+<div class="row">
+{% for dept in departments %}
+<div class="col-md-4 mb-4">
+<div class="department-card">
+<h5>{{ dept.name }}</h5>
+<p>{{ dept.description }}</p>
+</div>
+</div>
+{% endfor %}
+</div>
+</section>
+
+<footer class="footer text-center">
+<p>© 2025 Safe Care Hospital | All Rights Reserved</p>
+<div>
+<i class="fab fa-facebook"></i>
+<i class="fab fa-instagram"></i>
+<i class="fab fa-linkedin"></i>
+</div>
+</footer>
+
+</body>
+</html>

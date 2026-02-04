@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% load static %}
+<title> {% block title %} Login {% endblock %} </title>
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'auth.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="auth-wrapper">
+<div class="auth-box">
+  <h3>Login</h3>
+  <form method="post">
+    {% csrf_token %}
+    <!-- <input type="text" name="name" placeholder="Name" class="form-control mb-3"> -->
+    <input type="email" name="email" placeholder="E-mail" class="form-control mb-3">
+    <input type="password" placeholder="Password" class="form-control mb-3">
+    <button class="btn btn-primary w-100">Login</button>
+  </form>
+</div>
+</div>
+{% endblock %}

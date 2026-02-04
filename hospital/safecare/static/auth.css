@@ -1,0 +1,57 @@
+/* Auth Pages (Login & Register) */
+
+.auth-wrapper {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #eaf4ff, #ffffff);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.auth-box {
+  width: 100%;
+  max-width: 420px;
+  background: #ffffff;
+  padding: 35px 30px;
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+
+.auth-box h3 {
+  text-align: center;
+  margin-bottom: 25px;
+  color: #007bff;
+  font-weight: 600;
+}
+
+.auth-box .form-control {
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 15px;
+}
+
+.auth-box select {
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.auth-box button {
+  margin-top: 10px;
+  padding: 12px;
+  font-weight: 600;
+}
+
+.auth-box p {
+  text-align: center;
+  margin-top: 15px;
+}
+
+.auth-box a {
+  color: #007bff;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.auth-box a:hover {
+  text-decoration: underline;
+}

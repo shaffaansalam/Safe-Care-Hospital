@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Register</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="navbar.css" />
+    <link rel="stylesheet" href="footer.css" />
+    <link rel="stylesheet" href="auth.css" />
+  </head>
+  <body>
+    <header class="navbar fixed-top px-5">
+      <div class="left-logo">
+        SAFE CARE
+        <div class="down">Hospital</div>
+      </div>
+      <nav>
+        <ul class="nav-links">
+          <li><a href="home.html">Home</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="departments.html">Departments</a></li>
+          <li><a href="contact.html">Contact</a></li>
+          <li><a href="login.html">Login</a></li>
+          <li>
+            <a href="register.html" class="btn btn-primary btn-sm text-white text-sm"
+              >Register</a
+            >
+          </li>
+        </ul>
+      </nav>
+    </header>
+    <div class="navbar-space"></div>
+
+    <div class="auth-wrapper">
+      <div class="auth-box">
+        <h3>Create Account</h3>
+ <form id="registerForm" novalidate>
+  <input type="hidden" value="Patient" />
+
+  <input id="name" class="form-control mb-1" placeholder="Name" />
+  <div class="text-danger small mb-2" id="nameError"></div>
+
+  <input id="email" class="form-control mb-1" placeholder="Email" />
+  <div class="text-danger small mb-2" id="emailError"></div>
+
+  <input
+    id="password"
+    class="form-control mb-1"
+    type="password"
+    placeholder="Password"
+  />
+  <div class="text-danger small mb-2" id="passwordError"></div>
+
+  <button type="submit" class="btn btn-success w-100">
+    Register
+  </button>
+</form>
+
+      </div>
+    </div>
+
+    <footer class="footer text-center">
+      <p>© 2025 Safe Care Hospital | All Rights Reserved</p>
+      <div>
+        <i class="fab fa-facebook"></i>
+        <i class="fab fa-instagram"></i>
+        <i class="fab fa-linkedin"></i>
+      </div>
+    </footer>
+
+<script>
+  const form = document.getElementById("registerForm");
+
+  form.addEventListener("submit", function (e) {
+    e.preventDefault(); // stop page reload
+
+    // get values
+    const name = document.getElementById("name").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value.trim();
+
+    // error elements
+    const nameError = document.getElementById("nameError");
+    const emailError = document.getElementById("emailError");
+    const passwordError = document.getElementById("passwordError");
+
+    // reset errors
+    nameError.textContent = "";
+    emailError.textContent = "";
+    passwordError.textContent = "";
+
+    let isValid = true;
+
+    // name validation
+    if (name === "" || name.length < 3) {
+      nameError.textContent = "Name must be at least 3 characters";
+      isValid = false;
+    }
+
+    // email validation
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailPattern.test(email)) {
+      emailError.textContent = "Enter a valid email address";
+      isValid = false;
+    }
+
+    // password validation
+    if (password.length < 6) {
+      passwordError.textContent = "Password must be at least 6 characters";
+      isValid = false;
+    }
+
+    // success
+    if (isValid) {
+      alert("User registered successfully!");
+
+      // simulate redirect to login page
+      setTimeout(() => {
+        window.location.href = "login.html";
+      }, 2000);
+    }
+  });
+</script>
+
+
+  </body>
+</html>

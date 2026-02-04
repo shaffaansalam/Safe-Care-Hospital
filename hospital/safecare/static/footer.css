@@ -1,0 +1,9 @@
+.footer {
+  background: #007bff;
+  color: white;
+  padding: 20px 0;
+}
+.footer i {
+  margin: 0 10px;
+  cursor: pointer;
+}

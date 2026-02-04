@@ -1,0 +1,42 @@
+
+{% extends 'base.html' %}
+{% load static %}
+<title> {% block title %} Home | Safe Care Hospital {% endblock %}</title>
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'home.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="banner d-flex align-items-center min-vh-100">
+  <div class="banner-overlay w-100">
+    <div class="container text-center">
+      <div class="sub">
+      <p class="lead">We believe in providing you with the best</p>
+      <h1 class="display-4 fw-bold">Caring For Life</h1>
+      <!--  -->
+      </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="container my-5">
+  <div class="row text-center">
+    <div class="col-md-4">
+      <i class="fa-solid fa-user-doctor fa-3x text-primary"></i>
+      <h4 class="mt-3">Expert Doctors</h4>
+      <p>Certified and experienced specialists.</p>
+    </div>
+    <div class="col-md-4">
+      <i class="fa-solid fa-video fa-3x text-primary"></i>
+      <h4 class="mt-3">Online Consultation</h4>
+      <p>Consult anytime from anywhere.</p>
+    </div>
+    <div class="col-md-4">
+      <i class="fa-solid fa-heart-pulse fa-3x text-primary"></i>
+      <h4 class="mt-3">Patient Care</h4>
+      <p>We treat patients with compassion.</p>
+    </div>
+  </div>
+</section>
+{% endblock %}

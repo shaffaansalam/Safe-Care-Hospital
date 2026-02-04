@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% load static %}
+<title> {% block title %}Register{% endblock %} </title>
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'auth.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="auth-wrapper">
+<div class="auth-box">
+  <h3>Create Account</h3>
+ <form method="post">
+    {% csrf_token %}
+    
+    <input type="hidden" name="role" value="Patient">
+
+    <input type="text" name="name" placeholder="Name" class="form-control mb-2">
+    
+    <input type="email" name="email" placeholder="Email" class="form-control mb-2">
+    <input type="password" name="password" placeholder="Password" class="form-control mb-2">
+    
+    <button type="submit" class="btn btn-success w-100">Register</button>
+</form>
+
+
+</div>
+</div>
+{% endblock %}
