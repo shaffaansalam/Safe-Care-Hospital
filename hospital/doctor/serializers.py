@@ -1,28 +1,10 @@
 from rest_framework import serializers
-from authentication.serializers import UserRegSerializer,UserProfile,DoctorProfile
-# from authentication.models import *
-from authentication.models import DoctorProfile
+from authentication.serializers import UserProfile,DoctorProfile
+from authentication.models import *
 from django.contrib.auth.models import User
-from .models import *
-
-# class DoctorProfileSerializer(serializers.ModelSerializer):
-#     user = UserRegSerializer()
-
-#     class Meta:
-#         model = DoctorProfile
-#         fields = '__all__'
-
-#     def create(self, validated_data):
-        # user_data = validated_data.pop('user')
-        # user = UserRegSerializer().create(user_data)
-
-        # UserProfile.objects.create(user=user, role='doctor')
-
-        # doctor = DoctorProfile.objects.create(user=user, **validated_data)
-        # return doctor
 
 
- 
+
 # This handles the Doctor-specific fields
 class DoctorProfileSerializer(serializers.ModelSerializer):
     class Meta:
@@ -33,52 +15,76 @@ class DoctorProfileSerializer(serializers.ModelSerializer):
             'available_end_time'
         ]
 
-# This handles the User creation and nests the Doctor data
-class DoctorRegistrationSerializer(serializers.ModelSerializer):
-    # This field MUST match the related_name='doctor' in your DoctorProfile model
-    doctor = DoctorProfileSerializer()
-
-    class Meta:
-        model = User
-        fields = [
-            'id', 'username', 'email', 'password', 
-            'first_name', 'last_name', 'doctor'
-        ]
-        extra_kwargs = {
-            'password': {'write_only': True},
-            'email': {'required': True}
-        }
+class DoctorRegistrationSerializer(serializers.Serializer):
+    username = serializers.CharField()
+    email = serializers.EmailField()
+    password = serializers.CharField(write_only=True)
+    specialization = serializers.CharField()
 
     def create(self, validated_data):
-        # 1. Extract the nested doctor dictionary
-        doctor_data = validated_data.pop('doctor')
+        # 1️⃣ Create user but DISABLE login
+        user = User.objects.create_user(
+            username=validated_data['username'],
+            email=validated_data['email'],
+            password=validated_data['password'],
+            is_active=False   #  VERY IMPORTANT
+        )
 
-        # 2. Create the User (hashes the password automatically)
-        user = User.objects.create_user(**validated_data)
+        # 2️⃣ Create doctor profile (NOT approved)
+        DoctorProfile.objects.create(
+            user=user,
+            specialization=validated_data['specialization'],
+            is_approved=False
+        )        
 
-        # 3. Create the mandatory Base UserProfile
-        UserProfile.objects.create(user=user, role='doctor')
+# class DoctorRegistrationSerializer(serializers.ModelSerializer):
+#     doctor = DoctorProfileSerializer()
 
-        # 4. Create the DoctorProfile linked to this user
-        DoctorProfile.objects.create(user=user, **doctor_data)
+#     class Meta:
+#         model = User
+#         fields = [
+#             'username', 'email', 'password',
+#             'first_name', 'last_name', 'doctor'
+#         ]
+#         extra_kwargs = {'password': {'write_only': True}}
 
-        return user
+#     def create(self, validated_data):
+#         doctor_data = validated_data.pop('doctor')
+
+#         user = User.objects.create_user(**validated_data)
+
+#         UserProfile.objects.create(user=user, role='doctor')
+
+#         DoctorProfile.objects.create(
+#             user=user,
+#             is_approved=False,   
+#             **doctor_data
+#         )
+
+#         return user
+
+
+
     
-# request body format:: 
-# {
-#   "username": "dr_smith15",
-#   "email": "smith@hospital.com",
-#   "password": "securepassword123",
-#   "first_name": "John",
-#   "last_name": "Smith",
-#   "doctor": {
-#     "phone": "123456789012",
-#     "specialization": "Cardiology",
-#     "qualification": "MD, MBBS",
-#     "experience": 10,
-#     "bio": "Experienced cardiologist.",
-#     "consultation_fee": "500.00",
-#     "available_start_time": "09:00:00",
-#     "available_end_time": "17:00:00"
+
+
+#     {
+#   "message": "Doctor registered successfully",
+#   "user": {
+#     "id": 19,
+#     "username": "dr_smith17",
+#     "email": "smith@hospital.com",
+#     "first_name": "John",
+#     "last_name": "Smith",
+#     "doctor": {
+#       "phone": "123456789012",
+#       "specialization": "Cardiology",
+#       "qualification": "MD, MBBS",
+#       "experience": 10,
+#       "bio": "Experienced cardiologist.",
+#       "consultation_fee": "500.00",
+#       "available_start_time": "09:00:00",
+#       "available_end_time": "17:00:00"
+#     }
 #   }
 # }

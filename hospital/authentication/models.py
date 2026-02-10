@@ -60,6 +60,7 @@ class DoctorProfile(models.Model):
     available_start_time = models.TimeField()
     available_end_time = models.TimeField()
     is_available = models.BooleanField(default=True)
+    is_approved = models.BooleanField(default=False) # Admin must set this to True manually
 
     profile_image = models.ImageField(upload_to='doctors/', blank=True, null=True)
 

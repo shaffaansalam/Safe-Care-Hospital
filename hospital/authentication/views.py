@@ -3,16 +3,12 @@ from django.shortcuts import render
 from django.contrib import messages
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from rest_framework.response import Response
-from django.contrib.auth.models import User
-from authentication.models import DoctorProfile
 from authentication.serializers import LogoutSerializer,LoginSerializer
-from doctor.serializers import DoctorProfileSerializer
 from patient.serializers import PatientProfileSerializer
-from .serializers import UserRegSerializer
+
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
-from django.shortcuts import redirect
 
 from rest_framework.validators import UniqueValidator
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -22,9 +18,6 @@ from rest_framework.response import Response
 from rest_framework import status, permissions
 from django.contrib.auth import authenticate
 from rest_framework.authtoken.models import Token
-from rest_framework.renderers import TemplateHTMLRenderer,JSONRenderer
-from django.contrib.auth import login
-from django.contrib.auth import get_user_model
 
 
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -36,19 +29,22 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
 from django.contrib.auth.models import User
-from .serializers import UserRegSerializer
 # from .serializers import DoctorProfileSerializer
 from doctor.serializers import *
+from patient.serializers import *
 
 
+    
 class RegisterApi(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
+
         serializer = UserRegSerializer(data=request.data)
 
         if serializer.is_valid():
             user = serializer.save()
+
             return Response(
                 {
                     "message": "User registered successfully",
@@ -63,6 +59,7 @@ class RegisterApi(APIView):
             )
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+   
 
 
 
@@ -75,6 +72,18 @@ class JWTLoginAPIView(APIView):
         serializer.is_valid(raise_exception=True)
 
         user = serializer.validated_data['user']
+
+        # 🔒 BLOCK DOCTOR IF NOT APPROVED
+        if user.profile.role == "doctor":
+            doctor_profile = getattr(user, "doctorprofile", None)
+
+            if doctor_profile and not doctor_profile.is_approved:
+                return Response(
+                    {
+                        "message": "Admin approval pending. Please wait for approval."
+                    },
+                    status=status.HTTP_403_FORBIDDEN
+                )
 
         refresh = RefreshToken.for_user(user)
 
@@ -89,6 +98,7 @@ class JWTLoginAPIView(APIView):
                 "role": user.profile.role
             }
         }, status=status.HTTP_200_OK)
+
     
 class JWTRefreshAPIView(APIView):
     permission_classes = [permissions.AllowAny]
@@ -147,16 +157,34 @@ class LogoutAPIView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
         
-
 class DoctorRegisterAPIView(APIView):
     permission_classes = [permissions.AllowAny]
+
     def post(self, request):
         serializer = DoctorRegistrationSerializer(data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()  # doctor created, is_approved=False
+
+            return Response(
+                {
+                    "message": "Doctor registered successfully. Await admin approval."
+                },
+                status=status.HTTP_201_CREATED
+            )
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
+class PatientRegisterAPIView(APIView):
+    def post(self, request):
+        serializer = PatientProfileSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            # return Response(serializer.data, status=status.HTTP_201_CREATED)
             return Response({
-                "message": "Doctor registered successfully",
-                "user": serializer.data,
+                "message": "Patient registered successfully",
+                "data": serializer.data
             }, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)    
