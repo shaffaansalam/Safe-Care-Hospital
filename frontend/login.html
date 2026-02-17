@@ -14,8 +14,10 @@
 <link rel="stylesheet" href="footer.css">
 <link rel="stylesheet" href="home.css">
 
+
   <!-- Axios CDN -->
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  
 </head>
 
 <body class="bg-gray-100 min-h-screen grid grid-rows-[auto_1fr_auto]">
@@ -44,7 +46,9 @@
 
       <p id="errorMsg" class="text-red-600 text-sm mb-4 hidden bg-red-50 p-2 rounded text-center"></p>
 
-      <form id="loginForm" class="space-y-6">
+      <form id="loginForm" class="space-y-6" method="POST">
+        
+
         <div>
           <label class="block text-sm font-semibold text-gray-700 mb-2">Email</label>
           <input type="email" id="email" required
@@ -72,57 +76,7 @@
       <i class="fab fa-linkedin hover:scale-110 transition cursor-pointer"></i>
     </div>
   </footer>
-
+<script src="login.js"></script>
 </body>
 
- 
-
-  
-
-   
-
-
-  <script>
-    const loginForm = document.getElementById("loginForm");
-    const errorMsg = document.getElementById("errorMsg");
-
-    loginForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-
-      errorMsg.classList.add("hidden");
-
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
-
-      try {
-        const response = await axios.post(
-          "http://127.0.0.1:8001/login/",
-          {
-            email: email,
-            password: password
-          }
-        );
-
-        // ✅ Save tokens in localStorage
-        localStorage.setItem("access_token", response.data.access);
-        localStorage.setItem("refresh_token", response.data.refresh);
-        localStorage.setItem("user", JSON.stringify(response.data.user));
-          console.log(response.data.user);
-          
-        // ✅ Redirect to home page
-        window.location.href = "http://127.0.0.1:8001/home/";
-
-      } catch (error) {
-        errorMsg.classList.remove("hidden");
-
-        if (error.response && error.response.data) {
-          errorMsg.innerText = error.response.data.detail || "Invalid login credentials";
-        } else {
-          errorMsg.innerText = "Something went wrong. Please try again.";
-        }
-      }
-    });
-  </script>
-
-</body>
 </html>

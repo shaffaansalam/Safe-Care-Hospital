@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body class="bg-gray-100">
+
+<div class="max-w-4xl mx-auto mt-10 bg-white shadow-lg rounded-xl p-8">
+  <h1 class="text-3xl font-bold mb-4 text-green-600">Doctor Dashboard</h1>
+
+  <div id="welcomeUser" class="mb-4"></div>
+  <div id="doctorData" class="space-y-3"></div>
+</div>
+
+<script>
+
+const token = localStorage.getItem("access_token");
+const storedUser = JSON.parse(localStorage.getItem("user"));
+
+// ✅ Role check
+if (!token || !storedUser || storedUser.role.toLowerCase() !== "doctor") {
+  window.location.replace("login.html");
+}
+
+document.getElementById("welcomeUser").innerHTML = `
+  <p class="text-lg font-semibold text-green-600">
+    Welcome, ${storedUser.name}
+  </p>
+`;
+
+axios.get("http://127.0.0.1:8001/auth/dashboard/doctor/", {
+  headers: { Authorization: `Bearer ${token}` }
+})
+.then(res => {
+
+  const data = res.data;
+
+  document.getElementById("doctorData").innerHTML = `
+    <p><strong>Name:</strong> ${data.user.name}</p>
+    <p><strong>Email:</strong> ${data.user.email}</p>
+    <p><strong>Specialization:</strong> ${data.specialization}</p>
+    <p><strong>Experience:</strong> ${data.experience} years</p>
+    <p><strong>Consultation Fee:</strong> ₹${data.consultation_fee}</p>
+  `;
+
+})
+.catch(() => {
+  showToast("Admin approval pending or session expired.", "#dc2626");
+  setTimeout(() => {
+    localStorage.clear();
+    window.location.replace("login.html");
+  }, 2000);
+});
+
+
+function showToast(message, color) {
+  const toast = document.createElement("div");
+  toast.innerText = message;
+
+  toast.style.position = "fixed";
+  toast.style.top = "20px";
+  toast.style.right = "20px";
+  toast.style.padding = "14px 22px";
+  toast.style.backgroundColor = color;
+  toast.style.color = "white";
+  toast.style.fontWeight = "600";
+  toast.style.borderRadius = "8px";
+  toast.style.boxShadow = "0 5px 15px rgba(0,0,0,0.2)";
+  toast.style.zIndex = "9999";
+  toast.style.opacity = "0";
+  toast.style.transition = "opacity 0.4s ease";
+
+  document.body.appendChild(toast);
+
+  setTimeout(() => toast.style.opacity = "1", 100);
+
+  setTimeout(() => {
+    toast.style.opacity = "0";
+    setTimeout(() => toast.remove(), 400);
+  }, 2000);
+}
+
+</script>
+</body>
+</html>

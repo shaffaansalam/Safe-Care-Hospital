@@ -37,32 +37,33 @@ class DoctorRegistrationSerializer(serializers.Serializer):
             is_approved=False
         )        
 
-# class DoctorRegistrationSerializer(serializers.ModelSerializer):
-#     doctor = DoctorProfileSerializer()
 
-#     class Meta:
-#         model = User
-#         fields = [
-#             'username', 'email', 'password',
-#             'first_name', 'last_name', 'doctor'
-#         ]
-#         extra_kwargs = {'password': {'write_only': True}}
+class DoctorDashboardSerializer(serializers.ModelSerializer):
+    user = serializers.SerializerMethodField()
 
-#     def create(self, validated_data):
-#         doctor_data = validated_data.pop('doctor')
+    class Meta:
+        model = DoctorProfile
+        fields = [
+            'user',
+            'phone',
+            'specialization',
+            'qualification',
+            'experience',
+            'bio',
+            'consultation_fee',
+            'available_start_time',
+            'available_end_time',
+            'is_available',
+            'profile_image'
+        ]
 
-#         user = User.objects.create_user(**validated_data)
-
-#         UserProfile.objects.create(user=user, role='doctor')
-
-#         DoctorProfile.objects.create(
-#             user=user,
-#             is_approved=False,   
-#             **doctor_data
-#         )
-
-#         return user
-
+    def get_user(self, obj):
+        return {
+            "id": obj.user.id,
+            "name": obj.user.get_full_name(),
+            "email": obj.user.email,
+            "role": obj.user.profile.role
+        }
 
 
     

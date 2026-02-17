@@ -4,14 +4,6 @@ from django.contrib.auth.models import User
 from authentication.models import UserProfile ,PatientProfile,DoctorProfile
 
 
-# class UserRegSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = User
-#         fields = ['username', 'email', 'password', 'first_name', 'last_name']
-#         extra_kwargs = {'password': {'write_only': True}}
-
-#     def create(self, validated_data):
-#         user = User.objects.create_user(**validated_data)
 
 class UserRegSerializer(serializers.ModelSerializer):
     role = serializers.ChoiceField(
@@ -82,3 +74,28 @@ class PatientProfileSerializer(serializers.ModelSerializer):
 
         patient_profile = PatientProfile.objects.create(user=user, **validated_data)
         return patient_profile
+
+class PatientDashboardSerializer(serializers.ModelSerializer):
+    user = serializers.SerializerMethodField()
+
+    class Meta:
+        model = PatientProfile
+        fields = [
+            'user',
+            'phone',
+            'gender',
+            'dob',
+            'age',
+            'address',
+            'blood_group',
+            'medical_history',
+            'profile_image'
+        ]
+
+    def get_user(self, obj):
+        return {
+            "id": obj.user.id,
+            "name": obj.user.get_full_name(),
+            "email": obj.user.email,
+            "role": obj.user.profile.role
+        }    

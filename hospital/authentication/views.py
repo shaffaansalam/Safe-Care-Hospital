@@ -73,7 +73,7 @@ class JWTLoginAPIView(APIView):
 
         user = serializer.validated_data['user']
 
-        # 🔒 BLOCK DOCTOR IF NOT APPROVED
+        #  BLOCK DOCTOR IF NOT APPROVED
         if user.profile.role == "doctor":
             doctor_profile = getattr(user, "doctorprofile", None)
 
@@ -98,6 +98,8 @@ class JWTLoginAPIView(APIView):
                 "role": user.profile.role
             }
         }, status=status.HTTP_200_OK)
+    
+    
 
     
 class JWTRefreshAPIView(APIView):

@@ -55,22 +55,38 @@ document.addEventListener("DOMContentLoaded", () => {
 
         console.log(" Sending data to backend:", data);
 
+    
     try {
-      const res = await axios.post(
-        "http://127.0.0.1:8001/auth/register/",
-        data
-      );
+  const res = await axios.post(
+    "http://127.0.0.1:8001/auth/register/",
+    data
+  );
 
-    //   console.log("Backend response:", response.data);
-      alert(res.data.message);
-      form.reset();
-      
-      window.location.href = "login.html";
+  const userRole = res.data.user.role;
 
-                  
-    //    console.log(" Backend response:", response.data);
-    //   alert(response.data.message);              
+  if (userRole === "patient") {
+    alert("Patient registered successfully ");
+    console.log("Patient registered successfully");
+  } 
+  else if (userRole === "doctor") {
+    alert("Doctor registered successfully ");
+    console.log("Doctor registered successfully");
+  } 
+  else {
+    alert("User registered successfully ");
+    console.log("User registered successfully");
+  }
 
+  form.reset();
+
+  console.log("Redirecting to login page...");
+  
+  setTimeout(() => {
+  window.location.href = "/login/";
+}, 1000);
+
+
+     
     } catch (err) {
   const msg =
     err.response?.data?.message ||
