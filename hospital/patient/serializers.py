@@ -10,11 +10,18 @@ class UserRegSerializer(serializers.ModelSerializer):
         choices=UserProfile.ROLE_CHOICES, write_only=True
     )
 
+        # 👇 Add patient fields here
+    phone = serializers.CharField(required=False)
+    gender = serializers.CharField(required=False)
+    dob = serializers.DateField(required=False, allow_null=True)
+    blood_group = serializers.CharField(required=False)
+
     class Meta:
         model = User
         fields = [
             'username', 'email', 'password',
-            'first_name', 'last_name', 'role'
+            'first_name', 'last_name', 'role',
+            'phone', 'gender', 'dob', 'blood_group'
         ]
         extra_kwargs = {
             'password': {'write_only': True}
@@ -22,20 +29,26 @@ class UserRegSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         role = validated_data.pop('role')
+        phone = validated_data.pop('phone', '')
+        gender = validated_data.pop('gender', 'other')
+        dob = validated_data.pop('dob', None)
+        blood_group = validated_data.pop('blood_group', '')
+        
 
         user = User.objects.create_user(**validated_data)
 
         UserProfile.objects.create(user=user, role=role)
+        
 
         if role == 'patient':
             PatientProfile.objects.create(
                 user=user,
-                phone='',
-                gender='other',
-                dob='2000-01-01',
+                phone=phone,
+                gender=gender,
+                dob=dob,
                 age=0,
                 address='',
-                blood_group=''
+                blood_group=blood_group
             )
 
         elif role == 'doctor':

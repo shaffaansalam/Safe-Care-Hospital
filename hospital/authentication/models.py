@@ -31,7 +31,7 @@ class PatientProfile(models.Model):
 
     phone = models.CharField(max_length=15)
     gender = models.CharField(max_length=10, choices=GENDER_CHOICES)
-    dob = models.DateField()
+    dob = models.DateField(null=True, blank=True)
     age = models.PositiveIntegerField()
     address = models.TextField()
     blood_group = models.CharField(max_length=5)

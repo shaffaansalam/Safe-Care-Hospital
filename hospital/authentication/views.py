@@ -74,6 +74,15 @@ class JWTLoginAPIView(APIView):
         user = serializer.validated_data['user']
 
         #  BLOCK DOCTOR IF NOT APPROVED
+         #  BLOCK INACTIVE USERS (Doctor not approved)
+        if not user.is_active:
+            return Response(
+                {
+                    "message": "Your account is pending admin approval."
+                },
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
         if user.profile.role == "doctor":
             doctor_profile = getattr(user, "doctorprofile", None)
 

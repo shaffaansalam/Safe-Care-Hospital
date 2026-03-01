@@ -3,145 +3,51 @@
 <head>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
-
-
-<link rel="stylesheet" href="navbar.css">
-<link rel="stylesheet" href="footer.css">
-
-
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
+  <link rel="stylesheet" href="navbar.css">
+  <link rel="stylesheet" href="footer.css">
 </head>
+
 <body class="bg-gray-100">
 
-  <header class="navbar fixed-top px-5">
-<div class="left-logo">SAFE CARE<div class="down">Hospital</div></div>
-<nav>
-<ul class="nav-links">
-<li><a href="{% url 'home' %}">Home</a></li>
-<li><a href="{% url 'about' %}">About</a></li>
-<li><a href="{% url 'departments' %}">Departments</a></li>
-<li><a href="{% url 'contact' %}">Contact</a></li>
+<header class="navbar fixed-top px-5">
+  <div class="left-logo">SAFE CARE<div class="down">Hospital</div></div>
+  <nav>
+    <ul class="nav-links">
+      <li><a href="{% url 'home' %}">Home</a></li>
+      <li><a href="{% url 'about' %}">About</a></li>
+      <li><a href="{% url 'departments' %}">Departments</a></li>
+      <li><a href="{% url 'contact' %}">Contact</a></li>
 
-<li id="loginNav">
-  <a href="{% url 'login' %}">Login</a>
-</li>
+      <li id="loginNav">
+        <a href="{% url 'login-page' %}">Login</a>
+      </li>
 
-<li id="logoutNav" style="display:none;">
-  <a href="#" onclick="logoutUser()">Logout</a>
-</li>
+      <li id="logoutNav" style="display:none;">
+        <a href="#" onclick="logoutUser()">Logout</a>
+      </li>
 
-<li>
-  <a href="{% url 'authentication:register' %}" 
-     class="btn btn-primary btn-sm text-white text-sm">
-     Register
-  </a>
-</li>
-</ul>
-
-</nav>
+      <li>
+        <a href="{% url 'authentication:register' %}" 
+           class="btn btn-primary btn-sm text-white text-sm">
+           Register
+        </a>
+      </li>
+    </ul>
+  </nav>
 </header>
-<div class="navbar-space"></div>
 
+<div class="navbar-space"></div>
 
 <div class="max-w-4xl mx-auto mt-10 bg-white shadow-lg rounded-xl p-8">
   <h1 class="text-3xl font-bold mb-4 text-blue-600">Patient Dashboard</h1>
-
   <div id="welcomeUser" class="mb-4"></div>
   <div id="patientData" class="space-y-3"></div>
 </div>
 
-<script>
+<!--  Only one script -->
+<!-- <script src="{% static 'patient-dashboard.js' %}"></script> -->
+<script src="patient-dashboard.js"></script>
 
-const token = localStorage.getItem("access_token");
-const storedUser = JSON.parse(localStorage.getItem("user"));
-
-console.log("TOKEN:", token);
-console.log("STORED USER:", storedUser);
-console.log("ROLE BEFORE NORMALIZE:", storedUser?.role);
-
-// ✅ Check login properly
-// if (!token || !storedUser || storedUser.role.toLowerCase() !== "patient") {
-//   window.location.replace("login.html");
-// }
-
-let role = storedUser?.role;
-
-if (Array.isArray(role)) {
-  role = role[0];
-}
-
-role = role?.toLowerCase().trim();
-
-if (!token || !storedUser || role !== "patient") {
-  window.location.replace("login.html");
-}
-
-showToast(
-  `Welcome ${storedUser.name} (${role})`,
-  "#16a34a"
-);
-
-
-// Show welcome
-document.getElementById("welcomeUser").innerHTML = `
-  <p class="text-lg font-semibold text-green-600">
-    Welcome, ${storedUser.name}
-  </p>
-`;
-
-// Fetch patient data
-axios.get("http://127.0.0.1:8001/auth/dashboard/patient/", {
-  headers: { Authorization: `Bearer ${token}` }
-})
-.then(res => {
-
-  const data = res.data;
-
-  document.getElementById("patientData").innerHTML = `
-    <p><strong>Name:</strong> ${data.user.name}</p>
-    <p><strong>Email:</strong> ${data.user.email}</p>
-    <p><strong>Phone:</strong> ${data.phone}</p>
-    <p><strong>Gender:</strong> ${data.gender}</p>
-    <p><strong>Blood Group:</strong> ${data.blood_group}</p>
-  `;
-
-})
-.catch(() => {
-  showToast("Session expired. Please login again.", "#dc2626");
-  setTimeout(() => {
-    localStorage.clear();
-    window.location.replace("login.html");
-  }, 2000);
-});
-
-
-function showToast(message, color) {
-  const toast = document.createElement("div");
-  toast.innerText = message;
-
-  toast.style.position = "fixed";
-  toast.style.top = "20px";
-  toast.style.right = "20px";
-  toast.style.padding = "14px 22px";
-  toast.style.backgroundColor = color;
-  toast.style.color = "white";
-  toast.style.fontWeight = "600";
-  toast.style.borderRadius = "8px";
-  toast.style.boxShadow = "0 5px 15px rgba(0,0,0,0.2)";
-  toast.style.zIndex = "9999";
-  toast.style.opacity = "0";
-  toast.style.transition = "opacity 0.4s ease";
-
-  document.body.appendChild(toast);
-
-  setTimeout(() => toast.style.opacity = "1", 100);
-
-  setTimeout(() => {
-    toast.style.opacity = "0";
-    setTimeout(() => toast.remove(), 400);
-  }, 3000);
-}
-
-</script>
 </body>
 </html>

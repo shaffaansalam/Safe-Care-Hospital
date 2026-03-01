@@ -29,3 +29,4 @@ class PatientDashboardAPIView(APIView):
         patient = request.user.patient
         serializer = PatientDashboardSerializer(patient)
         return Response(serializer.data, status=200)
+
