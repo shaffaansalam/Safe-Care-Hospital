@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- AXIOS -->
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+</head>
+
+<body class="bg-gray-100">
+
+<div class="flex min-h-screen">
+
+<!-- SIDEBAR -->
+
+<aside class="w-64 bg-blue-900 text-white p-6">
+<h2 class="text-2xl font-bold mb-8">Admin Panel</h2>
+
+<ul class="space-y-4">
+<li><a href="#">Dashboard</a></li>
+<li><a href="#">Doctors</a></li>
+<li><a href="#">Patients</a></li>
+<li><a href="#">Departments</a></li>
+<li><a href="#">Appointments</a></li>
+<li><a href="#">Payments</a></li>
+</ul>
+
+</aside>
+
+<!-- MAIN CONTENT -->
+
+<main class="flex-1 p-10">
+
+<h1 class="text-3xl font-bold mb-6">Dashboard Overview</h1>
+
+<div class="grid grid-cols-4 gap-6">
+
+<div class="bg-white p-6 rounded shadow">
+<h3>Total Doctors</h3>
+<p id="totalDoctors" class="text-2xl font-bold"></p>
+</div>
+
+<div class="bg-white p-6 rounded shadow">
+<h3>Total Patients</h3>
+<p id="totalPatients" class="text-2xl font-bold"></p>
+</div>
+
+<div class="bg-white p-6 rounded shadow">
+<h3>Departments</h3>
+<p id="totalDepartments" class="text-2xl font-bold"></p>
+</div>
+
+<div class="bg-white p-6 rounded shadow">
+<h3>Total Revenue</h3>
+<p id="totalRevenue" class="text-2xl font-bold"></p>
+</div>
+
+</div>
+
+
+<!-- DOCTORS TABLE -->
+
+<div class="bg-white mt-10 p-6 rounded shadow">
+
+<h2 class="text-xl font-semibold mb-4">Doctors</h2>
+
+<table class="w-full border">
+
+<thead>
+<tr class="bg-gray-200">
+<th class="p-2">Name</th>
+<th>Email</th>
+<th>Specialization</th>
+<th>Status</th>
+<th>Action</th>
+</tr>
+</thead>
+
+<tbody id="doctorTable"></tbody>
+
+</table>
+
+</div>
+
+
+<!-- RECENT APPOINTMENTS -->
+
+<div class="bg-white mt-10 p-6 rounded shadow">
+
+<h2 class="text-xl font-semibold mb-4">Recent Appointments</h2>
+
+<table class="w-full border">
+
+<thead>
+<tr class="bg-gray-200">
+<th class="p-2">Patient</th>
+<th>Doctor</th>
+<th>Status</th>
+</tr>
+</thead>
+
+<tbody id="appointmentTable"></tbody>
+
+</table>
+
+</div>
+
+</main>
+
+</div>
+
+
+<script>
+
+/* ---------- AXIOS INSTANCE ---------- */
+
+const api = axios.create({
+baseURL:"http://127.0.0.1:8001/auth/",
+headers:{
+Authorization:"Bearer "+localStorage.getItem("access")
+}
+})
+
+
+/* ---------- LOAD DASHBOARD ---------- */
+
+async function loadDashboard(){
+
+const res = await api.get("admin/dashboard/")
+
+const data = res.data
+
+
+document.getElementById("totalDoctors").innerText = data.doctors.length
+document.getElementById("totalPatients").innerText = data.patients.length
+document.getElementById("totalDepartments").innerText = data.departments
+document.getElementById("totalRevenue").innerText = "₹ "+data.payments
+
+
+/* ---------- DOCTORS TABLE ---------- */
+
+let doctorHTML=""
+
+data.doctors.forEach(d=>{
+
+doctorHTML+=`
+
+<tr class="border-b">
+
+<td class="p-2">${d.user}</td>
+
+<td>${d.phone}</td>
+
+<td>${d.specialization}</td>
+
+<td>${d.is_approved ? "Approved":"Pending"}</td>
+
+<td>
+
+${!d.is_approved ?
+
+`<button onclick="approveDoctor(${d.id})"
+class="bg-green-500 text-white px-2 py-1 rounded">
+Approve
+</button>`:""}
+
+</td>
+
+</tr>
+
+`
+})
+
+document.getElementById("doctorTable").innerHTML=doctorHTML
+
+
+
+/* ---------- APPOINTMENTS ---------- */
+
+let appointmentHTML=""
+
+data.appointments.forEach(a=>{
+
+appointmentHTML+=`
+
+<tr class="border-b">
+
+<td class="p-2">${a.patient}</td>
+
+<td>${a.doctor}</td>
+
+<td>${a.status}</td>
+
+</tr>
+
+`
+})
+
+document.getElementById("appointmentTable").innerHTML=appointmentHTML
+
+}
+
+
+/* ---------- APPROVE DOCTOR ---------- */
+
+async function approveDoctor(id){
+
+await api.put("admin/doctors/approve/"+id+"/")
+
+alert("Doctor Approved")
+
+loadDashboard()
+
+}
+
+
+/* ---------- LOAD PAGE ---------- */
+
+loadDashboard()
+
+</script>
+
+</body>
+</html>

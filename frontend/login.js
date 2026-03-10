@@ -1,5 +1,3 @@
-
-
 document.addEventListener("DOMContentLoaded", () => {
   console.log("✅ JS Loaded");
 
@@ -7,7 +5,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const errorMsg = document.getElementById("errorMsg");
 
   loginForm.addEventListener("submit", async (e) => {
-    e.preventDefault(); // 🔥 THIS stops page reload completely
+    e.preventDefault();
 
     console.log("🚀 Form submitted properly");
 
@@ -23,6 +21,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     try {
+
       const response = await axios.post(
         "http://127.0.0.1:8001/auth/login/",
         { email, password }
@@ -30,55 +29,148 @@ document.addEventListener("DOMContentLoaded", () => {
 
       console.log("✅ Login Success:", response.data);
 
-      const { access, refresh, user } = response.data;
+      const { access, refresh, user, role } = response.data;
 
+      // STORE TOKENS
       localStorage.setItem("access_token", access);
       localStorage.setItem("refresh_token", refresh);
       localStorage.setItem("user", JSON.stringify(user));
+      localStorage.setItem("role", role);
       localStorage.setItem("isLoggedIn", "true");
 
       console.log("💾 Tokens stored successfully");
-      console.log("ACCESS TOKEN:", access);
-      console.log("REFRESH TOKEN:", refresh);
-      console.log("USER:", user);
 
-      let role = user.role;
+      const userRole = role?.toLowerCase().trim();
 
-      if (Array.isArray(role)) {
-        role = role[0];
-      }
+      console.log("🎯 Redirecting as:", userRole);
 
-      role = role?.toLowerCase().trim();
+      // ROLE BASED REDIRECT
+      if (userRole === "patient") {
 
-      console.log("🎯 Redirecting as:", role);
-
-      
-      if (role === "patient") {
         window.location.href = "patient-dashboard.html";
+
       } 
-      else if (role === "doctor") {
+      else if (userRole === "doctor") {
+
         window.location.href = "doctor-dashboard.html";
+
       } 
-      else {
-        window.location.href = "home.html";
+      else if (userRole === "admin") {
+
+        window.location.href = "admin-dashboard.html";
+
       }
-     
-    
+      else {
+
+        window.location.href = "home.html";
+
+      }
+
     } catch (error) {
+
       console.error("❌ Login Failed:", error);
+
       errorMsg.classList.remove("hidden");
 
       if (error.response) {
+
         errorMsg.innerText =
           error.response.data.message ||
           error.response.data.non_field_errors?.[0] ||
           "Invalid credentials.";
-      } else {
+
+      } 
+      else {
+
         errorMsg.innerText = "Server not reachable.";
+
       }
+
     }
+
   });
+
 });
+
+// document.addEventListener("DOMContentLoaded", () => {
+//   console.log("✅ JS Loaded");
+
+//   const loginForm = document.getElementById("loginForm");
+//   const errorMsg = document.getElementById("errorMsg");
+
+//   loginForm.addEventListener("submit", async (e) => {
+//     e.preventDefault(); // 🔥 THIS stops page reload completely
+
+//     console.log("🚀 Form submitted properly");
+
+//     errorMsg.classList.add("hidden");
+
+//     const email = document.getElementById("email").value.trim();
+//     const password = document.getElementById("password").value.trim();
+
+//     if (!email || !password) {
+//       errorMsg.classList.remove("hidden");
+//       errorMsg.innerText = "Email and password are required.";
+//       return;
+//     }
+
+//     try {
+//       const response = await axios.post(
+//         "http://127.0.0.1:8001/auth/login/",
+//         { email, password }
+//       );
+
+//       console.log("✅ Login Success:", response.data);
+
+//       const { access, refresh, user } = response.data;
+
+//       localStorage.setItem("access_token", access);
+//       localStorage.setItem("refresh_token", refresh);
+//       localStorage.setItem("user", JSON.stringify(user));
+//       localStorage.setItem("isLoggedIn", "true");
+
+//       console.log("💾 Tokens stored successfully");
+//       console.log("ACCESS TOKEN:", access);
+//       console.log("REFRESH TOKEN:", refresh);
+//       console.log("USER:", user);
+
+//       let role = user.role;
+
+//       if (Array.isArray(role)) {
+//         role = role[0];
+//       }
+
+//       role = role?.toLowerCase().trim();
+
+//       console.log("🎯 Redirecting as:", role);
+
+      
+//       if (role === "patient") {
+//         window.location.href = "patient-dashboard.html";
+//       } 
+//       else if (role === "doctor") {
+//         window.location.href = "doctor-dashboard.html";
+//       } 
+//       else {
+//         window.location.href = "home.html";
+//       }
+     
+    
+//     } catch (error) {
+//       console.error("❌ Login Failed:", error);
+//       errorMsg.classList.remove("hidden");
+
+//       if (error.response) {
+//         errorMsg.innerText =
+//           error.response.data.message ||
+//           error.response.data.non_field_errors?.[0] ||
+//           "Invalid credentials.";
+//       } else {
+//         errorMsg.innerText = "Server not reachable.";
+//       }
+//     }
+//   });
+// });
 
 
 

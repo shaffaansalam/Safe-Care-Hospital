@@ -1,7 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from .models import *
-from rest_framework.validators import UniqueValidator
 from django.contrib.auth import authenticate
 
 
@@ -47,3 +46,17 @@ class LogoutSerializer(serializers.Serializer):
     refresh = serializers.CharField()        
 
     
+class PaymentSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Payment
+        fields = '__all__'
+
+    def validate_amount(self, value):
+
+        if value <= 0:
+            raise serializers.ValidationError(
+                "Amount must be greater than zero"
+            )
+
+        return value  

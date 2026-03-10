@@ -1,19 +1,7 @@
-from django.shortcuts import render
-
-# from .forms import RegisterForm
-
-from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
-from rest_framework.response import Response
-
-from rest_framework.views import APIView
-
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, permissions
-
-from rest_framework.response import Response
-
-# from .serializers import DoctorProfileSerializer
+from rest_framework.permissions import IsAdminUser
 from doctor.serializers import *
 from patient.serializers import *
 
@@ -39,3 +27,26 @@ class DoctorDashboardAPIView(APIView):
 
         serializer = DoctorDashboardSerializer(doctor)
         return Response(serializer.data, status=200)
+
+
+class DepartmentListCreateAPIView(APIView):
+    permission_classes = [IsAdminUser]
+
+    def get(self, request):
+        departments = Department.objects.all()
+        serializer = DepartmentSerializer(departments, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = DepartmentSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(
+                {
+                    "message": "Department created successfully",
+                    "data": serializer.data
+                },
+                status=status.HTTP_201_CREATED
+            )
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    

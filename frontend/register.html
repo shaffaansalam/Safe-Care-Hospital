@@ -7,7 +7,7 @@
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    
+
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
       rel="stylesheet"
@@ -31,7 +31,9 @@
           <li><a href="contact.html">Contact</a></li>
           <li><a href="login.html">Login</a></li>
           <li>
-            <a href="register.html" class="btn btn-primary btn-sm text-white text-sm"
+            <a
+              href="register.html"
+              class="btn btn-primary btn-sm text-white text-sm"
               >Register</a
             >
           </li>
@@ -41,88 +43,201 @@
     <div class="navbar-space"></div>
 
     <div class="auth-wrapper">
-<div class="auth-box" style="max-width: 600px;">
-  <h3>Create Account</h3>
-  
-  <div class="d-flex justify-content-center mb-4">
-    <div class="btn-group" role="group">
-      <input type="radio" class="btn-check" name="roleToggle" id="rolePatient" value="patient" checked>
-      <label class="btn btn-outline-primary" for="rolePatient">Register as Patient</label>
+      <div class="auth-box" style="max-width: 600px">
+        <h3>Create Account</h3>
 
-      <input type="radio" class="btn-check" name="roleToggle" id="roleDoctor" value="doctor">
-      <label class="btn btn-outline-primary" for="roleDoctor">Register as Doctor</label>
-    </div>
-  </div>
+        <div class="d-flex justify-content-center mb-4">
+          <div class="btn-group" role="group">
+            <input
+              type="radio"
+              class="btn-check"
+              name="roleToggle"
+              id="rolePatient"
+              value="patient"
+              checked
+            />
+            <label class="btn btn-outline-primary" for="rolePatient"
+              >Register as Patient</label
+            >
 
-  <form id="registerForm" novalidate>
-    <div class="row">
-      <div class="col-md-6">
-        <input id="firstName" class="form-control mb-1" placeholder="First Name" />
-        <div class="text-danger small mb-2" id="firstNameError"></div>
-      </div>
-      <div class="col-md-6">
-        <input id="lastName" class="form-control mb-1" placeholder="Last Name" />
-        <div class="text-danger small mb-2" id="lastNameError"></div>
-      </div>
-    </div>
-
-    <input id="email" class="form-control mb-1" placeholder="Email" />
-    <div class="text-danger small mb-2" id="emailError"></div>
-
-    <input id="password" class="form-control mb-1" type="password" placeholder="Password" />
-    <div class="text-danger small mb-2" id="passwordError"></div>
-
-    <hr>
-
-    <div id="patientFields">
-      <!-- <h5 class="text-muted">Patient Details</h5> -->
-      <div class="row">
-        <div class="col-md-6">
-          <input id="phone" class="form-control mb-1" placeholder="Phone Number" />
+            <input
+              type="radio"
+              class="btn-check"
+              name="roleToggle"
+              id="roleDoctor"
+              value="doctor"
+            />
+            <label class="btn btn-outline-primary" for="roleDoctor"
+              >Register as Doctor</label
+            >
+          </div>
         </div>
-        <div class="col-md-6">
-          <select id="gender" class="form-control mb-1">
-            <option value="">Select Gender</option>
-            <option value="male">Male</option>
-            <option value="female">Female</option>
-            <option value="other">Other</option>
-          </select>
-        </div>
-      </div>
-      <div class="row mt-2">
-        <div class="col-md-6">
-          <label class="small">Date of Birth</label>
-          <input id="dob" type="date" class="form-control mb-1" />
-        </div>
-        <div class="col-md-6">
-          <label class="small">Blood Group</label>
-          <input id="bloodGroup" class="form-control mb-1" placeholder="e.g. O+" />
-        </div>
-      </div>
-      <div class="text-danger small" id="patientError"></div>
-    </div>
 
-    <div id="doctorFields" style="display:none;">
-      <!-- <h5 class="text-muted">Doctor Details</h5> -->
-      <input id="specialization" class="form-control mb-1" placeholder="Specialization" />
-      <input id="qualification" class="form-control mb-1" placeholder="Qualification" />
-      <div class="row">
-        <div class="col-md-6">
-          <input id="experience" type="number" class="form-control mb-1" placeholder="Years of Experience" />
-        </div>
-        <div class="col-md-6">
-          <input id="fee" type="number" class="form-control mb-1" placeholder="Consultation Fee" />
-        </div>
-      </div>
-      <div class="alert alert-warning small mt-2">
-        <strong>Note:</strong> Your account will require Admin approval before you can log in.
-      </div>
-      <div class="text-danger small" id="doctorError"></div>
-    </div>
+        <form id="registerForm" novalidate>
+          <div class="row">
+            <div class="col-md-6">
+              <input
+                id="firstName"
+                class="form-control mb-1"
+                placeholder="First Name"
+              />
+              <div class="text-danger small mb-2" id="firstNameError"></div>
+            </div>
+            <div class="col-md-6">
+              <input
+                id="lastName"
+                class="form-control mb-1"
+                placeholder="Last Name"
+              />
+              <div class="text-danger small mb-2" id="lastNameError"></div>
+            </div>
+          </div>
 
-    <button type="submit" class="btn btn-success w-100 mt-4">Register</button>
-  </form>
-</div>
+          <input id="email" class="form-control mb-1" placeholder="Email" />
+          <div class="text-danger small mb-2" id="emailError"></div>
+
+          <input
+            id="password"
+            class="form-control mb-1"
+            type="password"
+            placeholder="Password"
+          />
+          <div class="text-danger small mb-2" id="passwordError"></div>
+
+          <hr />
+
+          <div id="patientFields">
+            <!-- <h5 class="text-muted">Patient Details</h5> -->
+            <div class="row">
+              <div class="col-md-6">
+                <input
+                  id="phone"
+                  class="form-control mb-1"
+                  placeholder="Phone Number"
+                />
+              </div>
+              <div class="col-md-6">
+                <select id="gender" class="form-control mb-1">
+                  <option value="">Select Gender</option>
+                  <option value="male">Male</option>
+                  <option value="female">Female</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+            </div>
+            <div class="row mt-2">
+              <div class="col-md-6">
+                <label class="small">Date of Birth</label>
+                <input id="dob" type="date" class="form-control mb-1" />
+              </div>
+              <div class="col-md-6">
+                <label class="small">Blood Group</label>
+                <input
+                  id="bloodGroup"
+                  class="form-control mb-1"
+                  placeholder="e.g. O+"
+                />
+              </div>
+            </div>
+            <div class="text-danger small" id="patientError"></div>
+          </div>
+
+          <div class="col-md-6">
+
+              <textarea
+              id="address"
+              class="form-control mb-1"
+              placeholder="Addres"
+            ></textarea>
+   
+              </div>
+
+          <div id="doctorFields" style="display: none">
+            <!-- <h5 class="text-muted">Doctor Details</h5> -->
+            <input
+              id="specialization"
+              class="form-control mb-1"
+              placeholder="Specialization"
+            />
+            <input
+              id="qualification"
+              class="form-control mb-1"
+              placeholder="Qualification"
+            />
+            <div class="row">
+              <div class="col-md-6">
+                <input
+                  id="experience"
+                  type="number"
+                  class="form-control mb-1"
+                  placeholder="Years of Experience"
+                />
+              </div>
+              <div class="col-md-6">
+                <input
+                  id="fee"
+                  type="number"
+                  class="form-control mb-1"
+                  placeholder="Consultation Fee"
+                />
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6">
+              <input
+              id="doctorPhone"
+              class="form-control mb-1"
+              placeholder="Phone Number"
+            />
+             </div>
+
+              <div class="col-md-6">
+
+              <textarea
+              id="bio"
+              class="form-control mb-1"
+              placeholder="Short Bio"
+            ></textarea>
+   
+              </div>
+            </div>
+
+
+
+            <div class="row mt-2">
+              <div class="col-md-6">
+                <label class="small">Available Start Time</label>
+                <input
+                  id="availableStart"
+                  type="time"
+                  class="form-control mb-1"
+                />
+              </div>
+
+              <div class="col-md-6">
+                <label class="small">Available End Time</label>
+                <input
+                  id="availableEnd"
+                  type="time"
+                  class="form-control mb-1"
+                />
+              </div>
+            </div>
+
+            <div class="alert alert-warning small mt-2">
+              <strong>Note:</strong> Your account will require Admin approval
+              before you can log in.
+            </div>
+            <div class="text-danger small" id="doctorError"></div>
+          </div>
+
+          <button type="submit" class="btn btn-success w-100 mt-4">
+          <!-- <button type="button" id="registerBtn" class="btn btn-success w-100 mt-4">  -->
+            Register
+          </button>
+        </form>
+      </div>
     </div>
 
     <footer class="footer text-center">
@@ -134,7 +249,6 @@
       </div>
     </footer>
 
-
-<script src="register.js"></script>
+    <script src="register.js"></script>
   </body>
 </html>
