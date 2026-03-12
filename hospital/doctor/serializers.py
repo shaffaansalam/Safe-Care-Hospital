@@ -7,73 +7,87 @@ from django.contrib.auth.models import User
 
 # This handles the Doctor-specific fields
 class DoctorProfileSerializer(serializers.ModelSerializer):
+
+    id =   serializers.IntegerField(read_only=True)
+    user = serializers.SerializerMethodField()
+    department = serializers.SerializerMethodField()
+
     class Meta:
         model = DoctorProfile
         fields = [
-            'phone', 'specialization', 'qualification', 'experience', 
-            'bio', 'consultation_fee', 'available_start_time', 
-            'available_end_time'
+            "id",
+            "user",
+            "phone",
+            "specialization",
+            "qualification",
+            "experience",
+            "bio",
+            "consultation_fee",
+            "available_start_time",
+            "available_end_time",
+            "department",
+            "is_approved",
         ]
 
-class DoctorRegistrationSerializer(serializers.Serializer):
-    username = serializers.CharField()
-    email = serializers.EmailField()
-    password = serializers.CharField(write_only=True)
-    specialization = serializers.CharField()
+    def get_user(self, obj):
+        return {
+            "id": obj.user.id,
+            "name": obj.user.get_full_name(),
+            "email": obj.user.email,
+            "role": obj.user.profile.role,
+        }
 
-    def create(self, validated_data):
-        # 1️⃣ Create user but DISABLE login
-        user = User.objects.create_user(
-            username=validated_data['username'],
-            email=validated_data['email'],
-            password=validated_data['password'],
-            is_active=False   #  VERY IMPORTANT
-        )
+    def get_department(self, obj):
+        if obj.department:
+            return obj.department.name
+        return None
 
-        # 2️⃣ Create doctor profile (NOT approved)
-        DoctorProfile.objects.create(
-            user=user,
-            specialization=validated_data['specialization'],
-            is_approved=False
-        ) 
+# class DoctorProfileSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = DoctorProfile
+#         fields = [
+#             'phone', 'specialization', 'qualification', 'experience', 
+#             'bio', 'consultation_fee', 'available_start_time', 
+#             'available_end_time','department','is_approved'
+#         ]
 
-        UserProfile.objects.create(user=user, role='doctor')     
+#         def get_user(self, obj):
+#             return {
+#                    "id": obj.user.id,
+#                    "name": obj.user.get_full_name(),
+#                    "email": obj.user.email,
+#                    "role": obj.user.profile.role
+#                     }
+
+#         def get_department(self, obj):
+#             if obj.department:
+#                return obj.department.name
+#             return None
 
 # class DoctorRegistrationSerializer(serializers.Serializer):
-
 #     username = serializers.CharField()
 #     email = serializers.EmailField()
 #     password = serializers.CharField(write_only=True)
-
 #     specialization = serializers.CharField()
-#     qualification = serializers.CharField()
-#     experience = serializers.IntegerField()
-#     consultation_fee = serializers.DecimalField(max_digits=8, decimal_places=2)
 
 #     def create(self, validated_data):
-
+#         # 1️⃣ Create user but DISABLE login
 #         user = User.objects.create_user(
-#             username=validated_data["username"],
-#             email=validated_data["email"],
-#             password=validated_data["password"],
-#             is_active=False
+#             username=validated_data['username'],
+#             email=validated_data['email'],
+#             password=validated_data['password'],
+#             is_active=False   #  VERY IMPORTANT
 #         )
 
+#         # 2️⃣ Create doctor profile (NOT approved)
 #         DoctorProfile.objects.create(
 #             user=user,
-#             specialization=validated_data["specialization"],
-#             qualification=validated_data["qualification"],
-#             experience=validated_data["experience"],
-#             consultation_fee=validated_data["consultation_fee"],
+#             specialization=validated_data['specialization'],
 #             is_approved=False
-#         )
+#         ) 
 
-#         UserProfile.objects.create(
-#             user=user,
-#             role="doctor"
-#         )
-
-#         return user        
+#         UserProfile.objects.create(user=user, role='doctor')     
+     
 
 
 class DoctorDashboardSerializer(serializers.ModelSerializer):

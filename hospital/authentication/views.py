@@ -5,6 +5,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, permissions
 from rest_framework.permissions import AllowAny, IsAdminUser
+
 # JWT
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.exceptions import TokenError
@@ -13,7 +14,7 @@ from authentication.models import (DoctorProfile,PatientProfile,Department,Appoi
 # Serializers
 from authentication.serializers import (LogoutSerializer,LoginSerializer,RefreshTokenSerializer,
 PaymentSerializer)
-from doctor.serializers import (DoctorProfileSerializer,DepartmentSerializer,DoctorRegistrationSerializer)
+from doctor.serializers import (DoctorProfileSerializer,DepartmentSerializer)
 from patient.serializers import (PatientProfileSerializer,AppointmentSerializer,UserRegSerializer)
 
 
@@ -24,6 +25,7 @@ class RegisterApi(APIView):
     def post(self, request):
 
         serializer = UserRegSerializer(data=request.data)
+        print("REQUEST DATA:", request.data)
 
         if serializer.is_valid():
             user = serializer.save()
@@ -42,43 +44,7 @@ class RegisterApi(APIView):
             )
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-# class RegisterApi(APIView):
-
-#     permission_classes = [AllowAny]
-
-#     def post(self, request):
-
-#         role = request.data.get("role")
-
-#         if role == "doctor":
-#             serializer = DoctorRegistrationSerializer(data=request.data)
-
-#         elif role == "patient":
-#             serializer = UserRegSerializer(data=request.data)
-
-#         else:
-#             return Response(
-#                 {"error": "Invalid role"},
-#                 status=400
-#             )
-
-#         if serializer.is_valid():
-#             user = serializer.save()
-
-#             return Response(
-#                 {
-#                     "message": f"{role.capitalize()} registered successfully",
-#                     "user": {
-#                         "id": user.id,
-#                         "email": user.email,
-#                         "role": role
-#                     }
-#                 },
-#                 status=201
-#             )
-
-#         return Response(serializer.errors, status=400)        
+      
    
 
 class JWTLoginAPIView(APIView):
@@ -99,25 +65,49 @@ class JWTLoginAPIView(APIView):
             )
 
         # BLOCK DOCTOR IF NOT APPROVED
-        if user.profile.role == "doctor":
+        # if user.profile.role == "doctor":
 
-            doctor_profile = getattr(user, "doctor", None)
+        #     doctor_profile = getattr(user, "doctor", None)
 
-            if doctor_profile and not doctor_profile.is_approved:
-                return Response(
-                    {"message": "Admin approval pending. Please wait for approval."},
-                    status=status.HTTP_403_FORBIDDEN
+        #     if doctor_profile and not doctor_profile.is_approved:
+        #         return Response(
+        #             {"message": "Admin approval pending. Please wait for approval."},
+        #             status=status.HTTP_403_FORBIDDEN
+        #         )
+
+        if hasattr(user, "doctor"):
+
+           doctor_profile = user.doctor
+
+           if not doctor_profile.is_approved:
+              return Response(
+                     {"message": "Admin approval pending. Please wait for approval."},
+                     status=status.HTTP_403_FORBIDDEN
                 )
+    
 
         # DETECT ROLE SAFELY
-        if hasattr(user, 'doctor'):
-            role = "doctor"
+        # if hasattr(user, 'doctor'):
+        #     role = "doctor"
+        # elif hasattr(user, 'patient'):
+        #     role = "patient"
+        # elif user.is_staff:
+        #     role = "admin"
+        # else:
+        #     role = user.profile.role
+
+        if user.is_staff or user.is_superuser:
+           role = "admin"
+
+        elif hasattr(user, 'doctor'):
+           role = "doctor"
+
         elif hasattr(user, 'patient'):
             role = "patient"
-        elif user.is_staff:
-            role = "admin"
+
         else:
-            role = user.profile.role
+            role = "user"
+
 
         # GENERATE TOKENS
         refresh = RefreshToken.for_user(user)
@@ -140,53 +130,6 @@ class JWTLoginAPIView(APIView):
         }, status=status.HTTP_200_OK)
 
 
-
-# class JWTLoginAPIView(APIView):
-#     permission_classes = [permissions.AllowAny]
-
-#     def post(self, request):
-#         serializer = LoginSerializer(data=request.data)
-#         serializer.is_valid(raise_exception=True)
-
-#         user = serializer.validated_data['user']
-
-#         #  BLOCK DOCTOR IF NOT APPROVED
-#          #  BLOCK INACTIVE USERS (Doctor not approved)
-#         if not user.is_active:
-#             return Response(
-#                 {
-#                     "message": "Your account is pending admin approval."
-#                 },
-#                 status=status.HTTP_403_FORBIDDEN
-#             )
-        
-#         if user.profile.role == "doctor":
-#             # doctor_profile = getattr(user, "doctorprofile", None)
-#             doctor_profile = getattr(user, "doctor", None)
-
-#             if doctor_profile and not doctor_profile.is_approved:
-#                 return Response(
-#                     {
-#                         "message": "Admin approval pending. Please wait for approval."
-#                     },
-#                     status=status.HTTP_403_FORBIDDEN
-#                 )
-
-#         refresh = RefreshToken.for_user(user)
-
-#         return Response({
-#             "message": "Login successful",
-#             "access": str(refresh.access_token),
-#             "refresh": str(refresh),
-#             "user": {
-#                 "id": user.id,
-#                 "name": user.get_full_name(),
-#                 "email": user.email,
-#                 "role": user.profile.role
-#             }
-#         }, status=status.HTTP_200_OK)
-    
-    
 
     
 class JWTRefreshAPIView(APIView):
@@ -246,23 +189,23 @@ class LogoutAPIView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
         
-class DoctorRegisterAPIView(APIView):
-    permission_classes = [permissions.AllowAny]
+# class DoctorRegisterAPIView(APIView):
+#     permission_classes = [permissions.AllowAny]
 
-    def post(self, request):
-        serializer = DoctorRegistrationSerializer(data=request.data)
+#     def post(self, request):
+#         serializer = DoctorRegistrationSerializer(data=request.data)
 
-        if serializer.is_valid():
-            serializer.save()  # doctor created, is_approved=False
+#         if serializer.is_valid():
+#             serializer.save()  # doctor created, is_approved=False
 
-            return Response(
-                {
-                    "message": "Doctor registered successfully. Await admin approval."
-                },
-                status=status.HTTP_201_CREATED
-            )
+#             return Response(
+#                 {
+#                     "message": "Doctor registered successfully. Await admin approval."
+#                 },
+#                 status=status.HTTP_201_CREATED
+#             )
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 
@@ -285,7 +228,10 @@ class AdminDashboardAPIView(APIView):
 
     def get(self, request):
 
-        doctors = DoctorProfile.objects.all()
+        # doctors = DoctorProfile.objects.all()
+        doctors = DoctorProfile.objects.select_related("user","user__profile","department").all()
+        # print("TOTAL DOCTORS:", doctors.count())
+        # print("DOCTOR IDS:", list(doctors.values_list("id", flat=True)))
         patients = PatientProfile.objects.all()
         departments = Department.objects.all()
         appointments = Appointment.objects.all().order_by('-id')[:5]

@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
 # IMPORT FROM AUTHENTICATION APP, NOT FROM .models
-from authentication.models import UserProfile ,PatientProfile,DoctorProfile,Appointment
+from authentication.models import UserProfile ,PatientProfile,DoctorProfile,Appointment,Department
 
 class UserRegSerializer(serializers.ModelSerializer):
 
@@ -28,6 +28,9 @@ class UserRegSerializer(serializers.ModelSerializer):
     bio = serializers.CharField(required=False, allow_blank=True)
     available_start_time = serializers.TimeField(required=False, allow_null=True)
     available_end_time = serializers.TimeField(required=False, allow_null=True)
+    department = serializers.PrimaryKeyRelatedField(queryset=Department.objects.all(),
+    required=False,allow_null=True
+    )
 
     class Meta:
         model = User
@@ -41,7 +44,7 @@ class UserRegSerializer(serializers.ModelSerializer):
             # doctor
             'specialization', 'qualification',
             'experience', 'consultation_fee',
-            'bio', 'available_start_time', 'available_end_time'
+            'bio', 'available_start_time', 'available_end_time','department'
         ]
 
         extra_kwargs = {
@@ -50,7 +53,7 @@ class UserRegSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
 
-        role = validated_data.pop('role')
+        role = validated_data.pop('role').lower()
 
         # Patient fields
         phone = validated_data.pop('phone', '')
@@ -67,6 +70,7 @@ class UserRegSerializer(serializers.ModelSerializer):
         bio = validated_data.pop('bio', '')
         available_start_time = validated_data.pop('available_start_time', None)
         available_end_time = validated_data.pop('available_end_time', None)
+        department = validated_data.pop('department', None)
 
         # Create user
         user = User.objects.create_user(**validated_data)
@@ -93,6 +97,7 @@ class UserRegSerializer(serializers.ModelSerializer):
         if role == 'doctor':
 
             DoctorProfile.objects.create(
+                
                 user=user,
                 phone=phone,
                 specialization=specialization,
@@ -102,138 +107,14 @@ class UserRegSerializer(serializers.ModelSerializer):
                 bio=bio,
                 available_start_time=available_start_time,
                 available_end_time=available_end_time,
+                department=department,
                 is_approved=False
             )
+            print("Doctor profile created for:", user.email)
 
         return user
 
-# class UserRegSerializer(serializers.ModelSerializer):
-#     role = serializers.ChoiceField(
-#         choices=UserProfile.ROLE_CHOICES, write_only=True
-#     )
 
-#         # 👇 Add patient fields here
-#     phone = serializers.CharField(required=False)
-#     gender = serializers.CharField(required=False)
-#     dob = serializers.DateField(required=False, allow_null=True)
-#     blood_group = serializers.CharField(required=False)
-#     address = serializers.CharField(required=False, allow_blank=True)
-
-#     class Meta:
-#         model = User
-#         fields = [
-#             'username', 'email', 'password',
-#             'first_name', 'last_name', 'role',
-#             'phone', 'gender', 'dob', 'blood_group','address',
-#         ]
-#         extra_kwargs = {
-#             'password': {'write_only': True}
-#         }
-
-#     def create(self, validated_data):
-#         role = validated_data.pop('role')
-#         phone = validated_data.pop('phone', '')
-#         gender = validated_data.pop('gender', 'other')
-#         dob = validated_data.pop('dob', None)
-#         blood_group = validated_data.pop('blood_group', '')
-#         address = validated_data.pop("address", None)
-        
-
-#          # Doctor fields
-#         specialization = validated_data.pop('specialization', '')
-#         qualification = validated_data.pop('qualification', '')
-#         experience = validated_data.pop('experience', 0)
-#         consultation_fee = validated_data.pop('consultation_fee', 0)
-#         bio = validated_data.pop('bio', '')
-#         available_start_time = validated_data.pop('available_start_time', None)
-#         available_end_time = validated_data.pop('available_end_time', None)
-    
-
-#         user = User.objects.create_user(
-#                 username=validated_data['username'],
-#                 email=validated_data['email'],
-#                 password=validated_data['password'],
-#                 first_name=validated_data['first_name'],
-#                 last_name=validated_data['last_name']
-#             )
-
-#     # Create profile role
-#         UserProfile.objects.create(
-#              user=user,
-#              role=role
-#          )
-
-#     # PATIENT PROFILE
-#         if role == 'patient':
-
-#            PatientProfile.objects.create(
-#                 user=user,
-#                 phone=phone,
-#                 gender=gender,
-#                 dob=dob,
-#                 blood_group=blood_group,
-#                 address=address
-#             )
-
-#     # DOCTOR PROFILE
-#         if role == 'doctor':
-
-#             DoctorProfile.objects.create(
-#                   user=user,
-#                   phone=phone,
-#                   specialization=specialization,
-#                   qualification=qualification,
-#                   experience=experience,
-#                   consultation_fee=consultation_fee,
-#                   bio=bio,
-#                   available_start_time=available_start_time,
-#                   available_end_time=available_end_time,
-#         )
-
-#         return user
-
-
-        # user = User.objects.create_user(
-        #        username=validated_data['username'],
-        #        email=validated_data['email'],
-        #        password=validated_data['password'],
-        #        first_name=validated_data['first_name'],
-        #        last_name=validated_data['last_name']
-        #        )
-
-        # UserProfile.objects.create(
-        #            user=user,
-        #            role=validated_data['role']
-        #            )
-
-
-
-        # if validated_data['role'] == 'patient':
-
-        #    PatientProfile.objects.create(
-        #         user=user,
-        #         phone=validated_data.get('phone'),
-        #         gender=validated_data.get('gender'),
-        #         dob=validated_data.get('dob'),
-        #         blood_group=validated_data.get('blood_group'),
-        #         address=validated_data.get('address')
-        # )
-           
-        # if validated_data['role'] == 'doctor':
-
-        #    DoctorProfile.objects.create(
-        #          user=user,
-        #          phone=validated_data.get('phone'),
-        #          specialization=validated_data.get('specialization'),
-        #          qualification=validated_data.get('qualification'),
-        #          experience=validated_data.get('experience'),
-        #          consultation_fee=validated_data.get('consultation_fee'),
-        #          bio=validated_data.get('bio'),
-        #          available_start_time=validated_data.get('available_start_time'),
-        #          available_end_time=validated_data.get('available_end_time'),
-        # )
-
-        # return user
 
 
 class PatientProfileSerializer(serializers.ModelSerializer):

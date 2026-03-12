@@ -90,7 +90,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     console.log("Sending data:", JSON.stringify(data, null, 2));
-    console.log("Sending data to backend:", data);
+    // console.log("Sending data to backend:", data);
 
     try {
       console.log("🚀 Sending request...");
@@ -100,7 +100,7 @@ document.addEventListener("DOMContentLoaded", () => {
         data
       );
 
-      console.log("✅ Response received");
+      // console.log("✅ Response received");
       console.log("Full response:", res);
       console.log("Status:", res.status);
 
@@ -119,9 +119,9 @@ document.addEventListener("DOMContentLoaded", () => {
       console.log("🎉", successMessage);
 
       form.reset();
-      console.log("Form reset done");
+      // console.log("Form reset done");
 
-      console.log("Current page:", window.location.href);
+      // console.log("Current page:", window.location.href);
       console.log("Redirecting to login.html...");
 
       window.location.href = "login.html";
