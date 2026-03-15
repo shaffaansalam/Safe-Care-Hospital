@@ -65,15 +65,7 @@ class JWTLoginAPIView(APIView):
             )
 
         # BLOCK DOCTOR IF NOT APPROVED
-        # if user.profile.role == "doctor":
 
-        #     doctor_profile = getattr(user, "doctor", None)
-
-        #     if doctor_profile and not doctor_profile.is_approved:
-        #         return Response(
-        #             {"message": "Admin approval pending. Please wait for approval."},
-        #             status=status.HTTP_403_FORBIDDEN
-        #         )
 
         if hasattr(user, "doctor"):
 
@@ -87,14 +79,7 @@ class JWTLoginAPIView(APIView):
     
 
         # DETECT ROLE SAFELY
-        # if hasattr(user, 'doctor'):
-        #     role = "doctor"
-        # elif hasattr(user, 'patient'):
-        #     role = "patient"
-        # elif user.is_staff:
-        #     role = "admin"
-        # else:
-        #     role = user.profile.role
+
 
         if user.is_staff or user.is_superuser:
            role = "admin"
@@ -189,25 +174,6 @@ class LogoutAPIView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
         
-# class DoctorRegisterAPIView(APIView):
-#     permission_classes = [permissions.AllowAny]
-
-#     def post(self, request):
-#         serializer = DoctorRegistrationSerializer(data=request.data)
-
-#         if serializer.is_valid():
-#             serializer.save()  # doctor created, is_approved=False
-
-#             return Response(
-#                 {
-#                     "message": "Doctor registered successfully. Await admin approval."
-#                 },
-#                 status=status.HTTP_201_CREATED
-#             )
-
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
 
 
 class PatientRegisterAPIView(APIView):
@@ -228,7 +194,7 @@ class AdminDashboardAPIView(APIView):
 
     def get(self, request):
 
-        # doctors = DoctorProfile.objects.all()
+
         doctors = DoctorProfile.objects.select_related("user","user__profile","department").all()
         # print("TOTAL DOCTORS:", doctors.count())
         # print("DOCTOR IDS:", list(doctors.values_list("id", flat=True)))

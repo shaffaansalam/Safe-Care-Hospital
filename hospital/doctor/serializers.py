@@ -26,7 +26,9 @@ class DoctorProfileSerializer(serializers.ModelSerializer):
             "available_start_time",
             "available_end_time",
             "department",
+            # "profile_image",
             "is_approved",
+        
         ]
 
     def get_user(self, obj):
@@ -41,57 +43,13 @@ class DoctorProfileSerializer(serializers.ModelSerializer):
         if obj.department:
             return obj.department.name
         return None
-
-# class DoctorProfileSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = DoctorProfile
-#         fields = [
-#             'phone', 'specialization', 'qualification', 'experience', 
-#             'bio', 'consultation_fee', 'available_start_time', 
-#             'available_end_time','department','is_approved'
-#         ]
-
-#         def get_user(self, obj):
-#             return {
-#                    "id": obj.user.id,
-#                    "name": obj.user.get_full_name(),
-#                    "email": obj.user.email,
-#                    "role": obj.user.profile.role
-#                     }
-
-#         def get_department(self, obj):
-#             if obj.department:
-#                return obj.department.name
-#             return None
-
-# class DoctorRegistrationSerializer(serializers.Serializer):
-#     username = serializers.CharField()
-#     email = serializers.EmailField()
-#     password = serializers.CharField(write_only=True)
-#     specialization = serializers.CharField()
-
-#     def create(self, validated_data):
-#         # 1️⃣ Create user but DISABLE login
-#         user = User.objects.create_user(
-#             username=validated_data['username'],
-#             email=validated_data['email'],
-#             password=validated_data['password'],
-#             is_active=False   #  VERY IMPORTANT
-#         )
-
-#         # 2️⃣ Create doctor profile (NOT approved)
-#         DoctorProfile.objects.create(
-#             user=user,
-#             specialization=validated_data['specialization'],
-#             is_approved=False
-#         ) 
-
-#         UserProfile.objects.create(user=user, role='doctor')     
+ 
      
 
 
 class DoctorDashboardSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField()
+    department = serializers.CharField(source="department.name",read_only=True)
 
     class Meta:
         model = DoctorProfile
@@ -103,10 +61,11 @@ class DoctorDashboardSerializer(serializers.ModelSerializer):
             'experience',
             'bio',
             'consultation_fee',
+            'department',
             'available_start_time',
             'available_end_time',
             'is_available',
-            'profile_image'
+            # 'profile_image'
         ]
 
     def get_user(self, obj):
@@ -117,6 +76,11 @@ class DoctorDashboardSerializer(serializers.ModelSerializer):
             "role": obj.user.profile.role
         }
 
+    def get_department(self, obj):
+        if obj.department:
+            return obj.department.name
+        return None    
+
 
 class DepartmentSerializer(serializers.ModelSerializer):
     class Meta:
@@ -124,26 +88,54 @@ class DepartmentSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-    
 
+# {
+#   "username": "sachin_tendulkar",
+#   "first_name": "sachin",
+#   "last_name": "tendulkar",
+#   "email": "sachin1234@gmail.com",
+#   "password": "sachin4321",
+#   "phone": "9447769634",
+#   "role": "doctor",
+#   "specialization": "Neurologist",
+#   "qualification": "MBBS",
+#   "experience": 10,
+#   "bio": "Brain Specialist",
+#   "consultation_fee": 300,
+#   "available_start_time": "09:00:00",
+#   "available_end_time": "17:00:00",
+#   "department": 3
+# }
 
-#     {
-#   "message": "Doctor registered successfully",
+# {
+#   "message": "User registered successfully",
 #   "user": {
-#     "id": 19,
-#     "username": "dr_smith17",
-#     "email": "smith@hospital.com",
-#     "first_name": "John",
-#     "last_name": "Smith",
-#     "doctor": {
-#       "phone": "123456789012",
-#       "specialization": "Cardiology",
-#       "qualification": "MD, MBBS",
-#       "experience": 10,
-#       "bio": "Experienced cardiologist.",
-#       "consultation_fee": "500.00",
-#       "available_start_time": "09:00:00",
-#       "available_end_time": "17:00:00"
-#     }
+#     "id": 175,
+#     "username": "sachin_tendulkar",
+#     "email": "sachin1234@gmail.com",
+#     "role": "doctor"
 #   }
+# }
+
+# {
+#       "id": 87,
+#       "user": {
+#         "id": 175,
+#         "name": "sachin tendulkar",
+#         "email": "sachin1234@gmail.com",
+#         "role": "doctor"
+#       },
+#       "phone": "9447769634",
+#       "specialization": "Neurologist",
+#       "qualification": "MBBS",
+#       "experience": 10,
+#       "bio": "Brain Specialist",
+#       "consultation_fee": "300.00",
+#       "available_start_time": "09:00:00",
+#       "available_end_time": "17:00:00",
+#       "department": "Neurology",
+#       "is_approved": false
+#     }
+# {
+#   "message": "Doctor approved successfully"
 # }

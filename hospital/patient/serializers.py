@@ -15,6 +15,9 @@ class UserRegSerializer(serializers.ModelSerializer):
     dob = serializers.DateField(required=False, allow_null=True)
     blood_group = serializers.CharField(required=False)
     address = serializers.CharField(required=False, allow_blank=True)
+    medical_history = serializers.CharField(required=False, allow_blank=True)
+    age = serializers.IntegerField(required=False)
+    # profile_image = serializers.ImageField(required=False)
 
     # Doctor fields  ⭐ ADD THESE
     specialization = serializers.CharField(required=False)
@@ -39,7 +42,9 @@ class UserRegSerializer(serializers.ModelSerializer):
             'first_name', 'last_name', 'role',
 
             # patient
-            'phone', 'gender', 'dob', 'blood_group', 'address',
+            'phone', 'gender', 'dob','age', 'blood_group', 'address','medical_history',
+            # 'profile_image'
+            
 
             # doctor
             'specialization', 'qualification',
@@ -61,6 +66,9 @@ class UserRegSerializer(serializers.ModelSerializer):
         dob = validated_data.pop('dob', None)
         blood_group = validated_data.pop('blood_group', '')
         address = validated_data.pop("address", '')
+        medical_history = validated_data.pop("medical_history", '')
+        age = validated_data.pop('age',None)
+        # profile_image = validated_data.pop('profile_image',None)
 
         # Doctor fields
         specialization = validated_data.pop('specialization', '')
@@ -90,7 +98,10 @@ class UserRegSerializer(serializers.ModelSerializer):
                 gender=gender,
                 dob=dob,
                 blood_group=blood_group,
-                address=address
+                address=address,
+                medical_history=medical_history,
+                age=age,
+                # profile_image=profile_image
             )
 
         # DOCTOR PROFILE
@@ -114,17 +125,30 @@ class UserRegSerializer(serializers.ModelSerializer):
 
         return user
 
+class SimpleUserSerializer(serializers.ModelSerializer):
 
+    role=serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = ["id", "username", "first_name", "last_name", "email",'role',]
+
+    def get_role(self,obj):
+        return obj.profile.role        
 
 
 class PatientProfileSerializer(serializers.ModelSerializer):
-    user = UserRegSerializer()
+
+    user = SimpleUserSerializer()
+    id = serializers.IntegerField(read_only=True)
+   
 
     class Meta:
         model = PatientProfile
         fields = [
-            'user', 'phone', 'gender', 'dob', 'age', 
-            'address', 'blood_group', 'medical_history'
+            'id','user', 'phone', 'gender', 'age', 
+            'address', 'blood_group', 'medical_history',
+            # 'profile_image',
         ]
 
     def create(self, validated_data):
@@ -151,7 +175,7 @@ class PatientDashboardSerializer(serializers.ModelSerializer):
             'address',
             'blood_group',
             'medical_history',
-            'profile_image'
+            # 'profile_image'
         ]
 
     def get_user(self, obj):

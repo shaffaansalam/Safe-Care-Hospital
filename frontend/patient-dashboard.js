@@ -49,12 +49,16 @@ document.addEventListener("DOMContentLoaded", () => {
     const data = res.data;
 
     document.getElementById("patientData").innerHTML = `
-        <p><strong>Name:</strong> ${data.user.name}</p>
-        <p><strong>Email:</strong> ${data.user.email}</p>
-        <p><strong>Phone:</strong> ${data.phone || "N/A"}</p>
-        <p><strong>Gender:</strong> ${data.gender || "N/A"}</p>
-        <p><strong>Date of Birth:</strong> ${data.dob || "N/A"}</p>
-        <p><strong>Blood Group:</strong> ${data.blood_group || "N/A"}</p>
+        <p><strong>Name :</strong> ${data.user.name}</p>
+        <p><strong>Email :</strong> ${data.user.email}</p>
+        <p><strong>Phone :</strong> ${data.phone || "N/A"}</p>
+        <p><strong>Gender :</strong> ${data.gender || "N/A"}</p>
+        <p><strong>Age :</strong> ${data.age || "N/A"}</p>
+        <p><strong>Blood Group :</strong> ${data.blood_group || "N/A"}</p>
+        <p><strong>Address :</strong> ${data.address || "N/A"}</p>
+        <p><strong>Medical History :</strong> ${data.medical_history || "N/A"}</p>
+        <img src="http://127.0.0.1:8001${data.profile_image}" width="120" />
+
     `;
 
   })

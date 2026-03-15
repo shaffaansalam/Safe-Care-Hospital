@@ -3,8 +3,41 @@
 <head>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
+  <link rel="stylesheet" href="navbar.css">
+  <link rel="stylesheet" href="footer.css">
 </head>
 <body class="bg-gray-100">
+
+  <header class="navbar fixed-top px-5">
+  <div class="left-logo">SAFE CARE<div class="down">Hospital</div></div>
+  <nav>
+    <ul class="nav-links">
+      <li><a href="{% url 'home' %}">Home</a></li>
+      <li><a href="{% url 'about' %}">About</a></li>
+      <li><a href="{% url 'departments' %}">Departments</a></li>
+      <li><a href="{% url 'contact' %}">Contact</a></li>
+
+      <li id="loginNav">
+        <a href="{% url 'login-page' %}">Login</a>
+      </li>
+
+      <li id="logoutNav" style="display:none;">
+        <a href="#" onclick="logoutUser()">Logout</a>
+      </li>
+
+      <li>
+        <a href="{% url 'authentication:register' %}" 
+           class="btn btn-primary btn-sm text-white text-sm">
+           Register
+        </a>
+      </li>
+    </ul>
+  </nav>
+</header>
+
+<div class="navbar-space"></div>
+
 
 <div class="max-w-4xl mx-auto mt-10 bg-white shadow-lg rounded-xl p-8">
   <h1 class="text-3xl font-bold mb-4 text-green-600">Doctor Dashboard</h1>
@@ -17,6 +50,18 @@
 
 const token = localStorage.getItem("access_token");
 const storedUser = JSON.parse(localStorage.getItem("user"));
+
+  const loginNav = document.getElementById("loginNav");
+  const logoutNav = document.getElementById("logoutNav");
+
+  // ✅ Navbar toggle
+  if (token) {
+    loginNav.style.display = "none";
+    logoutNav.style.display = "block";
+  } else {
+    loginNav.style.display = "block";
+    logoutNav.style.display = "none";
+  }
 
 // ✅ Role check
 if (!token || !storedUser || storedUser.role.toLowerCase() !== "doctor") {
@@ -37,11 +82,19 @@ axios.get("http://127.0.0.1:8001/auth/dashboard/doctor/", {
   const data = res.data;
 
   document.getElementById("doctorData").innerHTML = `
-    <p><strong>Name:</strong> ${data.user.name}</p>
-    <p><strong>Email:</strong> ${data.user.email}</p>
-    <p><strong>Specialization:</strong> ${data.specialization}</p>
-    <p><strong>Experience:</strong> ${data.experience} years</p>
-    <p><strong>Consultation Fee:</strong> ₹${data.consultation_fee}</p>
+    <p><strong>Name :</strong> ${data.user.name}</p>
+    <p><strong>Email :</strong> ${data.user.email}</p>
+    <p><strong>Specialization :</strong> ${data.specialization}</p>
+    <p><strong>Experience :</strong> ${data.experience} years</p>
+    <p><strong>Phone Number :</strong> ${data.phone}</p>
+    <p><strong>Qualification :</strong> ${data.qualification}</p>
+    <p><strong>Bio :</strong> ${data.bio}</p>
+    <p><strong>Department :</strong> ${data.department}</p>
+    <p><strong>Consultation Fee :</strong> ₹${data.consultation_fee}</p>
+    <p><strong>Available Start Time :</strong> ${data.available_start_time}</p>
+    <p><strong>Available End Time :</strong> ${data.available_end_time}</p>
+    <img src="http://127.0.0.1:8001 ${data.profile_image}" width="120" />
+
   `;
 
 })
@@ -52,6 +105,32 @@ axios.get("http://127.0.0.1:8001/auth/dashboard/doctor/", {
     window.location.replace("login.html");
   }, 2000);
 });
+
+// ✅ GLOBAL LOGOUT FUNCTION
+async function logoutUser() {
+
+  const refreshToken = localStorage.getItem("refresh_token");
+  const accessToken = localStorage.getItem("access_token");
+
+  try {
+    if (refreshToken) {
+      await axios.post(
+        "http://127.0.0.1:8001/auth/logout/",
+        { refresh: refreshToken },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`
+          }
+        }
+      );
+    }
+  } catch (error) {
+    console.log("Logout API error:", error);
+  }
+
+  localStorage.clear();
+  window.location.href = "/";
+}
 
 
 function showToast(message, color) {
