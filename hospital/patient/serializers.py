@@ -29,6 +29,7 @@ class UserRegSerializer(serializers.ModelSerializer):
         required=False
     )
     bio = serializers.CharField(required=False, allow_blank=True)
+    profile_image = serializers.ImageField(required=False)
     available_start_time = serializers.TimeField(required=False, allow_null=True)
     available_end_time = serializers.TimeField(required=False, allow_null=True)
     department = serializers.PrimaryKeyRelatedField(queryset=Department.objects.all(),
@@ -49,7 +50,8 @@ class UserRegSerializer(serializers.ModelSerializer):
             # doctor
             'specialization', 'qualification',
             'experience', 'consultation_fee',
-            'bio', 'available_start_time', 'available_end_time','department'
+            'bio', 'available_start_time', 'available_end_time','department',
+            # 'profile_image',
         ]
 
         extra_kwargs = {
@@ -79,6 +81,7 @@ class UserRegSerializer(serializers.ModelSerializer):
         available_start_time = validated_data.pop('available_start_time', None)
         available_end_time = validated_data.pop('available_end_time', None)
         department = validated_data.pop('department', None)
+        # profile_image = validated_data.pop('profile_image',None)
 
         # Create user
         user = User.objects.create_user(**validated_data)
@@ -119,7 +122,8 @@ class UserRegSerializer(serializers.ModelSerializer):
                 available_start_time=available_start_time,
                 available_end_time=available_end_time,
                 department=department,
-                is_approved=False
+                is_approved=False,
+                # profile_image=profile_image,
             )
             print("Doctor profile created for:", user.email)
 
@@ -151,18 +155,11 @@ class PatientProfileSerializer(serializers.ModelSerializer):
             # 'profile_image',
         ]
 
-    def create(self, validated_data):
-        user_data = validated_data.pop('user')
-        user = User.objects.create_user(**user_data)
-        
-        # Ensure you use the imported UserProfile from authentication
-        UserProfile.objects.create(user=user, role='patient')
-
-        patient_profile = PatientProfile.objects.create(user=user, **validated_data)
-        return patient_profile
+    
 
 class PatientDashboardSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField()
+    # profile_image = serializers.ImageField(read_only=True)
 
     class Meta:
         model = PatientProfile
@@ -175,7 +172,7 @@ class PatientDashboardSerializer(serializers.ModelSerializer):
             'address',
             'blood_group',
             'medical_history',
-            # 'profile_image'
+            # 'profile_image',
         ]
 
     def get_user(self, obj):
@@ -206,6 +203,12 @@ class AppointmentSerializer(serializers.ModelSerializer):
             appointment_time=time,
             status__in=['pending','accepted']
         ).exists()
+
+        if doctor.available_start_time and doctor.available_end_time:
+            if not (doctor.available_start_time <= time <= doctor.available_end_time):
+              raise serializers.ValidationError(
+                  "Appointment time is outside doctor's availability"
+               )
 
         if conflict:
             raise serializers.ValidationError(

@@ -8,6 +8,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const loginNav = document.getElementById("loginNav");
   const logoutNav = document.getElementById("logoutNav");
 
+
   // ✅ Navbar toggle
   if (token) {
     loginNav.style.display = "none";
@@ -48,6 +49,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const data = res.data;
 
+    // const imageUrl = data.profile_image ? 
+    // `http://127.0.0.1:8001
+    // ${data.profile_image}` :
+    //  "https://via.placeholder.com/120";
+
     document.getElementById("patientData").innerHTML = `
         <p><strong>Name :</strong> ${data.user.name}</p>
         <p><strong>Email :</strong> ${data.user.email}</p>
@@ -57,9 +63,12 @@ document.addEventListener("DOMContentLoaded", () => {
         <p><strong>Blood Group :</strong> ${data.blood_group || "N/A"}</p>
         <p><strong>Address :</strong> ${data.address || "N/A"}</p>
         <p><strong>Medical History :</strong> ${data.medical_history || "N/A"}</p>
-        <img src="http://127.0.0.1:8001${data.profile_image}" width="120" />
 
-    `;
+
+    //     <img src="http://127.0.0.1:8001 ${data.profile_image}
+    //     "class="w-32 h-32 rounded-full object-cover border mb-3" />
+
+    // `;
 
   })
   .catch(() => {

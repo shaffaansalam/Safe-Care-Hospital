@@ -1,6 +1,4 @@
 from django.db import models
-
-from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.models import User
 from django.conf import settings
 from datetime import date
@@ -41,16 +39,25 @@ class PatientProfile(models.Model):
 
     def __str__(self):
         return self.user.get_full_name()
+    # def save(self, *args, **kwargs):
+
+    #     if self.dob:
+    #         today = date.today()
+
+    #         self.age = today.year - self.dob.year - (
+    #             (today.month, today.day) < (self.dob.month, self.dob.day)
+    #         )
+
+    #     super().save(*args, **kwargs)
+
     def save(self, *args, **kwargs):
-
         if self.dob:
-            today = date.today()
-
-            self.age = today.year - self.dob.year - (
-                (today.month, today.day) < (self.dob.month, self.dob.day)
-            )
-
+           today = date.today()
+           self.age = today.year - self.dob.year - (
+               (today.month, today.day) < (self.dob.month, self.dob.day)
+        )
         super().save(*args, **kwargs)
+        
 
 class Department(models.Model):
     name = models.CharField(max_length=100, unique=True)
@@ -146,16 +153,16 @@ class Payment(models.Model):
         ('wallet', 'Wallet'),
     )
 
-    appointment = models.ForeignKey(Appointment, on_delete=models.CASCADE)
+    appointment = models.ForeignKey(Appointment, on_delete=models.CASCADE, related_name='payments')
 
     patient = models.ForeignKey(
         PatientProfile,
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE , related_name='payments'
     )
 
     doctor = models.ForeignKey(
         DoctorProfile,
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE, related_name='payments'
     )
 
     amount = models.DecimalField(max_digits=10, decimal_places=2)

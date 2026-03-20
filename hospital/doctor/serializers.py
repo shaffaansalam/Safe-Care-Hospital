@@ -1,6 +1,5 @@
 from rest_framework import serializers
-from authentication.serializers import UserProfile,DoctorProfile
-from authentication.models import *
+from authentication.models import DoctorProfile,Department
 from django.contrib.auth.models import User
 
 
@@ -50,6 +49,7 @@ class DoctorProfileSerializer(serializers.ModelSerializer):
 class DoctorDashboardSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField()
     department = serializers.CharField(source="department.name",read_only=True)
+    # profile_image = serializers.ImageField(read_only=True)
 
     class Meta:
         model = DoctorProfile
@@ -65,7 +65,7 @@ class DoctorDashboardSerializer(serializers.ModelSerializer):
             'available_start_time',
             'available_end_time',
             'is_available',
-            # 'profile_image'
+            # 'profile_image',
         ]
 
     def get_user(self, obj):
@@ -76,10 +76,6 @@ class DoctorDashboardSerializer(serializers.ModelSerializer):
             "role": obj.user.profile.role
         }
 
-    def get_department(self, obj):
-        if obj.department:
-            return obj.department.name
-        return None    
 
 
 class DepartmentSerializer(serializers.ModelSerializer):

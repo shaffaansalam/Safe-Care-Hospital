@@ -14,6 +14,6 @@ class PatientDashboardAPIView(APIView):
             return Response({"error": "Unauthorized"}, status=403)
 
         patient = request.user.patient
-        serializer = PatientDashboardSerializer(patient)
+        serializer = PatientDashboardSerializer(patient, context={'request': request})
         return Response(serializer.data, status=200)
 

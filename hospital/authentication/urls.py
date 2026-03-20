@@ -44,8 +44,7 @@ path('payments/', PaymentCreateAPIView.as_view()),
 
 path('payments/<int:pk>/', PaymentDetailAPIView.as_view()),
 
-path('admin/payments/', AdminPaymentReportAPIView.as_view()),
-
+path('admin/payments/',AdminPaymentListAPIView.as_view()),
 
 ]
     

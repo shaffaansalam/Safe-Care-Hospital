@@ -30,6 +30,10 @@ class RegisterApi(APIView):
         if serializer.is_valid():
             user = serializer.save()
 
+            if user.profile.role == "doctor":
+               user.is_active = False
+               user.save()
+
             return Response(
                 {
                     "message": "User registered successfully",
@@ -189,33 +193,52 @@ class PatientRegisterAPIView(APIView):
 
 
 
+# class AdminDashboardAPIView(APIView):
+#     permission_classes = [IsAdminUser]
+
+#     def get(self, request):
+#         # print("TOTAL DOCTORS:", total_doctors.count())
+#         # print("DOCTOR IDS:", list(total_doctors.values_list("id", flat=True)))
+#         total_doctors = DoctorProfile.objects.count()
+#         total_patients = PatientProfile.objects.count()
+#         total_departments = Department.objects.count()
+#         total_appointments = Appointment.objects.count()
+#         total_payments = Payment.objects.count()
+
+#         return Response({
+#             "total_doctors": total_doctors,
+#             "total_patients": total_patients,
+#             "total_departments": total_departments,
+#             "total_appointments": total_appointments,
+#             "total_payments": total_payments
+#         })
+
 class AdminDashboardAPIView(APIView):
     permission_classes = [IsAdminUser]
 
     def get(self, request):
 
+        role = request.query_params.get("role")
 
-        doctors = DoctorProfile.objects.select_related("user","user__profile","department").all()
-        # print("TOTAL DOCTORS:", doctors.count())
-        # print("DOCTOR IDS:", list(doctors.values_list("id", flat=True)))
-        patients = PatientProfile.objects.all()
-        departments = Department.objects.all()
-        appointments = Appointment.objects.all().order_by('-id')[:5]
-        payments = Payment.objects.all()
+        if role == "doctor":
+            doctors = DoctorProfile.objects.select_related("user", "department")
+            serializer = DoctorProfileSerializer(doctors, many=True)
+            return Response({"doctors": serializer.data})
 
-        doctor_serializer = DoctorProfileSerializer(doctors, many=True)
-        patient_serializer = PatientProfileSerializer(patients, many=True)
-        appointment_serializer = AppointmentSerializer(appointments, many=True)
+        elif role == "patient":
+            patients = PatientProfile.objects.select_related("user")
+            serializer = PatientProfileSerializer(patients, many=True)
+            return Response({"patients": serializer.data})
 
-        total_revenue = payments.aggregate(total=Sum('amount'))['total'] or 0
+        else:
+            return Response({
+                "total_doctors": DoctorProfile.objects.count(),
+                "total_patients": PatientProfile.objects.count(),
+                "total_departments": Department.objects.count(),
+                "total_appointments": Appointment.objects.count(),
+                "total_payments": Payment.objects.count()
+            })
 
-        return Response({
-            "doctors": doctor_serializer.data,
-            "patients": patient_serializer.data,
-            "departments": departments.count(),
-            "appointments": appointment_serializer.data,
-            "payments": total_revenue
-        })  
 
 
 class AdminDoctorApprovalAPIView(APIView):
@@ -237,13 +260,27 @@ class AdminDoctorApprovalAPIView(APIView):
             "message": "Doctor approved successfully"
         })          
 
+# class AdminDoctorListAPIView(APIView):
+#     permission_classes = [IsAdminUser]
+
+#     def get(self, request):
+#         doctors = DoctorProfile.objects.all()
+#         serializer = DoctorProfileSerializer(doctors, many=True)
+#         return Response(serializer.data)
+
 class AdminDoctorListAPIView(APIView):
+
     permission_classes = [IsAdminUser]
 
     def get(self, request):
-        doctors = DoctorProfile.objects.all()
+
+        doctors = DoctorProfile.objects.select_related("user","department").all()
+
         serializer = DoctorProfileSerializer(doctors, many=True)
-        return Response(serializer.data)
+
+        return Response({
+            "doctors": serializer.data
+        })    
 
 
 
@@ -276,13 +313,28 @@ class AdminDoctorDetailAPIView(APIView):
         return Response({"message": "Doctor deleted"}, status=204)  
 
 
+# class AdminPatientListAPIView(APIView):
+#     permission_classes = [IsAdminUser]
+
+#     def get(self, request):
+#         patients = PatientProfile.objects.all()
+#         serializer = PatientProfileSerializer(patients, many=True)
+#         return Response(serializer.data)
+    
 class AdminPatientListAPIView(APIView):
+
     permission_classes = [IsAdminUser]
 
     def get(self, request):
-        patients = PatientProfile.objects.all()
+
+        patients = PatientProfile.objects.select_related("user").all()
+
         serializer = PatientProfileSerializer(patients, many=True)
-        return Response(serializer.data)
+
+        return Response({
+            "patients": serializer.data
+        })
+
 
 class AdminPatientDetailAPIView(APIView):
     permission_classes = [IsAdminUser]
@@ -298,20 +350,34 @@ class AdminPatientDetailAPIView(APIView):
 
 
 
+# class AdminDepartmentListAPIView(APIView):
+#     permission_classes = [IsAdminUser]
+
+#     def get(self, request):
+#         departments = Department.objects.all()
+#         serializer = DepartmentSerializer(departments, many=True)
+#         return Response(serializer.data)
+
+#     def post(self, request):
+#         serializer = DepartmentSerializer(data=request.data)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data, status=201)
+#         return Response(serializer.errors, status=400)    
+    
 class AdminDepartmentListAPIView(APIView):
+
     permission_classes = [IsAdminUser]
 
     def get(self, request):
-        departments = Department.objects.all()
-        serializer = DepartmentSerializer(departments, many=True)
-        return Response(serializer.data)
 
-    def post(self, request):
-        serializer = DepartmentSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=201)
-        return Response(serializer.errors, status=400)        
+        departments = Department.objects.all()
+
+        serializer = DepartmentSerializer(departments, many=True)
+
+        return Response({
+            "departments": serializer.data
+        })        
 
           
 class AdminDepartmentDetailAPIView(APIView):
@@ -338,13 +404,29 @@ class AdminDepartmentDetailAPIView(APIView):
         department.delete()
         return Response({"message": "Deleted"}, status=204)    
 
+# class AdminAppointmentListAPIView(APIView):
+#     permission_classes = [IsAdminUser]
+
+#     def get(self, request):
+#         appointments = Appointment.objects.all().order_by('-created_at')
+#         serializer = AppointmentSerializer(appointments, many=True)
+#         return Response(serializer.data)
+    
 class AdminAppointmentListAPIView(APIView):
+
     permission_classes = [IsAdminUser]
 
     def get(self, request):
-        appointments = Appointment.objects.all().order_by('-created_at')
+
+        appointments = Appointment.objects.select_related(
+            "doctor","patient"
+        ).order_by("-id")
+
         serializer = AppointmentSerializer(appointments, many=True)
-        return Response(serializer.data)
+
+        return Response({
+            "appointments": serializer.data
+        })    
 
 class AdminAppointmentDetailAPIView(APIView):
     permission_classes = [IsAdminUser]
@@ -395,17 +477,7 @@ class PaymentCreateAPIView(APIView):
 
         return Response(serializer.errors, status=400)
     
-class AdminPaymentReportAPIView(APIView):
-
-    permission_classes = [IsAdminUser]
-
-    def get(self, request):
-
-        payments = Payment.objects.all().order_by('-created_at')
-
-        serializer = PaymentSerializer(payments, many=True)
-
-        return Response(serializer.data)    
+ 
 
 class PaymentDetailAPIView(APIView):
 
@@ -422,3 +494,20 @@ class PaymentDetailAPIView(APIView):
         serializer = PaymentSerializer(payment)
 
         return Response(serializer.data)    
+    
+
+class AdminPaymentListAPIView(APIView):
+
+    permission_classes = [IsAdminUser]
+
+    def get(self, request):
+
+        payments = Payment.objects.all()
+
+        total_revenue = payments.aggregate(
+            total=Sum("amount")
+        )["total"] or 0
+
+        return Response({
+            "payments": total_revenue
+        })

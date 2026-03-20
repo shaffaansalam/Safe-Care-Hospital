@@ -47,6 +47,8 @@ document.addEventListener("DOMContentLoaded", () => {
       'input[name="roleToggle"]:checked'
     ).value;
 
+    
+
     const data = {
       role,
       first_name: firstName.value.trim(),
