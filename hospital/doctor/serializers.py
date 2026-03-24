@@ -25,7 +25,7 @@ class DoctorProfileSerializer(serializers.ModelSerializer):
             "available_start_time",
             "available_end_time",
             "department",
-            # "profile_image",
+            "profile_image",
             "is_approved",
         
         ]
@@ -49,7 +49,7 @@ class DoctorProfileSerializer(serializers.ModelSerializer):
 class DoctorDashboardSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField()
     department = serializers.CharField(source="department.name",read_only=True)
-    # profile_image = serializers.ImageField(read_only=True)
+    profile_image = serializers.ImageField(read_only=True)
 
     class Meta:
         model = DoctorProfile
@@ -65,7 +65,7 @@ class DoctorDashboardSerializer(serializers.ModelSerializer):
             'available_start_time',
             'available_end_time',
             'is_available',
-            # 'profile_image',
+            'profile_image',
         ]
 
     def get_user(self, obj):

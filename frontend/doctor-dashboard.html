@@ -1,172 +1,185 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-<head>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
-  <link rel="stylesheet" href="navbar.css">
-  <link rel="stylesheet" href="footer.css">
-</head>
-<body class="bg-gray-100">
+  <head>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
+    />
+    <link rel="stylesheet" href="navbar.css" />
+    <link rel="stylesheet" href="footer.css" />
+  </head>
 
-  <header class="navbar fixed-top px-5">
-  <div class="left-logo">SAFE CARE<div class="down">Hospital</div></div>
-  <nav>
-    <ul class="nav-links">
-      <li><a href="{% url 'home' %}">Home</a></li>
-      <li><a href="{% url 'about' %}">About</a></li>
-      <li><a href="{% url 'departments' %}">Departments</a></li>
-      <li><a href="{% url 'contact' %}">Contact</a></li>
+  <body class="bg-gray-100">
+    <header class="navbar fixed-top px-5">
+      <div class="left-logo">
+        SAFE CARE
+        <div class="down">Hospital</div>
+      </div>
+      <nav>
+        <ul class="nav-links">
+          <li><a href="{% url 'home' %}">Home</a></li>
+          <li><a href="{% url 'about' %}">About</a></li>
+          <li><a href="{% url 'departments' %}">Departments</a></li>
+          <li><a href="{% url 'contact' %}">Contact</a></li>
 
-      <li id="loginNav">
-        <a href="{% url 'login-page' %}">Login</a>
-      </li>
+          <li id="loginNav">
+            <a href="{% url 'login-page' %}">Login</a>
+          </li>
 
-      <li id="logoutNav" style="display:none;">
-        <a href="#" onclick="logoutUser()">Logout</a>
-      </li>
+          <li id="logoutNav" style="display: none">
+            <a href="#" onclick="logoutUser()">Logout</a>
+          </li>
 
-      <li>
-        <a href="{% url 'authentication:register' %}" 
-           class="btn btn-primary btn-sm text-white text-sm">
-           Register
-        </a>
-      </li>
-    </ul>
-  </nav>
-</header>
+          <li>
+            <a
+              href="{% url 'authentication:register' %}"
+              class="btn btn-primary btn-sm text-white text-sm"
+            >
+              Register
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </header>
 
-<div class="navbar-space"></div>
+    <div class="navbar-space"></div>
 
+    <div class="max-w-4xl mx-auto mt-10 bg-white shadow-lg rounded-xl p-8">
+      <h1 class="text-3xl font-bold mb-4 text-green-600">Doctor Dashboard</h1>
 
-<div class="max-w-4xl mx-auto mt-10 bg-white shadow-lg rounded-xl p-8">
-  <h1 class="text-3xl font-bold mb-4 text-green-600">Doctor Dashboard</h1>
+      <div id="welcomeUser" class="mb-4"></div>
+      <div id="doctorData" class="space-y-3"></div>
+    </div>
 
-  <div id="welcomeUser" class="mb-4"></div>
-  <div id="doctorData" class="space-y-3"></div>
-</div>
+    <script>
+      const token = localStorage.getItem("access_token");
+      const storedUser = JSON.parse(localStorage.getItem("user"));
 
-<script>
+      const loginNav = document.getElementById("loginNav");
+      const logoutNav = document.getElementById("logoutNav");
 
-const token = localStorage.getItem("access_token");
-const storedUser = JSON.parse(localStorage.getItem("user"));
+      // ✅ Navbar toggle
+      if (token) {
+        loginNav.style.display = "none";
+        logoutNav.style.display = "block";
+      } else {
+        loginNav.style.display = "block";
+        logoutNav.style.display = "none";
+      }
 
-  const loginNav = document.getElementById("loginNav");
-  const logoutNav = document.getElementById("logoutNav");
+      // ✅ Role check
+      if (!token || !storedUser || storedUser.role.toLowerCase() !== "doctor") {
+        window.location.replace("login.html");
+      }
 
-
-  // ✅ Navbar toggle
-  if (token) {
-    loginNav.style.display = "none";
-    logoutNav.style.display = "block";
-  } else {
-    loginNav.style.display = "block";
-    logoutNav.style.display = "none";
-  }
-
-// ✅ Role check
-if (!token || !storedUser || storedUser.role.toLowerCase() !== "doctor") {
-  window.location.replace("login.html");
-}
-
-document.getElementById("welcomeUser").innerHTML = `
+      document.getElementById("welcomeUser").innerHTML = `
   <p class="text-lg font-semibold text-green-600">
     Welcome, ${storedUser.name}
   </p>
 `;
 
-axios.get("http://127.0.0.1:8001/auth/dashboard/doctor/", {
-  headers: { Authorization: `Bearer ${token}` }
-})
-.then(res => {
+      axios
+        .get("http://127.0.0.1:8001/auth/dashboard/doctor/", {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        .then((res) => {
+          const data = res.data;
 
-  const data = res.data;
+          const baseServerUrl = "http://127.0.0.1:8001";
 
-  // const imageUrl = data.profile_image 
-  // ? `http://127.0.0.1:8001${data.profile_image}` 
-  // : "https://via.placeholder.com/120";
+          // Logic to handle relative vs absolute URLs
+          let imageUrl = data.profile_image;
+          if (imageUrl && !imageUrl.startsWith('http')) {
+              imageUrl = `${baseServerUrl}${imageUrl}`;
+          } else if (!imageUrl) {
+             imageUrl = "https://ui-avatars.com/api/?name=" + data.user.name;
+          }
 
-  document.getElementById("doctorData").innerHTML = `
-    <p><strong>Name :</strong> ${data.user.name}</p>
-    <p><strong>Email :</strong> ${data.user.email}</p>
-    <p><strong>Specialization :</strong> ${data.specialization}</p>
-    <p><strong>Experience :</strong> ${data.experience} years</p>
-    <p><strong>Phone Number :</strong> ${data.phone}</p>
-    <p><strong>Qualification :</strong> ${data.qualification}</p>
-    <p><strong>Bio :</strong> ${data.bio}</p>
-    <p><strong>Department :</strong> ${data.department}</p>
-    <p><strong>Consultation Fee :</strong> ₹${data.consultation_fee}</p>
-    <p><strong>Available Start Time :</strong> ${data.available_start_time}</p>
-    <p><strong>Available End Time :</strong> ${data.available_end_time}</p>
-    // <img src="http://127.0.0.1:8001${data.profile_image}" 
-    //  class="w-32 h-32 rounded-full object-cover border mb-3" />
+
+          document.getElementById("doctorData").innerHTML = `
+            <p><strong>Name :</strong> ${data.user.name}</p>
+            <p><strong>Email :</strong> ${data.user.email}</p>
+            <p><strong>Specialization :</strong> ${data.specialization}</p>
+            <p><strong>Experience :</strong> ${data.experience} years</p>
+            <p><strong>Phone Number :</strong> ${data.phone}</p>
+            <p><strong>Qualification :</strong> ${data.qualification}</p>
+            <p><strong>Bio :</strong> ${data.bio}</p>
+            <p><strong>Department :</strong> ${data.department}</p>
+            <p><strong>Consultation Fee :</strong> ₹${data.consultation_fee}</p>
+            <p><strong>Available Start Time :</strong> ${data.available_start_time}</p>
+            <p><strong>Available End Time :</strong> ${data.available_end_time}</p>
+
+            <img src="${imageUrl}" 
+            class="w-32 h-32 rounded-full object-cover border mt-4" 
+            alt="Profile Image" 
+            onerror="this.src='https://via.placeholder.com/120'"/>
+
+
     
 
   `;
+        })
+        .catch(() => {
+          showToast("Admin approval pending or session expired.", "#dc2626");
+          setTimeout(() => {
+            localStorage.clear();
+            window.location.replace("login.html");
+          }, 2000);
+        });
 
-})
-.catch(() => {
-  showToast("Admin approval pending or session expired.", "#dc2626");
-  setTimeout(() => {
-    localStorage.clear();
-    window.location.replace("login.html");
-  }, 2000);
-});
+      // ✅ GLOBAL LOGOUT FUNCTION
+      async function logoutUser() {
+        const refreshToken = localStorage.getItem("refresh_token");
+        const accessToken = localStorage.getItem("access_token");
 
-// ✅ GLOBAL LOGOUT FUNCTION
-async function logoutUser() {
-
-  const refreshToken = localStorage.getItem("refresh_token");
-  const accessToken = localStorage.getItem("access_token");
-
-  try {
-    if (refreshToken) {
-      await axios.post(
-        "http://127.0.0.1:8001/auth/logout/",
-        { refresh: refreshToken },
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`
+        try {
+          if (refreshToken) {
+            await axios.post(
+              "http://127.0.0.1:8001/auth/logout/",
+              { refresh: refreshToken },
+              {
+                headers: {
+                  Authorization: `Bearer ${accessToken}`,
+                },
+              },
+            );
           }
+        } catch (error) {
+          console.log("Logout API error:", error);
         }
-      );
-    }
-  } catch (error) {
-    console.log("Logout API error:", error);
-  }
 
-  localStorage.clear();
-  window.location.href = "/";
-}
+        localStorage.clear();
+        window.location.href = "/";
+      }
 
+      function showToast(message, color) {
+        const toast = document.createElement("div");
+        toast.innerText = message;
 
-function showToast(message, color) {
-  const toast = document.createElement("div");
-  toast.innerText = message;
+        toast.style.position = "fixed";
+        toast.style.top = "20px";
+        toast.style.right = "20px";
+        toast.style.padding = "14px 22px";
+        toast.style.backgroundColor = color;
+        toast.style.color = "white";
+        toast.style.fontWeight = "600";
+        toast.style.borderRadius = "8px";
+        toast.style.boxShadow = "0 5px 15px rgba(0,0,0,0.2)";
+        toast.style.zIndex = "9999";
+        toast.style.opacity = "0";
+        toast.style.transition = "opacity 0.4s ease";
 
-  toast.style.position = "fixed";
-  toast.style.top = "20px";
-  toast.style.right = "20px";
-  toast.style.padding = "14px 22px";
-  toast.style.backgroundColor = color;
-  toast.style.color = "white";
-  toast.style.fontWeight = "600";
-  toast.style.borderRadius = "8px";
-  toast.style.boxShadow = "0 5px 15px rgba(0,0,0,0.2)";
-  toast.style.zIndex = "9999";
-  toast.style.opacity = "0";
-  toast.style.transition = "opacity 0.4s ease";
+        document.body.appendChild(toast);
 
-  document.body.appendChild(toast);
+        setTimeout(() => (toast.style.opacity = "1"), 100);
 
-  setTimeout(() => toast.style.opacity = "1", 100);
-
-  setTimeout(() => {
-    toast.style.opacity = "0";
-    setTimeout(() => toast.remove(), 400);
-  }, 2000);
-}
-
-</script>
-</body>
+        setTimeout(() => {
+          toast.style.opacity = "0";
+          setTimeout(() => toast.remove(), 400);
+        }, 2000);
+      }
+    </script>
+  </body>
 </html>

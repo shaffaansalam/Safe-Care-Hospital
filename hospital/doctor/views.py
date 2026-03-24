@@ -24,9 +24,10 @@ class DoctorDashboardAPIView(APIView):
                 {"message": "Admin approval pending"},
                 status=403
             )
-
-        serializer = DoctorDashboardSerializer(doctor)
+            # ADD CONTEXT HERE so the serializer can build the full URL
+        serializer = DoctorDashboardSerializer(doctor, context={'request': request})
         return Response(serializer.data, status=200)
+
 
 
 class DepartmentListCreateAPIView(APIView):

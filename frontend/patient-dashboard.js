@@ -1,5 +1,4 @@
 document.addEventListener("DOMContentLoaded", () => {
-
   console.log("Patient dashboard JS loaded ✅");
 
   const token = localStorage.getItem("access_token");
@@ -7,7 +6,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const loginNav = document.getElementById("loginNav");
   const logoutNav = document.getElementById("logoutNav");
-
 
   // ✅ Navbar toggle
   if (token) {
@@ -42,19 +40,28 @@ document.addEventListener("DOMContentLoaded", () => {
   `;
 
   // ✅ Fetch patient data
-  axios.get("http://127.0.0.1:8001/auth/dashboard/patient/", {
-    headers: { Authorization: `Bearer ${token}` }
-  })
-  .then(res => {
+  axios
+    .get("http://127.0.0.1:8001/auth/dashboard/patient/", {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    .then((res) => {
+      const data = res.data;
 
-    const data = res.data;
+      const baseServerUrl = "http://127.0.0.1:8001";
 
-    // const imageUrl = data.profile_image ? 
-    // `http://127.0.0.1:8001
-    // ${data.profile_image}` :
-    //  "https://via.placeholder.com/120";
+      // ✅ Fix Image Path Logic
+      let imageUrl = data.profile_image;
+      
+      if (imageUrl && !imageUrl.startsWith('http')) {
+          // If path is relative (/media/...), prepend the server port
+          imageUrl = `${baseServerUrl}${imageUrl}`;
+      } else if (!imageUrl) {
+          // Fallback if no image exists
+          imageUrl = "https://ui-avatars.com/api/?name=" + data.user.name;
+      }
 
-    document.getElementById("patientData").innerHTML = `
+
+      document.getElementById("patientData").innerHTML = `
         <p><strong>Name :</strong> ${data.user.name}</p>
         <p><strong>Email :</strong> ${data.user.email}</p>
         <p><strong>Phone :</strong> ${data.phone || "N/A"}</p>
@@ -64,27 +71,24 @@ document.addEventListener("DOMContentLoaded", () => {
         <p><strong>Address :</strong> ${data.address || "N/A"}</p>
         <p><strong>Medical History :</strong> ${data.medical_history || "N/A"}</p>
 
+        <img src="${imageUrl}" 
+             class="w-32 h-32 rounded-full object-cover border mt-4" 
+             alt="Profile Image" 
+             onerror="this.src='https://via.placeholder.com/120'"/>
 
-    //     <img src="http://127.0.0.1:8001 ${data.profile_image}
-    //     "class="w-32 h-32 rounded-full object-cover border mb-3" />
-
-    // `;
-
-  })
-  .catch(() => {
-    showToast("Session expired. Please login again.", "#dc2626");
-    setTimeout(() => {
-      localStorage.clear();
-      window.location.replace("/login/");
-    }, 2000);
-  });
-
+    `;
+    })
+    .catch(() => {
+      showToast("Session expired. Please login again.", "#dc2626");
+      setTimeout(() => {
+        localStorage.clear();
+        window.location.replace("/login/");
+      }, 2000);
+    });
 });
-
 
 // ✅ GLOBAL LOGOUT FUNCTION
 async function logoutUser() {
-
   const refreshToken = localStorage.getItem("refresh_token");
   const accessToken = localStorage.getItem("access_token");
 
@@ -95,9 +99,9 @@ async function logoutUser() {
         { refresh: refreshToken },
         {
           headers: {
-            Authorization: `Bearer ${accessToken}`
-          }
-        }
+            Authorization: `Bearer ${accessToken}`,
+          },
+        },
       );
     }
   } catch (error) {
@@ -108,10 +112,8 @@ async function logoutUser() {
   window.location.href = "/";
 }
 
-
 // ✅ Toast function
 function showToast(message, color) {
-
   const toast = document.createElement("div");
   toast.innerText = message;
 
@@ -130,7 +132,7 @@ function showToast(message, color) {
 
   document.body.appendChild(toast);
 
-  setTimeout(() => toast.style.opacity = "1", 100);
+  setTimeout(() => (toast.style.opacity = "1"), 100);
 
   setTimeout(() => {
     toast.style.opacity = "0";

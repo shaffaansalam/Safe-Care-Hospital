@@ -169,8 +169,8 @@ from datetime import timedelta
 
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=20),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=560),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=520),
     'ROTATE_REFRESH_TOKENS': True,
     'BLACKLIST_AFTER_ROTATION': True,
     'AUTH_HEADER_TYPES': ('Bearer',),
@@ -181,6 +181,3 @@ CORS_ALLOWED_ORIGINS = [
 ]
 
 # CORS_ALLOW_ALL_ORIGINS = True
-
-MEDIA_URL="/media/"
-MEDIA_ROOT=os.path.join(BASE_DIR,"media")

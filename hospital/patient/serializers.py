@@ -9,15 +9,18 @@ class UserRegSerializer(serializers.ModelSerializer):
         choices=UserProfile.ROLE_CHOICES, write_only=True
     )
 
-    # Patient fields
+    # Common fields for both profiles
     phone = serializers.CharField(required=False)
+    profile_image = serializers.ImageField(required=False, allow_null=True)
+
+    # Patient fields
     gender = serializers.CharField(required=False)
     dob = serializers.DateField(required=False, allow_null=True)
     blood_group = serializers.CharField(required=False)
     address = serializers.CharField(required=False, allow_blank=True)
     medical_history = serializers.CharField(required=False, allow_blank=True)
     age = serializers.IntegerField(required=False)
-    # profile_image = serializers.ImageField(required=False)
+   
 
     # Doctor fields  ⭐ ADD THESE
     specialization = serializers.CharField(required=False)
@@ -29,7 +32,6 @@ class UserRegSerializer(serializers.ModelSerializer):
         required=False
     )
     bio = serializers.CharField(required=False, allow_blank=True)
-    profile_image = serializers.ImageField(required=False)
     available_start_time = serializers.TimeField(required=False, allow_null=True)
     available_end_time = serializers.TimeField(required=False, allow_null=True)
     department = serializers.PrimaryKeyRelatedField(queryset=Department.objects.all(),
@@ -44,14 +46,14 @@ class UserRegSerializer(serializers.ModelSerializer):
 
             # patient
             'phone', 'gender', 'dob','age', 'blood_group', 'address','medical_history',
-            # 'profile_image'
+            'profile_image',
             
 
             # doctor
             'specialization', 'qualification',
             'experience', 'consultation_fee',
             'bio', 'available_start_time', 'available_end_time','department',
-            # 'profile_image',
+        
         ]
 
         extra_kwargs = {
@@ -62,15 +64,19 @@ class UserRegSerializer(serializers.ModelSerializer):
 
         role = validated_data.pop('role').lower()
 
-        # Patient fields
+        # Extract the image ONCE
+        profile_image = validated_data.pop('profile_image', None)
         phone = validated_data.pop('phone', '')
+
+        # Patient fields
+        
         gender = validated_data.pop('gender', 'other')
         dob = validated_data.pop('dob', None)
         blood_group = validated_data.pop('blood_group', '')
         address = validated_data.pop("address", '')
         medical_history = validated_data.pop("medical_history", '')
         age = validated_data.pop('age',None)
-        # profile_image = validated_data.pop('profile_image',None)
+        
 
         # Doctor fields
         specialization = validated_data.pop('specialization', '')
@@ -81,7 +87,7 @@ class UserRegSerializer(serializers.ModelSerializer):
         available_start_time = validated_data.pop('available_start_time', None)
         available_end_time = validated_data.pop('available_end_time', None)
         department = validated_data.pop('department', None)
-        # profile_image = validated_data.pop('profile_image',None)
+
 
         # Create user
         user = User.objects.create_user(**validated_data)
@@ -104,7 +110,7 @@ class UserRegSerializer(serializers.ModelSerializer):
                 address=address,
                 medical_history=medical_history,
                 age=age,
-                # profile_image=profile_image
+                profile_image=profile_image,
             )
 
         # DOCTOR PROFILE
@@ -123,7 +129,7 @@ class UserRegSerializer(serializers.ModelSerializer):
                 available_end_time=available_end_time,
                 department=department,
                 is_approved=False,
-                # profile_image=profile_image,
+                profile_image=profile_image,
             )
             print("Doctor profile created for:", user.email)
 
@@ -152,14 +158,14 @@ class PatientProfileSerializer(serializers.ModelSerializer):
         fields = [
             'id','user', 'phone', 'gender', 'age', 
             'address', 'blood_group', 'medical_history',
-            # 'profile_image',
+            'profile_image',
         ]
 
     
 
 class PatientDashboardSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField()
-    # profile_image = serializers.ImageField(read_only=True)
+    profile_image = serializers.ImageField(read_only=True)
 
     class Meta:
         model = PatientProfile
@@ -172,7 +178,7 @@ class PatientDashboardSerializer(serializers.ModelSerializer):
             'address',
             'blood_group',
             'medical_history',
-            # 'profile_image',
+            'profile_image',
         ]
 
     def get_user(self, obj):
