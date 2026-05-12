@@ -46,5 +46,17 @@ path('payments/<int:pk>/', PaymentDetailAPIView.as_view()),
 
 path('admin/payments/',AdminPaymentListAPIView.as_view()),
 
+path('doctor/<int:doctor_id>/slots/', DoctorAvailableSlotsAPIView.as_view()),
+
+path('appointments/book/', BookAppointmentAPIView.as_view()),
+
+path('appointments/my/', PatientAppointmentsAPIView.as_view()),
+path('departments/dropdown/',DepartmentDropdownAPIView.as_view(),),
+
+path('departments/<int:department_id>/doctors/',DepartmentDoctorsAPIView.as_view(),),
+
+path('doctors/search/',DoctorSearchAPIView.as_view(),name='doctor-search'),
+
+
 ]
     

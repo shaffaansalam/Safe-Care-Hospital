@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://cdn.tailwindcss.com"></script>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
+
+
+<link rel="stylesheet" href="navbar.css">
+<link rel="stylesheet" href="footer.css">
+<link rel="stylesheet" href="home.css">
+</head>
+
+<body class="bg-gray-100">
+
+    <header class="navbar fixed-top px-5">
+<div class="left-logo">SAFE CARE<div class="down">Hospital</div></div>
+<nav>
+<ul class="nav-links">
+<li><a href="home.html">Home</a></li>
+<li><a href="about.html">About</a></li>
+<li><a href="{% url 'departments' %}">Departments</a></li>
+<li><a href="{% url 'contact' %}">Contact</a></li>
+<li><a href="patient-booking.html">Booking</a></li>
+
+<li id="loginNav">
+  <a href="{% url 'login-page' %}">Login</a>
+</li>
+
+<li id="logoutNav" style="display:none;">
+  <a href="#" onclick="logoutUser()">Logout</a>
+</li>
+
+<li>
+  <a href="{% url 'authentication:register' %}" 
+     class="btn btn-primary btn-sm text-white text-sm">
+     Register
+  </a>
+</li>
+</ul>
+
+</nav>
+</header>
+<div class="navbar-space"></div>
+
+
+<div class="max-w-xl mx-auto mt-20 bg-white p-6 rounded-xl shadow-lg">
+
+    <h2 class="text-3xl font-bold mb-6">
+        Book Appointment
+    </h2>
+
+    <form id="bookingForm" class="space-y-4">
+
+        <!-- Department -->
+        <select id="department"
+            class="w-full p-3 border rounded-lg">
+
+            <option value="">
+                Select Department
+            </option>
+
+        </select>
+
+        <!-- Doctor -->
+        <select id="doctor"
+            class="w-full p-3 border rounded-lg">
+
+            <option value="">
+                Select Doctor
+            </option>
+
+        </select>
+
+        <!-- Date -->
+        <input
+            type="date"
+            id="date"
+            class="w-full p-3 border rounded-lg"
+        >
+
+        <!-- Slots -->
+        <select id="time"
+            class="w-full p-3 border rounded-lg">
+
+            <option value="">
+                Select Time Slot
+            </option>
+
+        </select>
+
+        <!-- Reason -->
+        <textarea
+            id="reason"
+            placeholder="Reason for consultation"
+            class="w-full p-3 border rounded-lg"
+        ></textarea>
+
+        <button
+            type="submit"
+            class="bg-blue-600 text-white w-full py-3 rounded-lg"
+        >
+            Book Appointment
+        </button>
+
+    </form>
+
+    <p id="message"
+       class="mt-4 text-green-600 font-semibold">
+    </p>
+
+</div>
+
+<!-- <script>
+
+document.getElementById("date").addEventListener("change", function() {
+
+    let doctorId = document.getElementById("doctor_id").value;
+    let date = this.value;
+
+    fetch(`/api/doctor/${doctorId}/slots/?date=${date}`)
+    .then(res => res.json())
+    .then(data => {
+
+        let select = document.getElementById("time");
+        select.innerHTML = "";
+
+        data.available_slots.forEach(slot => {
+            let option = document.createElement("option");
+            option.value = slot;
+            option.text = slot;
+            select.appendChild(option);
+        });
+    });
+});
+
+
+document.getElementById("bookingForm").addEventListener("submit", function(e) {
+    e.preventDefault();
+
+    fetch("/api/appointments/book/", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer YOUR_ACCESS_TOKEN"
+        },
+        body: JSON.stringify({
+            doctor: document.getElementById("doctor_id").value,
+            appointment_date: document.getElementById("date").value,
+            appointment_time: document.getElementById("time").value,
+            reason: document.getElementById("reason").value
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        document.getElementById("message").innerText = data.message || "Error!";
+    });
+});
+
+</script> -->
+
+<script>
+
+const token = localStorage.getItem("access_token");
+
+
+// =======================================
+// LOAD DEPARTMENTS
+// =======================================
+
+async function loadDepartments() {
+
+    const response = await fetch(
+        "http://127.0.0.1:8001/auth/departments/dropdown/"
+    );
+
+    const data = await response.json();
+
+    const departmentSelect =
+        document.getElementById("department");
+
+    data.forEach(dept => {
+
+        const option =
+            document.createElement("option");
+
+        option.value = dept.id;
+        option.text = dept.name;
+
+        departmentSelect.appendChild(option);
+    });
+}
+
+loadDepartments();
+
+
+// =======================================
+// LOAD DOCTORS
+// =======================================
+
+document.getElementById("department")
+.addEventListener("change", async function() {
+
+    const departmentId = this.value;
+
+    const response = await fetch(
+        `http://127.0.0.1:8001/auth/departments/${departmentId}/doctors/`
+    );
+
+    const data = await response.json();
+
+    const doctorSelect =
+        document.getElementById("doctor");
+
+    doctorSelect.innerHTML =
+        `<option value="">Select Doctor</option>`;
+
+    data.forEach(doctor => {
+
+        const option =
+            document.createElement("option");
+
+        option.value = doctor.id;
+
+        option.text =
+            `${doctor.name} (${doctor.specialization})`;
+
+        doctorSelect.appendChild(option);
+    });
+});
+
+
+// =======================================
+// LOAD AVAILABLE SLOTS
+// =======================================
+
+document.getElementById("date")
+.addEventListener("change", async function() {
+
+    const doctorId =
+        document.getElementById("doctor").value;
+
+    const date = this.value;
+
+    const response = await fetch(
+        `http://127.0.0.1:8001/auth/doctor/${doctorId}/slots/?date=${date}`
+    );
+
+    const data = await response.json();
+
+    const timeSelect =
+        document.getElementById("time");
+
+    timeSelect.innerHTML =
+        `<option>Select Time Slot</option>`;
+
+    data.available_slots.forEach(slot => {
+
+        const option =
+            document.createElement("option");
+
+        option.value = slot;
+        option.text = slot;
+
+        timeSelect.appendChild(option);
+    });
+});
+
+
+// =======================================
+// BOOK APPOINTMENT
+// =======================================
+
+document.getElementById("bookingForm")
+.addEventListener("submit", async function(e) {
+
+    e.preventDefault();
+
+    const response = await fetch(
+        "http://127.0.0.1:8001/auth/appointments/book/",
+        {
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            },
+
+            body: JSON.stringify({
+
+                doctor:
+                    document.getElementById("doctor").value,
+
+                appointment_date:
+                    document.getElementById("date").value,
+
+                appointment_time:
+                    document.getElementById("time").value,
+
+                reason:
+                    document.getElementById("reason").value
+            })
+        }
+    );
+
+    const data = await response.json();
+
+    document.getElementById("message")
+        .innerText = data.message || data.error;
+});
+
+</script>
+
+</body>
+</html>

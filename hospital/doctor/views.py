@@ -4,6 +4,11 @@ from rest_framework import status, permissions
 from rest_framework.permissions import IsAdminUser
 from doctor.serializers import *
 from patient.serializers import *
+from datetime import datetime, timedelta
+from rest_framework.views import APIView
+from authentication.models import DoctorProfile, Appointment,Department
+from .serializers import DoctorProfileSerializer
+
 
 # Create your views here.
 
@@ -51,3 +56,118 @@ class DepartmentListCreateAPIView(APIView):
             )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
+
+
+
+
+class DoctorAvailableSlotsAPIView(APIView):
+
+    permission_classes = [permissions.AllowAny]
+
+    def get(self, request, doctor_id):
+
+        try:
+            doctor = DoctorProfile.objects.get(id=doctor_id, is_approved=True)
+        except DoctorProfile.DoesNotExist:
+            return Response({"error": "Doctor not found"}, status=404)
+
+        date_param = request.query_params.get('date')
+
+        if not date_param:
+            return Response({"error": "Date is required"}, status=400)
+
+        date_obj = datetime.strptime(date_param, "%Y-%m-%d").date()
+
+        start_time = doctor.available_start_time
+        end_time = doctor.available_end_time
+
+        slots = []
+        current_time = datetime.combine(date_obj, start_time)
+
+        while current_time.time() <= end_time:
+
+            slot_time = current_time.time()
+
+            # check if booked
+            is_booked = Appointment.objects.filter(
+                doctor=doctor,
+                appointment_date=date_obj,
+                appointment_time=slot_time
+            ).exists()
+
+            if not is_booked:
+                slots.append(slot_time.strftime("%H:%M"))
+
+            current_time += timedelta(minutes=30)  # 30 min slot
+
+        return Response({
+            "doctor": doctor.user.get_full_name(),
+            "available_slots": slots
+        })    
+    
+
+
+
+class DoctorSearchAPIView(APIView):
+
+    permission_classes = [permissions.AllowAny]
+
+    def get(self, request):
+
+        specialization = request.query_params.get('specialization')
+
+        doctors = DoctorProfile.objects.filter(
+            specialization__icontains=specialization,
+            is_approved=True,
+            is_available=True
+        )
+
+        serializer = DoctorProfileSerializer(doctors, many=True)
+
+        return Response({
+            "doctors": serializer.data
+        })
+    
+
+
+class DepartmentDropdownAPIView(APIView):
+
+    permission_classes = [permissions.AllowAny]
+
+    def get(self, request):
+
+        departments = Department.objects.all()
+
+        data = [
+            {
+                "id": dept.id,
+                "name": dept.name
+            }
+            for dept in departments
+        ]
+
+        return Response(data)    
+
+class DepartmentDoctorsAPIView(APIView):
+
+    permission_classes = [permissions.AllowAny]
+
+    def get(self, request, department_id):
+
+        doctors = DoctorProfile.objects.filter(
+            department_id=department_id,
+            is_available=True,
+            is_approved=True
+        )
+
+        data = [
+            {
+                "id": doctor.id,
+                "name": doctor.user.get_full_name(),
+                "specialization": doctor.specialization,
+                "fee": doctor.consultation_fee
+            }
+            for doctor in doctors
+        ]
+
+        return Response(data)        

@@ -135,8 +135,12 @@ class Appointment(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        unique_together = ('doctor', 'appointment_date', 'appointment_time')  #prevents double booking
+        ordering = ['-created_at']
+
     def __str__(self):
-        return f"{self.patient} - {self.doctor}"
+        return f"{self.patient} - {self.doctor}" 
 
 class Payment(models.Model):
 

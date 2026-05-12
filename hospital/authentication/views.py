@@ -348,22 +348,7 @@ class AdminPatientDetailAPIView(APIView):
         patient.user.delete()
         return Response({"message": "Patient deleted"}, status=204)    
 
-
-
-# class AdminDepartmentListAPIView(APIView):
-#     permission_classes = [IsAdminUser]
-
-#     def get(self, request):
-#         departments = Department.objects.all()
-#         serializer = DepartmentSerializer(departments, many=True)
-#         return Response(serializer.data)
-
-#     def post(self, request):
-#         serializer = DepartmentSerializer(data=request.data)
-#         if serializer.is_valid():
-#             serializer.save()
-#             return Response(serializer.data, status=201)
-#         return Response(serializer.errors, status=400)    
+   
     
 class AdminDepartmentListAPIView(APIView):
 
@@ -404,13 +389,7 @@ class AdminDepartmentDetailAPIView(APIView):
         department.delete()
         return Response({"message": "Deleted"}, status=204)    
 
-# class AdminAppointmentListAPIView(APIView):
-#     permission_classes = [IsAdminUser]
 
-#     def get(self, request):
-#         appointments = Appointment.objects.all().order_by('-created_at')
-#         serializer = AppointmentSerializer(appointments, many=True)
-#         return Response(serializer.data)
     
 class AdminAppointmentListAPIView(APIView):
 

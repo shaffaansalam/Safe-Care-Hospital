@@ -2,6 +2,7 @@ from rest_framework import serializers
 from django.contrib.auth.models import User
 # IMPORT FROM AUTHENTICATION APP, NOT FROM .models
 from authentication.models import UserProfile ,PatientProfile,DoctorProfile,Appointment,Department
+from datetime import datetime, date
 
 class UserRegSerializer(serializers.ModelSerializer):
 
@@ -191,34 +192,174 @@ class PatientDashboardSerializer(serializers.ModelSerializer):
        
     
 
+# class AppointmentSerializer(serializers.ModelSerializer):
+
+#     class Meta:
+#         model = Appointment
+#         fields = "__all__"
+#         read_only_fields = ['patient', 'status']
+
+#     def validate(self, data):
+
+#         doctor = data.get('doctor')
+#         appointment_date = data.get('appointment_date')
+#         appointment_time = data.get('appointment_time')
+
+#         # ✅ REMOVE SECONDS (PUT HERE)
+#         appointment_time = appointment_time.replace(second=0)
+
+#         # 🚫 Past date validation
+#         if appointment_date < date.today():
+#             raise serializers.ValidationError(
+#                 "Cannot book past dates"
+#             )
+
+#         # 🚫 Doctor availability
+#         if not doctor.is_available:
+#             raise serializers.ValidationError(
+#                 "Doctor is not available"
+#             )
+
+#         # 🚫 Time range validation
+#         if not (
+#             doctor.available_start_time <= appointment_time <= doctor.available_end_time
+#         ):
+#             raise serializers.ValidationError(
+#                 "Selected time is outside doctor's availability"
+#             )
+
+#         # 🚫 Double booking
+#         if Appointment.objects.filter(
+#             doctor=doctor,
+#             appointment_date=appointment_date,
+#             appointment_time=appointment_time,
+#             status__in=['pending', 'accepted']
+#         ).exists():
+
+#             raise serializers.ValidationError(
+#                 "This slot is already booked"
+#             )
+
+#         return data
+
+#     # 🔥 CREATE METHOD
+#     def create(self, validated_data):
+
+#         request = self.context.get('request')
+
+#         # ✅ REMOVE SECONDS AGAIN (OPTIONAL SAFETY)
+#         appointment_time = validated_data['appointment_time'].replace(second=0)
+
+#         # ✅ PUT patient=request.user.patient HERE
+#         appointment = Appointment.objects.create(
+
+#             patient=request.user.patient,
+
+#             doctor=validated_data['doctor'],
+
+#             appointment_date=validated_data['appointment_date'],
+
+#             appointment_time=appointment_time,
+
+#             reason=validated_data['reason'],
+
+#             status='pending'
+#         )
+
+#         return appointment
+
 class AppointmentSerializer(serializers.ModelSerializer):
+
+    doctor_name = serializers.CharField(
+        source='doctor.user.get_full_name',
+        read_only=True
+    )
+
+    patient_name = serializers.CharField(
+        source='patient.user.get_full_name',
+        read_only=True
+    )
 
     class Meta:
         model = Appointment
-        fields = "__all__"
+
+        fields = [
+            'id',
+            'doctor',
+            'doctor_name',
+            'patient_name',
+            'appointment_date',
+            'appointment_time',
+            'reason',
+            'status',
+            'created_at'
+        ]
+
+        read_only_fields = [
+            'patient',
+            'status'
+        ]
 
     def validate(self, data):
 
-        doctor = data['doctor']
-        date = data['appointment_date']
-        time = data['appointment_time']
+        doctor = data.get('doctor')
+        appointment_date = data.get('appointment_date')
+        appointment_time = data.get('appointment_time')
 
-        conflict = Appointment.objects.filter(
-            doctor=doctor,
-            appointment_date=date,
-            appointment_time=time,
-            status__in=['pending','accepted']
-        ).exists()
+        appointment_time = appointment_time.replace(second=0)
 
-        if doctor.available_start_time and doctor.available_end_time:
-            if not (doctor.available_start_time <= time <= doctor.available_end_time):
-              raise serializers.ValidationError(
-                  "Appointment time is outside doctor's availability"
-               )
+        if appointment_date < date.today():
 
-        if conflict:
             raise serializers.ValidationError(
-                "Doctor already has an appointment at this time"
+                "Cannot book past dates"
             )
 
-        return data       
+        if not doctor.is_available:
+
+            raise serializers.ValidationError(
+                "Doctor unavailable"
+            )
+
+        if not (
+            doctor.available_start_time <= appointment_time <= doctor.available_end_time
+        ):
+
+            raise serializers.ValidationError(
+                "Outside doctor schedule"
+            )
+
+        exists = Appointment.objects.filter(
+            doctor=doctor,
+            appointment_date=appointment_date,
+            appointment_time=appointment_time,
+            status__in=['pending', 'accepted']
+        ).exists()
+
+        if exists:
+
+            raise serializers.ValidationError(
+                "Slot already booked"
+            )
+
+        return data
+
+    def create(self, validated_data):
+
+        request = self.context.get('request')
+
+        appointment = Appointment.objects.create(
+
+            patient=request.user.patient,
+
+            doctor=validated_data['doctor'],
+
+            appointment_date=validated_data['appointment_date'],
+
+            appointment_time=validated_data['appointment_time'],
+
+            reason=validated_data['reason'],
+
+            status='pending'
+        )
+
+        return appointment

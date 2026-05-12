@@ -16,15 +16,17 @@
 <body>
 
 
-<!-- NAVBAR -->
+#NAVBAR
 <header class="navbar fixed-top px-5">
 <div class="left-logo">SAFE CARE<div class="down">Hospital</div></div>
 <nav>
 <ul class="nav-links">
-<li><a href="{% url 'home' %}">Home</a></li>
-<li><a href="{% url 'about' %}">About</a></li>
+<li><a href="home.html">Home</a></li>
+<li><a href="about.html">About</a></li>
 <li><a href="{% url 'departments' %}">Departments</a></li>
 <li><a href="{% url 'contact' %}">Contact</a></li>
+<li><a href="patient-booking.html">Appointment Booking</a></li>
+<li><a href="search-doctors.html">Find Doctors</a></li>
 
 <li id="loginNav">
   <a href="{% url 'login-page' %}">Login</a>
