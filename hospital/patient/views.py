@@ -42,10 +42,7 @@ class BookAppointmentAPIView(APIView):
             try:
                 appointment = serializer.save()
 
-                # return Response({
-                #     "message": "Appointment booked successfully",
-                #     "appointment_id": appointment.id
-                # }, status=201)
+
 
                 return Response({
 

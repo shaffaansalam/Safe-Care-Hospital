@@ -9,6 +9,14 @@ urlpatterns = [
     path('auth/', include('authentication.urls')),
 
     path('login/', TemplateView.as_view(template_name="login.html"), name="login-page"),
+
+    path('patient-dashboard/',TemplateView.as_view(template_name="patient-dashboard.html")),
+
+    path('doctor-dashboard/',TemplateView.as_view(template_name="doctor-dashboard.html")),
+
+    path('admin-dashboard/', TemplateView.as_view(template_name="admin-dashboard.html")),
+
+    path('patient-booking/',TemplateView.as_view(template_name="patient-booking.html")),
 ]
 
 if settings.DEBUG:
