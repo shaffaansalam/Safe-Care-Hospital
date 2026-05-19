@@ -1,8 +1,11 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
 # IMPORT FROM AUTHENTICATION APP, NOT FROM .models
-from authentication.models import UserProfile ,PatientProfile,DoctorProfile,Appointment,Department
+from authentication.models import UserProfile ,PatientProfile,DoctorProfile,Appointment,Department,Prescription,MedicalReport,TestRequest
 from datetime import datetime, date
+
+
+
 
 class UserRegSerializer(serializers.ModelSerializer):
 
@@ -190,83 +193,7 @@ class PatientDashboardSerializer(serializers.ModelSerializer):
             "role": obj.user.profile.role
         } 
        
-    
 
-# class AppointmentSerializer(serializers.ModelSerializer):
-
-#     class Meta:
-#         model = Appointment
-#         fields = "__all__"
-#         read_only_fields = ['patient', 'status']
-
-#     def validate(self, data):
-
-#         doctor = data.get('doctor')
-#         appointment_date = data.get('appointment_date')
-#         appointment_time = data.get('appointment_time')
-
-#         # ✅ REMOVE SECONDS (PUT HERE)
-#         appointment_time = appointment_time.replace(second=0)
-
-#         # 🚫 Past date validation
-#         if appointment_date < date.today():
-#             raise serializers.ValidationError(
-#                 "Cannot book past dates"
-#             )
-
-#         # 🚫 Doctor availability
-#         if not doctor.is_available:
-#             raise serializers.ValidationError(
-#                 "Doctor is not available"
-#             )
-
-#         # 🚫 Time range validation
-#         if not (
-#             doctor.available_start_time <= appointment_time <= doctor.available_end_time
-#         ):
-#             raise serializers.ValidationError(
-#                 "Selected time is outside doctor's availability"
-#             )
-
-#         # 🚫 Double booking
-#         if Appointment.objects.filter(
-#             doctor=doctor,
-#             appointment_date=appointment_date,
-#             appointment_time=appointment_time,
-#             status__in=['pending', 'accepted']
-#         ).exists():
-
-#             raise serializers.ValidationError(
-#                 "This slot is already booked"
-#             )
-
-#         return data
-
-#     # 🔥 CREATE METHOD
-#     def create(self, validated_data):
-
-#         request = self.context.get('request')
-
-#         # ✅ REMOVE SECONDS AGAIN (OPTIONAL SAFETY)
-#         appointment_time = validated_data['appointment_time'].replace(second=0)
-
-#         # ✅ PUT patient=request.user.patient HERE
-#         appointment = Appointment.objects.create(
-
-#             patient=request.user.patient,
-
-#             doctor=validated_data['doctor'],
-
-#             appointment_date=validated_data['appointment_date'],
-
-#             appointment_time=appointment_time,
-
-#             reason=validated_data['reason'],
-
-#             status='pending'
-#         )
-
-#         return appointment
 
 class AppointmentSerializer(serializers.ModelSerializer):
 
@@ -363,3 +290,116 @@ class AppointmentSerializer(serializers.ModelSerializer):
         )
 
         return appointment
+    
+    from authentication.models import Prescription, MedicalReport
+
+
+# =========================================
+# PRESCRIPTION SERIALIZER
+# =========================================
+
+
+class PrescriptionSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Prescription
+
+        fields = [
+            "id",
+            "appointment",
+            "diagnosis",
+            "medicines",
+            "notes",
+            "created_at"
+        ]
+
+        read_only_fields = [
+            "appointment",
+            "created_at"
+        ]
+
+
+# =========================================
+# REPORT SERIALIZER
+# =========================================
+
+class MedicalReportSerializer(serializers.ModelSerializer):
+
+    patient_name = serializers.CharField(
+        source='patient.user.get_full_name',
+        read_only=True
+    )
+
+    doctor_name = serializers.CharField(
+        source='doctor.user.get_full_name',
+        read_only=True
+    )
+
+    class Meta:
+
+        model = MedicalReport
+
+        fields = [
+            'id',
+            'test_request',
+            'patient',
+            'doctor',
+            'patient_name',
+            'doctor_name',
+            'report_title',
+            'report_file',
+            'uploaded_at'
+        ]
+
+        read_only_fields = [
+            'test_request',
+            'patient',
+            'doctor',
+            'patient_name',
+            'doctor_name',
+            'uploaded_at'
+        ]
+
+class TestRequestSerializer(serializers.ModelSerializer):
+
+    patient_name = serializers.CharField(
+        source='appointment.patient.user.get_full_name',
+        read_only=True
+    )
+
+    doctor_name = serializers.CharField(
+        source='appointment.doctor.user.get_full_name',
+        read_only=True
+    )
+
+    class Meta:
+
+        model = TestRequest
+
+        fields = [
+            'id',
+            'appointment',
+            'patient_name',
+            'doctor_name',
+            'test_name',
+            'instructions',
+            'status',
+            'requested_at'
+        ]
+
+        read_only_fields = [
+            'appointment',
+            'patient_name',
+            'doctor_name',
+            'requested_at'
+        ]
+
+    # IMPORTANT FIX
+    def create(self, validated_data):
+
+        return TestRequest.objects.create(
+            appointment=validated_data['appointment'],
+            test_name=validated_data['test_name'],
+            instructions=validated_data['instructions'],
+            status=validated_data.get('status', 'pending')
+        )

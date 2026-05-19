@@ -57,6 +57,24 @@ path('departments/<int:department_id>/doctors/',DepartmentDoctorsAPIView.as_view
 
 path('doctors/search/',DoctorSearchAPIView.as_view(),name='doctor-search'),
 
+path('doctor/appointments/',DoctorAppointmentsAPIView.as_view()),
+
+path('doctor/prescription/<int:appointment_id>/',AddPrescriptionAPIView.as_view()),
+
+path('doctor/patient-history/<int:patient_id>/',PatientMedicalHistoryAPIView.as_view()),
+
+path('patient/prescriptions/',PatientPrescriptionsAPIView.as_view()),
+
+path('patient/reports/',PatientReportsAPIView.as_view()),
+
+# path('doctor/upload-report/<int:patient_id>/',UploadMedicalReportAPIView.as_view()),
+
+path('doctor/request-test/<int:appointment_id>/',RequestMedicalTestAPIView.as_view()),
+
+path('patient/upload-report/<int:test_request_id>/',PatientUploadReportAPIView.as_view()),
+
+path('doctor/patient-reports/<int:patient_id>/',DoctorPatientReportsAPIView.as_view()),
+
 
 ]
     

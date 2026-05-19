@@ -8,6 +8,10 @@ from datetime import datetime, timedelta
 from rest_framework.views import APIView
 from authentication.models import DoctorProfile, Appointment,Department
 from .serializers import DoctorProfileSerializer
+from authentication.models import Prescription
+from authentication.models import MedicalReport
+from patient.serializers import PrescriptionSerializer
+from patient.serializers import MedicalReportSerializer
 
 
 # Create your views here.
@@ -170,4 +174,220 @@ class DepartmentDoctorsAPIView(APIView):
             for doctor in doctors
         ]
 
-        return Response(data)        
+        return Response(data)   
+
+
+    # =========================================
+# DOCTOR VIEW APPOINTMENTS
+# =========================================
+
+class DoctorAppointmentsAPIView(APIView):
+
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+
+        if request.user.profile.role != "doctor":
+
+            return Response(
+                {"error": "Only doctors allowed"},
+                status=403
+            )
+
+        doctor = request.user.doctor
+
+        appointments = Appointment.objects.filter(
+            doctor=doctor
+        ).select_related(
+            'patient',
+            'patient__user'
+        )
+
+        data = []
+
+        for appointment in appointments:
+
+            data.append({
+
+                "appointment_id": appointment.id,
+
+                "patient_name":
+                    appointment.patient.user.get_full_name(),
+
+                "patient_age":
+                    appointment.patient.age,
+
+                "patient_gender":
+                    appointment.patient.gender,
+
+                "medical_history":
+                    appointment.patient.medical_history,
+
+                "appointment_date":
+                    appointment.appointment_date,
+
+                "appointment_time":
+                    appointment.appointment_time,
+
+                "status":
+                    appointment.status,
+
+                "reason":
+                    appointment.reason
+            })
+
+        return Response(data)
+
+    # =========================================
+# ADD PRESCRIPTION
+# =========================================
+
+class AddPrescriptionAPIView(APIView):
+
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, appointment_id):
+
+        if request.user.profile.role != "doctor":
+            return Response(
+                {"error": "Only doctors allowed"},
+                status=403
+            )
+
+        try:
+            appointment = Appointment.objects.get(
+                id=appointment_id,
+                doctor=request.user.doctor
+            )
+
+        except Appointment.DoesNotExist:
+
+            return Response(
+                {"error": "Appointment not found"},
+                status=404
+            )
+
+        serializer = PrescriptionSerializer(
+            data=request.data
+        )
+
+        if serializer.is_valid():
+
+            serializer.save(
+                appointment=appointment
+            )
+
+            return Response({
+                "message": "Prescription added successfully",
+                "data": serializer.data
+            })
+
+        return Response(
+            serializer.errors,
+            status=400
+        )
+
+    # =========================================
+# PATIENT MEDICAL HISTORY
+# =========================================
+
+class PatientMedicalHistoryAPIView(APIView):
+
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, patient_id):
+
+        if request.user.profile.role != "doctor":
+
+            return Response(
+                {"error": "Only doctors allowed"},
+                status=403
+            )
+
+        prescriptions = Prescription.objects.filter(
+            appointment__patient_id=patient_id
+        )
+
+        serializer = PrescriptionSerializer(
+            prescriptions,
+            many=True
+        )
+
+        return Response(serializer.data)
+
+class DoctorPatientReportsAPIView(APIView):
+
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, patient_id):
+
+        if request.user.profile.role != "doctor":
+
+            return Response(
+                {"error": "Only doctors allowed"},
+                status=403
+            )
+
+        reports = MedicalReport.objects.filter(
+            patient_id=patient_id
+        )
+
+        serializer = MedicalReportSerializer(
+            reports,
+            many=True,
+            context={'request': request}
+        )
+
+        return Response(serializer.data)
+    
+    
+class DoctorRequestTestAPIView(APIView):
+
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, appointment_id):
+
+        # ONLY DOCTOR
+        if request.user.profile.role != "doctor":
+
+            return Response(
+                {"error": "Only doctors allowed"},
+                status=403
+            )
+
+        try:
+
+            appointment = Appointment.objects.get(
+                id=appointment_id,
+                doctor=request.user.doctor
+            )
+
+        except Appointment.DoesNotExist:
+
+            return Response(
+                {"error": "Appointment not found"},
+                status=404
+            )
+
+        serializer = TestRequestSerializer(
+            data=request.data
+        )
+
+        if serializer.is_valid():
+
+            serializer.save(
+                appointment=appointment
+            )
+
+            return Response({
+
+                "message": "Test requested successfully",
+
+                "data": serializer.data
+
+            }, status=201)
+
+        return Response(
+            serializer.errors,
+            status=400
+        )

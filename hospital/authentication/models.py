@@ -39,16 +39,7 @@ class PatientProfile(models.Model):
 
     def __str__(self):
         return self.user.get_full_name()
-    # def save(self, *args, **kwargs):
 
-    #     if self.dob:
-    #         today = date.today()
-
-    #         self.age = today.year - self.dob.year - (
-    #             (today.month, today.day) < (self.dob.month, self.dob.day)
-    #         )
-
-    #     super().save(*args, **kwargs)
 
     def save(self, *args, **kwargs):
         if self.dob:
@@ -186,4 +177,91 @@ class Payment(models.Model):
         blank=True
     )
 
-    created_at = models.DateTimeField(auto_now_add=True)      
+    created_at = models.DateTimeField(auto_now_add=True) 
+
+    # =========================================
+# PRESCRIPTION MODEL
+# =========================================
+
+class Prescription(models.Model):
+
+    appointment = models.OneToOneField(
+        Appointment,
+        on_delete=models.CASCADE,
+        related_name='prescription'
+    )
+
+    diagnosis = models.TextField()
+
+    medicines = models.TextField()
+
+    notes = models.TextField(blank=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Prescription - {self.appointment.id}"
+
+
+
+class TestRequest(models.Model):
+
+    appointment = models.ForeignKey(
+        Appointment,
+        on_delete=models.CASCADE
+    )
+
+    test_name = models.CharField(max_length=255)
+
+    instructions = models.TextField()
+
+    status = models.CharField(
+        max_length=50,
+        default="pending"
+    )
+
+    requested_at = models.DateTimeField(
+        auto_now_add=True
+    )
+
+    def __str__(self):
+        return self.test_name
+    
+    
+class MedicalReport(models.Model):
+
+    test_request = models.ForeignKey(
+        TestRequest,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True
+    )
+
+    patient = models.ForeignKey(
+        PatientProfile,
+        on_delete=models.CASCADE,
+        related_name='reports'
+    )
+
+    doctor = models.ForeignKey(
+        DoctorProfile,
+        on_delete=models.CASCADE
+    )
+
+    report_title = models.CharField(
+        max_length=255
+    )
+
+    report_file = models.FileField(
+        upload_to='reports/'
+    )
+
+    uploaded_at = models.DateTimeField(
+        auto_now_add=True
+    )
+
+    def __str__(self):
+
+        return self.report_title
+
+        
