@@ -3,6 +3,7 @@ from .views import JWTLoginAPIView
 from .views import *
 from patient.views import *
 from doctor.views import*
+
 app_name='authentication'
 
 
@@ -19,6 +20,11 @@ urlpatterns = [
 
     path('dashboard/patient/', PatientDashboardAPIView.as_view(), name='patient-dashboard'),
     path('dashboard/doctor/', DoctorDashboardAPIView.as_view(), name='doctor-dashboard'),
+
+
+
+
+    
 
 
     # ADMIN ROUTES
@@ -70,6 +76,7 @@ path('patient/reports/',PatientReportsAPIView.as_view()),
 # path('doctor/upload-report/<int:patient_id>/',UploadMedicalReportAPIView.as_view()),
 
 path('doctor/request-test/<int:appointment_id>/',RequestMedicalTestAPIView.as_view()),
+path('patient/test-requests/',PatientTestRequestsAPIView.as_view()),
 
 path('patient/upload-report/<int:test_request_id>/',PatientUploadReportAPIView.as_view()),
 

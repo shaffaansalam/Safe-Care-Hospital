@@ -1,55 +1,114 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-<head>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
-  <link rel="stylesheet" href="navbar.css">
-  <link rel="stylesheet" href="footer.css">
-</head>
+  <head>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
+    />
+    <link rel="stylesheet" href="navbar.css" />
+    <link rel="stylesheet" href="footer.css" />
+  </head>
 
-<body class="bg-gray-100">
+  <body class="bg-gray-100">
+    <header class="navbar fixed-top px-5">
+      <div class="left-logo">
+        SAFE CARE
+        <div class="down">Hospital</div>
+      </div>
+      <nav>
+        <ul class="nav-links">
+          <li><a href="home.html">Home</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="departments.html">Departments</a></li>
+          <li><a href="contact.html">Contact</a></li>
+          <li><a href="search-doctors.html">Find Doctors</a></li>
+          <li><a href="patient-booking.html">Appointment Booking</a></li>
 
-<header class="navbar fixed-top px-5">
-  <div class="left-logo">SAFE CARE<div class="down">Hospital</div></div>
-  <nav>
-    <ul class="nav-links">
-      <li><a href="{% url 'home' %}">Home</a></li>
-      <li><a href="{% url 'about' %}">About</a></li>
-      <li><a href="{% url 'departments' %}">Departments</a></li>
-      <li><a href="{% url 'contact' %}">Contact</a></li>
-      <li><a href="{% url 'search-doctors' %}">Find Doctors</a></li>
-      <li><a href="patient-booking.html">Appointment Booking</a></li>
+          <li id="loginNav">
+            <a href="login.html">Login</a>
+          </li>
 
-      <li id="loginNav">
-        <a href="{% url 'login-page' %}">Login</a>
-      </li>
+          <li id="logoutNav" style="display: none">
+            <a href="#" onclick="logoutUser()">Logout</a>
+          </li>
 
-      <li id="logoutNav" style="display:none;">
-        <a href="#" onclick="logoutUser()">Logout</a>
-      </li>
+          <li id="registerNav">
+            <a
+              href="register.html"
+              class="btn btn-primary btn-sm text-white text-sm"
+            >
+              Register
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </header>
 
-      <li>
-        <a href="{% url 'authentication:register' %}" 
-           class="btn btn-primary btn-sm text-white text-sm">
-           Register
-        </a>
-      </li>
-    </ul>
-  </nav>
-</header>
+    <div class="navbar-space"></div>
 
-<div class="navbar-space"></div>
+    <div class="max-w-4xl mx-auto mt-10 bg-white shadow-lg rounded-xl p-8">
+      <h1 class="text-3xl font-bold mb-4 text-blue-600">Patient Dashboard</h1>
+      <div id="welcomeUser" class="mb-4"></div>
+      <div id="patientData" class="space-y-3"></div>
+    </div>
 
-<div class="max-w-4xl mx-auto mt-10 bg-white shadow-lg rounded-xl p-8">
-  <h1 class="text-3xl font-bold mb-4 text-blue-600">Patient Dashboard</h1>
-  <div id="welcomeUser" class="mb-4"></div>
-  <div id="patientData" class="space-y-3"></div>
-</div>
+    <!-- PRESCRIPTIONS -->
 
-<!--  Only one script -->
-<!-- <script src="{% static 'patient-dashboard.js' %}"></script> -->
-<script src="patient-dashboard.js"></script>
+    <div class="bg-white p-6 rounded-xl shadow mt-8">
+      <h2 class="text-2xl font-bold mb-5">My Prescriptions</h2>
 
-</body>
+      <div id="prescriptionsContainer"></div>
+    </div>
+
+    <!-- TEST REQUESTS -->
+
+    <div class="bg-white p-6 rounded-xl shadow mt-8">
+      <h2 class="text-2xl font-bold mb-5">Requested Tests</h2>
+
+      <div id="testsContainer"></div>
+    </div>
+
+    <!-- UPLOAD REPORT -->
+
+    <div class="bg-white p-6 rounded-xl shadow mt-8">
+      <h2 class="text-2xl font-bold mb-5">Upload Medical Report</h2>
+
+      <input type="file" id="reportFile" class="mb-3" />
+
+      <input
+        type="text"
+        id="reportTitle"
+        placeholder="Report Title"
+        class="w-full border p-3 rounded mb-3"
+      />
+
+      <input
+        type="number"
+        id="testRequestId"
+        placeholder="Test Request ID"
+        class="w-full border p-3 rounded mb-3"
+      />
+
+      <button
+        onclick="uploadReport()"
+        class="bg-blue-600 text-white px-5 py-2 rounded"
+      >
+        Upload Report
+      </button>
+    </div>
+
+    <!-- REPORTS -->
+
+    <div class="bg-white p-6 rounded-xl shadow mt-8">
+      <h2 class="text-2xl font-bold mb-5">My Reports</h2>
+
+      <div id="reportsContainer"></div>
+    </div>
+
+    <!--  Only one script -->
+    <!-- <script src="{% static 'patient-dashboard.js' %}"></script> -->
+    <script src="patient-dashboard.js"></script>
+  </body>
 </html>

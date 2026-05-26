@@ -1,185 +1,856 @@
 <!doctype html>
-<html>
+<html lang="en">
   <head>
+    <meta charset="UTF-8" />
+
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+
+    <title>Safe Care Hospital</title>
+
+    <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Axios -->
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    <!-- Font Awesome -->
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
     />
+
+    <!-- CSS -->
     <link rel="stylesheet" href="navbar.css" />
     <link rel="stylesheet" href="footer.css" />
   </head>
 
   <body class="bg-gray-100">
+
+    <!-- NAVBAR -->
+
     <header class="navbar fixed-top px-5">
+
       <div class="left-logo">
         SAFE CARE
         <div class="down">Hospital</div>
       </div>
+
       <nav>
+
         <ul class="nav-links">
-          <li><a href="{% url 'home' %}">Home</a></li>
-          <li><a href="{% url 'about' %}">About</a></li>
-          <li><a href="{% url 'departments' %}">Departments</a></li>
-          <li><a href="{% url 'contact' %}">Contact</a></li>
 
-          <li id="loginNav">
-            <a href="{% url 'login-page' %}">Login</a>
-          </li>
-
-          <li id="logoutNav" style="display: none">
-            <a href="#" onclick="logoutUser()">Logout</a>
+          <li>
+            <a href="home.html">Home</a>
           </li>
 
           <li>
+            <a href="about.html">About</a>
+          </li>
+
+          <li>
+            <a href="departments.html">Departments</a>
+          </li>
+
+          <li>
+            <a href="contact.html">Contact</a>
+          </li>
+
+          <li>
+            <a href="search-doctors.html">
+              Find Doctors
+            </a>
+          </li>
+
+          <li>
+            <a href="patient-booking.html">
+              Appointment Booking
+            </a>
+          </li>
+
+          <li id="loginNav">
+            <a href="login.html">Login</a>
+          </li>
+
+          <li id="logoutNav" style="display:none;">
+            <a href="#" onclick="logoutUser()">
+              Logout
+            </a>
+          </li>
+
+          <li id="registerNav">
             <a
-              href="{% url 'authentication:register' %}"
+              href="register.html"
               class="btn btn-primary btn-sm text-white text-sm"
             >
               Register
             </a>
           </li>
+
         </ul>
+
       </nav>
+
     </header>
 
     <div class="navbar-space"></div>
 
-    <div class="max-w-4xl mx-auto mt-10 bg-white shadow-lg rounded-xl p-8">
-      <h1 class="text-3xl font-bold mb-4 text-green-600">Doctor Dashboard</h1>
 
-      <div id="welcomeUser" class="mb-4"></div>
-      <div id="doctorData" class="space-y-3"></div>
+
+
+
+    <!-- DASHBOARD -->
+
+    <div class="max-w-7xl mx-auto p-8">
+
+      <h1 class="text-4xl font-bold text-blue-700 mb-8">
+
+        Doctor Dashboard
+
+      </h1>
+
+
+
+      <!-- PENDING APPOINTMENTS -->
+
+      <div class="bg-white rounded-xl shadow p-6 mb-8">
+
+        <h2 class="text-2xl font-bold text-orange-600 mb-5">
+
+          Pending Appointments
+
+        </h2>
+
+        <div id="pendingAppointmentsContainer"></div>
+
+      </div>
+
+
+
+      <!-- COMPLETED APPOINTMENTS -->
+
+      <div class="bg-white rounded-xl shadow p-6 mb-8">
+
+        <h2 class="text-2xl font-bold text-green-600 mb-5">
+
+          Completed Appointments
+
+        </h2>
+
+        <div id="completedAppointmentsContainer"></div>
+
+      </div>
+
     </div>
 
+
+
+
+
     <script>
-      const token = localStorage.getItem("access_token");
-      const storedUser = JSON.parse(localStorage.getItem("user"));
 
-      const loginNav = document.getElementById("loginNav");
-      const logoutNav = document.getElementById("logoutNav");
+      const token =
+        localStorage.getItem("access_token");
 
-      // ✅ Navbar toggle
+      const storedUser =
+        JSON.parse(localStorage.getItem("user"));
+
+
+
+      const loginNav =
+        document.getElementById("loginNav");
+
+      const logoutNav =
+        document.getElementById("logoutNav");
+
+      const registerNav =
+        document.getElementById("registerNav");
+
+
+
+      // =========================================
+      // NAVBAR TOGGLE
+      // =========================================
+
       if (token) {
+
         loginNav.style.display = "none";
+
         logoutNav.style.display = "block";
-      } else {
+
+        registerNav.style.display = "none";
+
+      }
+
+      else {
+
         loginNav.style.display = "block";
+
         logoutNav.style.display = "none";
+
+        registerNav.style.display = "block";
+
       }
 
-      // ✅ Role check
-      if (!token || !storedUser || storedUser.role.toLowerCase() !== "doctor") {
-        window.location.replace("login.html");
+
+
+      // =========================================
+      // ROLE VALIDATION
+      // =========================================
+
+      let role = storedUser?.role;
+
+      if (Array.isArray(role)) {
+
+        role = role[0];
+
       }
 
-      document.getElementById("welcomeUser").innerHTML = `
-  <p class="text-lg font-semibold text-green-600">
-    Welcome, ${storedUser.name}
-  </p>
-`;
+      role = role?.toLowerCase().trim();
 
-      axios
-        .get("http://127.0.0.1:8001/auth/dashboard/doctor/", {
-          headers: { Authorization: `Bearer ${token}` },
-        })
-        .then((res) => {
-          const data = res.data;
+      if (!token || !storedUser || role !== "doctor") {
 
-          const baseServerUrl = "http://127.0.0.1:8001";
+        window.location.href = "login.html";
 
-          // Logic to handle relative vs absolute URLs
-          let imageUrl = data.profile_image;
-          if (imageUrl && !imageUrl.startsWith('http')) {
-              imageUrl = `${baseServerUrl}${imageUrl}`;
-          } else if (!imageUrl) {
-             imageUrl = "https://ui-avatars.com/api/?name=" + data.user.name;
-          }
+      }
 
 
-          document.getElementById("doctorData").innerHTML = `
-            <p><strong>Name :</strong> ${data.user.name}</p>
-            <p><strong>Email :</strong> ${data.user.email}</p>
-            <p><strong>Specialization :</strong> ${data.specialization}</p>
-            <p><strong>Experience :</strong> ${data.experience} years</p>
-            <p><strong>Phone Number :</strong> ${data.phone}</p>
-            <p><strong>Qualification :</strong> ${data.qualification}</p>
-            <p><strong>Bio :</strong> ${data.bio}</p>
-            <p><strong>Department :</strong> ${data.department}</p>
-            <p><strong>Consultation Fee :</strong> ₹${data.consultation_fee}</p>
-            <p><strong>Available Start Time :</strong> ${data.available_start_time}</p>
-            <p><strong>Available End Time :</strong> ${data.available_end_time}</p>
 
-            <img src="${imageUrl}" 
-            class="w-32 h-32 rounded-full object-cover border mt-4" 
-            alt="Profile Image" 
-            onerror="this.src='https://via.placeholder.com/120'"/>
+      // =========================================
+      // LOAD APPOINTMENTS
+      // =========================================
 
-
-    
-
-  `;
-        })
-        .catch(() => {
-          showToast("Admin approval pending or session expired.", "#dc2626");
-          setTimeout(() => {
-            localStorage.clear();
-            window.location.replace("login.html");
-          }, 2000);
-        });
-
-      // ✅ GLOBAL LOGOUT FUNCTION
-      async function logoutUser() {
-        const refreshToken = localStorage.getItem("refresh_token");
-        const accessToken = localStorage.getItem("access_token");
+      async function loadAppointments() {
 
         try {
-          if (refreshToken) {
-            await axios.post(
-              "http://127.0.0.1:8001/auth/logout/",
-              { refresh: refreshToken },
-              {
-                headers: {
-                  Authorization: `Bearer ${accessToken}`,
-                },
+
+          const response = await axios.get(
+
+            "http://127.0.0.1:8001/auth/doctor/appointments/",
+
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
               },
-            );
+            }
+
+          );
+
+
+
+          const appointments =
+            response.data.results || response.data;
+
+
+
+          let pendingHtml = "";
+
+          let completedHtml = "";
+
+
+
+          appointments.forEach((item) => {
+
+            console.log("Appointment Item:", item);
+
+
+
+            const appointmentCard = `
+
+            <div class="border rounded-xl p-5 mb-6 bg-gray-50">
+
+                <div class="flex justify-between">
+
+                    <div>
+
+                        <h3 class="text-2xl font-bold text-blue-600 mb-3">
+
+                            ${item.patient_name}
+
+                        </h3>
+
+                        <p class="mb-1">
+
+                            <strong>Appointment ID:</strong>
+
+                            ${item.appointment_id}
+
+                        </p>
+
+                        <p class="mb-1">
+
+                            <strong>Age:</strong>
+
+                            ${item.patient_age}
+
+                        </p>
+
+                        <p class="mb-1">
+
+                            <strong>Gender:</strong>
+
+                            ${item.patient_gender}
+
+                        </p>
+
+                        <p class="mb-1">
+
+                            <strong>Blood Group:</strong>
+
+                            ${item.patient_blood_group || "N/A"}
+
+                        </p>
+
+                        <p class="mb-1">
+
+                            <strong>Medical History:</strong>
+
+                            ${item.medical_history || "No history"}
+
+                        </p>
+
+                        <p class="mb-1">
+
+                            <strong>Date:</strong>
+
+                            ${item.appointment_date}
+
+                        </p>
+
+                        <p class="mb-1">
+
+                            <strong>Time:</strong>
+
+                            ${item.appointment_time}
+
+                        </p>
+
+                        <p class="mb-1">
+
+                            <strong>Reason:</strong>
+
+                            ${item.reason}
+
+                        </p>
+
+
+
+                        <p class="mb-3">
+
+                            <strong>Status:</strong>
+
+                            <span class="${
+                              item.status === "completed"
+                                ? "text-green-600 bg-green-100 px-3 py-1 rounded-full"
+                                : item.status === "pending"
+                                ? "text-orange-600 bg-orange-100 px-3 py-1 rounded-full"
+                                : item.status === "cancelled"
+                                ? "text-red-600 bg-red-100 px-3 py-1 rounded-full"
+                                : "text-blue-600 bg-blue-100 px-3 py-1 rounded-full"
+                            }">
+
+                                ${item.status}
+
+                            </span>
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- PRESCRIPTION -->
+
+                <div class="mt-6 border-t pt-5">
+
+                    <h4 class="text-xl font-bold mb-4 text-green-700">
+
+                        Add Prescription
+
+                    </h4>
+
+                    <textarea
+                        id="diagnosis-${item.appointment_id}"
+                        placeholder="Diagnosis"
+                        class="w-full border p-3 rounded mb-3"
+                    ></textarea>
+
+                    <textarea
+                        id="medicines-${item.appointment_id}"
+                        placeholder="Medicines"
+                        class="w-full border p-3 rounded mb-3"
+                    ></textarea>
+
+                    <textarea
+                        id="notes-${item.appointment_id}"
+                        placeholder="Notes"
+                        class="w-full border p-3 rounded mb-3"
+                    ></textarea>
+
+                    <button
+                        onclick="addPrescription(${item.appointment_id})"
+                        class="bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded">
+
+                        Save Prescription
+
+                    </button>
+
+                </div>
+
+
+
+                <!-- REQUEST TEST -->
+
+                <div class="mt-6 border-t pt-5">
+
+                    <h4 class="text-xl font-bold mb-4 text-blue-700">
+
+                        Request Test
+
+                    </h4>
+
+                    <input
+                        type="text"
+                        id="test-${item.appointment_id}"
+                        placeholder="Blood Test / MRI / Scan"
+                        class="w-full border p-3 rounded mb-3"
+                    >
+
+                    <textarea
+                        id="instruction-${item.appointment_id}"
+                        placeholder="Instructions"
+                        class="w-full border p-3 rounded mb-3"
+                    ></textarea>
+
+                    <button
+                        onclick="requestTest(${item.appointment_id})"
+                        class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded">
+
+                        Request Test
+
+                    </button>
+
+                </div>
+
+
+
+                <!-- REPORTS -->
+
+                <div class="mt-6 border-t pt-5">
+
+                    <h4 class="text-xl font-bold mb-4 text-purple-700">
+
+                        Uploaded Reports
+
+                    </h4>
+
+                    <button
+                        onclick="viewReports(${item.patient_id})"
+                        class="bg-purple-600 hover:bg-purple-700 text-white px-5 py-2 rounded">
+
+                        View Reports
+
+                    </button>
+
+                    <div
+                        id="reports-${item.patient_id}"
+                        class="mt-4"
+                    ></div>
+
+                </div>
+
+            </div>
+
+            `;
+
+
+
+            // =========================================
+            // SEPARATE PENDING & COMPLETED
+            // =========================================
+
+            if (item.status === "completed") {
+
+              completedHtml += appointmentCard;
+
+            }
+
+            else {
+
+              pendingHtml += appointmentCard;
+
+            }
+
+          });
+
+
+
+          // =========================================
+          // EMPTY STATES
+          // =========================================
+
+          if (!pendingHtml) {
+
+            pendingHtml = `
+
+              <div class="text-center text-gray-500 py-10">
+
+                No Pending Appointments
+
+              </div>
+
+            `;
+
           }
-        } catch (error) {
-          console.log("Logout API error:", error);
+
+
+
+          if (!completedHtml) {
+
+            completedHtml = `
+
+              <div class="text-center text-gray-500 py-10">
+
+                No Completed Appointments
+
+              </div>
+
+            `;
+
+          }
+
+
+
+          // =========================================
+          // RENDER
+          // =========================================
+
+          document.getElementById(
+
+            "pendingAppointmentsContainer"
+
+          ).innerHTML = pendingHtml;
+
+
+
+          document.getElementById(
+
+            "completedAppointmentsContainer"
+
+          ).innerHTML = completedHtml;
+
         }
 
+        catch (error) {
+
+          console.log(error);
+
+          console.log(error.response?.data);
+
+          alert("Failed to load appointments");
+
+        }
+
+      }
+
+
+
+      loadAppointments();
+
+
+
+
+
+      // =========================================
+      // ADD PRESCRIPTION
+      // =========================================
+
+      async function addPrescription(appointmentId) {
+
+        console.log("Appointment ID:", appointmentId);
+
+        if (!appointmentId) {
+
+          alert("Appointment ID missing");
+
+          return;
+
+        }
+
+
+
+        const diagnosis =
+          document.getElementById(
+            `diagnosis-${appointmentId}`
+          ).value;
+
+
+
+        const medicines =
+          document.getElementById(
+            `medicines-${appointmentId}`
+          ).value;
+
+
+
+        const notes =
+          document.getElementById(
+            `notes-${appointmentId}`
+          ).value;
+
+
+
+        try {
+
+          const response = await axios.post(
+
+            `http://127.0.0.1:8001/auth/doctor/prescription/${appointmentId}/`,
+
+            {
+              diagnosis,
+              medicines,
+              notes,
+            },
+
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+
+          );
+
+
+
+          console.log(response.data);
+
+          alert("Prescription Added Successfully");
+
+
+
+          // AUTO REFRESH
+          loadAppointments();
+
+        }
+
+        catch (error) {
+
+          console.log(error);
+
+          console.log(error.response?.data);
+
+          alert("Prescription Failed");
+
+        }
+
+      }
+
+
+
+
+
+      // =========================================
+      // REQUEST TEST
+      // =========================================
+
+      async function requestTest(appointmentId) {
+
+        console.log("Appointment ID:", appointmentId);
+
+        if (!appointmentId) {
+
+          alert("Appointment ID missing");
+
+          return;
+
+        }
+
+
+
+        const test_name =
+          document.getElementById(
+            `test-${appointmentId}`
+          ).value;
+
+
+
+        const instructions =
+          document.getElementById(
+            `instruction-${appointmentId}`
+          ).value;
+
+
+
+        try {
+
+          const response = await axios.post(
+
+            `http://127.0.0.1:8001/auth/doctor/request-test/${appointmentId}/`,
+
+            {
+              test_name,
+              instructions,
+            },
+
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+
+          );
+
+
+
+          console.log(response.data);
+
+          alert("Test Requested Successfully");
+
+        }
+
+        catch(error) {
+
+          console.log(error);
+
+          console.log(error.response?.data);
+
+          alert("Test Request Failed");
+
+        }
+
+      }
+
+
+
+
+
+      // =========================================
+      // VIEW REPORTS
+      // =========================================
+
+      async function viewReports(patientId) {
+
+        console.log("Patient ID:", patientId);
+
+        if (!patientId) {
+
+          alert("Patient ID missing");
+
+          return;
+
+        }
+
+
+
+        try {
+
+          const response = await axios.get(
+
+            `http://127.0.0.1:8001/auth/doctor/patient-reports/${patientId}/`,
+
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+
+          );
+
+
+
+          const reports = response.data;
+
+          let html = "";
+
+
+
+          if (reports.length === 0) {
+
+            html = `
+
+              <p class="text-gray-500">
+
+                No reports uploaded
+
+              </p>
+
+            `;
+
+          }
+
+
+
+          reports.forEach((report) => {
+
+            html += `
+
+            <div class="border p-4 rounded mb-3 bg-white">
+
+                <p class="font-bold mb-2">
+
+                    ${report.report_title}
+
+                </p>
+
+                <a
+                    href="${report.report_file}"
+                    target="_blank"
+                    class="text-blue-600 underline">
+
+                    View Report
+
+                </a>
+
+            </div>
+
+            `;
+
+          });
+
+
+
+          document.getElementById(
+
+            `reports-${patientId}`
+
+          ).innerHTML = html;
+
+        }
+
+        catch(error) {
+
+          console.log(error);
+
+          console.log(error.response?.data);
+
+          alert("Failed to load reports");
+
+        }
+
+      }
+
+
+
+
+
+      // =========================================
+      // LOGOUT
+      // =========================================
+
+      function logoutUser() {
+
         localStorage.clear();
-        window.location.href = "/";
+
+        window.location.href = "login.html";
+
       }
 
-      function showToast(message, color) {
-        const toast = document.createElement("div");
-        toast.innerText = message;
-
-        toast.style.position = "fixed";
-        toast.style.top = "20px";
-        toast.style.right = "20px";
-        toast.style.padding = "14px 22px";
-        toast.style.backgroundColor = color;
-        toast.style.color = "white";
-        toast.style.fontWeight = "600";
-        toast.style.borderRadius = "8px";
-        toast.style.boxShadow = "0 5px 15px rgba(0,0,0,0.2)";
-        toast.style.zIndex = "9999";
-        toast.style.opacity = "0";
-        toast.style.transition = "opacity 0.4s ease";
-
-        document.body.appendChild(toast);
-
-        setTimeout(() => (toast.style.opacity = "1"), 100);
-
-        setTimeout(() => {
-          toast.style.opacity = "0";
-          setTimeout(() => toast.remove(), 400);
-        }, 2000);
-      }
     </script>
+
   </body>
+
 </html>

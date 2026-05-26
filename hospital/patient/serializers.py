@@ -207,18 +207,63 @@ class AppointmentSerializer(serializers.ModelSerializer):
         read_only=True
     )
 
+    patient_id = serializers.IntegerField(
+        source='patient.id',
+        read_only=True
+    )
+
+    patient_age = serializers.IntegerField(
+        source='patient.age',
+        read_only=True
+    )
+
+    patient_gender = serializers.CharField(
+        source='patient.gender',
+        read_only=True
+    )
+
+    patient_blood_group = serializers.CharField(
+        source='patient.blood_group',
+        read_only=True
+    )
+
+    medical_history = serializers.CharField(
+        source='patient.medical_history',
+        read_only=True
+    )
+
     class Meta:
+
         model = Appointment
 
         fields = [
+
             'id',
+
             'doctor',
+
             'doctor_name',
+
+            'patient_id',
+
             'patient_name',
+
+            'patient_age',
+
+            'patient_gender',
+
+            'patient_blood_group',
+
+            'medical_history',
+
             'appointment_date',
+
             'appointment_time',
+
             'reason',
+
             'status',
+
             'created_at'
         ]
 
@@ -226,70 +271,6 @@ class AppointmentSerializer(serializers.ModelSerializer):
             'patient',
             'status'
         ]
-
-    def validate(self, data):
-
-        doctor = data.get('doctor')
-        appointment_date = data.get('appointment_date')
-        appointment_time = data.get('appointment_time')
-
-        appointment_time = appointment_time.replace(second=0)
-
-        if appointment_date < date.today():
-
-            raise serializers.ValidationError(
-                "Cannot book past dates"
-            )
-
-        if not doctor.is_available:
-
-            raise serializers.ValidationError(
-                "Doctor unavailable"
-            )
-
-        if not (
-            doctor.available_start_time <= appointment_time <= doctor.available_end_time
-        ):
-
-            raise serializers.ValidationError(
-                "Outside doctor schedule"
-            )
-
-        exists = Appointment.objects.filter(
-            doctor=doctor,
-            appointment_date=appointment_date,
-            appointment_time=appointment_time,
-            status__in=['pending', 'accepted']
-        ).exists()
-
-        if exists:
-
-            raise serializers.ValidationError(
-                "Slot already booked"
-            )
-
-        return data
-
-    def create(self, validated_data):
-
-        request = self.context.get('request')
-
-        appointment = Appointment.objects.create(
-
-            patient=request.user.patient,
-
-            doctor=validated_data['doctor'],
-
-            appointment_date=validated_data['appointment_date'],
-
-            appointment_time=validated_data['appointment_time'],
-
-            reason=validated_data['reason'],
-
-            status='pending'
-        )
-
-        return appointment
     
     from authentication.models import Prescription, MedicalReport
 
@@ -393,13 +374,3 @@ class TestRequestSerializer(serializers.ModelSerializer):
             'doctor_name',
             'requested_at'
         ]
-
-    # IMPORTANT FIX
-    def create(self, validated_data):
-
-        return TestRequest.objects.create(
-            appointment=validated_data['appointment'],
-            test_name=validated_data['test_name'],
-            instructions=validated_data['instructions'],
-            status=validated_data.get('status', 'pending')
-        )

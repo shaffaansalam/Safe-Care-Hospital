@@ -1,15 +1,14 @@
 # Create your views here.
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import permissions,status
+from rest_framework import permissions
+
 from doctor.serializers import *
 from patient.serializers import *
 from django.db import IntegrityError
-from authentication.models import Prescription
-from authentication.models import MedicalReport
+from authentication.models import Prescription,MedicalReport,TestRequest
+from .serializers import PrescriptionSerializer,MedicalReportSerializer
 
-from .serializers import PrescriptionSerializer
-from .serializers import MedicalReportSerializer
 
 
 
@@ -148,58 +147,14 @@ class PatientReportsAPIView(APIView):
 
         return Response(serializer.data)
     
-# class UploadMedicalReportAPIView(APIView):
 
-#     permission_classes = [permissions.IsAuthenticated]
-
-#     def post(self, request, patient_id):
-
-#         if request.user.profile.role != "doctor":
-
-#             return Response(
-#                 {"error": "Only doctors allowed"},
-#                 status=403
-#             )
-
-#         try:
-#             patient = PatientProfile.objects.get(
-#                 id=patient_id
-#             )
-
-#         except PatientProfile.DoesNotExist:
-
-#             return Response(
-#                 {"error": "Patient not found"},
-#                 status=404
-#             )
-
-#         serializer = MedicalReportSerializer(
-#             data=request.data,
-#             context={'request': request}
-#         )
-
-#         if serializer.is_valid():
-
-#             serializer.save(
-#                 patient=patient,
-#                 doctor=request.user.doctor
-#             )
-
-#             return Response({
-#                 "message": "Report uploaded successfully",
-#                 "data": serializer.data
-#             })
-
-#         return Response(
-#             serializer.errors,
-#             status=400
-#         )
 class RequestMedicalTestAPIView(APIView):
 
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request, appointment_id):
 
+        # ONLY DOCTOR
         if request.user.profile.role != "doctor":
 
             return Response(
@@ -221,27 +176,50 @@ class RequestMedicalTestAPIView(APIView):
                 status=404
             )
 
-        serializer = TestRequestSerializer(
-            data=request.data
+        test_name = request.data.get("test_name")
+
+        instructions = request.data.get("instructions")
+
+
+
+        # UPDATE IF EXISTS
+        test_request, created = TestRequest.objects.update_or_create(
+
+            appointment=appointment,
+
+            defaults={
+
+                "test_name": test_name,
+
+                "instructions": instructions,
+
+                "status": "pending"
+            }
         )
 
-        if serializer.is_valid():
 
-            serializer.save(
-                appointment=appointment,
-                doctor=request.user.doctor,
-                patient=appointment.patient
-            )
+
+        if created:
 
             return Response({
-                "message": "Test requested successfully",
-                "data": serializer.data
-            })
 
-        return Response(
-            serializer.errors,
-            status=400
-        )
+                "message": "Test requested successfully",
+
+                "data": TestRequestSerializer(test_request).data
+
+            }, status=201)
+
+
+
+        return Response({
+
+            "message": "Test request updated successfully",
+
+            "data": TestRequestSerializer(test_request).data
+
+        }, status=200)
+    
+
 class PatientUploadReportAPIView(APIView):
 
     permission_classes = [permissions.IsAuthenticated]
@@ -297,3 +275,32 @@ class PatientUploadReportAPIView(APIView):
             serializer.errors,
             status=400
         )
+
+ # =========================================
+# PATIENT TEST REQUESTS
+# =========================================
+
+class PatientTestRequestsAPIView(APIView):
+
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+
+        if request.user.profile.role != "patient":
+
+            return Response(
+                {"error": "Only patients allowed"},
+                status=403
+            )
+
+        tests = TestRequest.objects.filter(
+            appointment__patient=request.user.patient
+        )
+
+        serializer = TestRequestSerializer(
+            tests,
+            many=True
+        )
+
+        return Response(serializer.data)
+

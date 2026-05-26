@@ -47,47 +47,47 @@ document.addEventListener("DOMContentLoaded", () => {
       console.log("🎯 Redirecting as:", userRole);
 
       // ROLE BASED REDIRECT
-      // if (userRole === "patient") {
+      if (userRole === "patient") {
 
-      //   window.location.href = "patient-dashboard.html";
+        window.location.href = "patient-dashboard.html";
 
-      // } 
-      // else if (userRole === "doctor") {
+      } 
+      else if (userRole === "doctor") {
 
-      //   window.location.href = "doctor-dashboard.html";
+        window.location.href = "doctor-dashboard.html";
 
-      // } 
-      // else if (userRole === "admin") {
+      } 
+      else if (userRole === "admin") {
 
-      //   window.location.href = "admin-dashboard.html";
+        window.location.href = "admin-dashboard.html";
 
-      // }
-      // else {
+      }
+      else {
 
-      //   window.location.href = "home.html";
+        window.location.href = "home.html";
 
-      // }
+      }
 
-    if (userRole === "patient") {
+//     if (userRole === "patient") {
 
-    window.location.href = "/patient-dashboard/";
+//     window.location.href = "/patient-dashboard/";
 
-}
-else if (userRole === "doctor") {
+// }
+// else if (userRole === "doctor") {
 
-    window.location.href = "/doctor-dashboard/";
+//     window.location.href = "/doctor-dashboard";
 
-}
-else if (userRole === "admin") {
+// }
+// else if (userRole === "admin") {
 
-    window.location.href = "/admin-dashboard/";
+//     window.location.href = "/admin-dashboard/";
 
-}
-else {
+// }
+// else {
 
-    window.location.href = "/";
+//     window.location.href = "/";
 
-}
+// }
 
     } catch (error) {
 

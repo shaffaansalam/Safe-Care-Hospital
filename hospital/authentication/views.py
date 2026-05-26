@@ -17,6 +17,8 @@ PaymentSerializer)
 from doctor.serializers import (DoctorProfileSerializer,DepartmentSerializer)
 from patient.serializers import (PatientProfileSerializer,AppointmentSerializer,UserRegSerializer)
 
+from django.views.generic import TemplateView
+
 
     
 class RegisterApi(APIView):
@@ -490,3 +492,9 @@ class AdminPaymentListAPIView(APIView):
         return Response({
             "payments": total_revenue
         })
+
+
+
+class DoctorDashboardTemplateView(TemplateView):
+
+    template_name = "doctor-dashboard.html"    

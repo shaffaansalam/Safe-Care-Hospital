@@ -6,12 +6,11 @@ from doctor.serializers import *
 from patient.serializers import *
 from datetime import datetime, timedelta
 from rest_framework.views import APIView
-from authentication.models import DoctorProfile, Appointment,Department
+from authentication.models import DoctorProfile, Appointment,Department,Prescription,MedicalReport
 from .serializers import DoctorProfileSerializer
-from authentication.models import Prescription
-from authentication.models import MedicalReport
-from patient.serializers import PrescriptionSerializer
-from patient.serializers import MedicalReportSerializer
+from patient.serializers import PrescriptionSerializer,MedicalReportSerializer
+
+from django.views.generic import TemplateView
 
 
 # Create your views here.
@@ -62,8 +61,6 @@ class DepartmentListCreateAPIView(APIView):
     
 
 
-
-
 class DoctorAvailableSlotsAPIView(APIView):
 
     permission_classes = [permissions.AllowAny]
@@ -111,7 +108,6 @@ class DoctorAvailableSlotsAPIView(APIView):
     
 
 
-
 class DoctorSearchAPIView(APIView):
 
     permission_classes = [permissions.AllowAny]
@@ -152,6 +148,7 @@ class DepartmentDropdownAPIView(APIView):
 
         return Response(data)    
 
+
 class DepartmentDoctorsAPIView(APIView):
 
     permission_classes = [permissions.AllowAny]
@@ -177,7 +174,7 @@ class DepartmentDoctorsAPIView(APIView):
         return Response(data)   
 
 
-    # =========================================
+# =========================================
 # DOCTOR VIEW APPOINTMENTS
 # =========================================
 
@@ -209,7 +206,11 @@ class DoctorAppointmentsAPIView(APIView):
 
             data.append({
 
+                # IMPORTANT
                 "appointment_id": appointment.id,
+
+                # IMPORTANT
+                "patient_id": appointment.patient.id,
 
                 "patient_name":
                     appointment.patient.user.get_full_name(),
@@ -219,6 +220,9 @@ class DoctorAppointmentsAPIView(APIView):
 
                 "patient_gender":
                     appointment.patient.gender,
+
+                "patient_blood_group":
+                    appointment.patient.blood_group,
 
                 "medical_history":
                     appointment.patient.medical_history,
@@ -237,6 +241,7 @@ class DoctorAppointmentsAPIView(APIView):
             })
 
         return Response(data)
+    
 
     # =========================================
 # ADD PRESCRIPTION
@@ -244,48 +249,73 @@ class DoctorAppointmentsAPIView(APIView):
 
 class AddPrescriptionAPIView(APIView):
 
-    permission_classes = [permissions.IsAuthenticated]
-
     def post(self, request, appointment_id):
 
-        if request.user.profile.role != "doctor":
-            return Response(
-                {"error": "Only doctors allowed"},
-                status=403
-            )
-
         try:
+
             appointment = Appointment.objects.get(
-                id=appointment_id,
-                doctor=request.user.doctor
+                id=appointment_id
             )
 
         except Appointment.DoesNotExist:
 
             return Response(
-                {"error": "Appointment not found"},
-                status=404
+                {
+                    "error": "Appointment not found"
+                },
+                status=status.HTTP_404_NOT_FOUND
             )
 
-        serializer = PrescriptionSerializer(
-            data=request.data
+        diagnosis = request.data.get("diagnosis")
+
+        medicines = request.data.get("medicines")
+
+        notes = request.data.get("notes")
+
+
+
+        # CREATE / UPDATE PRESCRIPTION
+        prescription, created = Prescription.objects.update_or_create(
+
+            appointment=appointment,
+
+            defaults={
+
+                "diagnosis": diagnosis,
+
+                "medicines": medicines,
+
+                "notes": notes
+            }
         )
 
-        if serializer.is_valid():
 
-            serializer.save(
-                appointment=appointment
+        # =========================================
+        # UPDATE APPOINTMENT STATUS
+        # =========================================
+
+        appointment.status = "completed"
+
+        appointment.save()
+
+
+        if created:
+
+            return Response(
+                {
+                    "message": "Prescription Added Successfully"
+                },
+                status=status.HTTP_201_CREATED
             )
 
-            return Response({
-                "message": "Prescription added successfully",
-                "data": serializer.data
-            })
 
         return Response(
-            serializer.errors,
-            status=400
+            {
+                "message": "Prescription Updated Successfully"
+            },
+            status=status.HTTP_200_OK
         )
+    
 
     # =========================================
 # PATIENT MEDICAL HISTORY
@@ -315,6 +345,7 @@ class PatientMedicalHistoryAPIView(APIView):
 
         return Response(serializer.data)
 
+
 class DoctorPatientReportsAPIView(APIView):
 
     permission_classes = [permissions.IsAuthenticated]
@@ -340,54 +371,8 @@ class DoctorPatientReportsAPIView(APIView):
 
         return Response(serializer.data)
     
+
+class DoctorDashboardTemplateView(TemplateView):
+
+    template_name = "doctor-dashboard.html"    
     
-class DoctorRequestTestAPIView(APIView):
-
-    permission_classes = [permissions.IsAuthenticated]
-
-    def post(self, request, appointment_id):
-
-        # ONLY DOCTOR
-        if request.user.profile.role != "doctor":
-
-            return Response(
-                {"error": "Only doctors allowed"},
-                status=403
-            )
-
-        try:
-
-            appointment = Appointment.objects.get(
-                id=appointment_id,
-                doctor=request.user.doctor
-            )
-
-        except Appointment.DoesNotExist:
-
-            return Response(
-                {"error": "Appointment not found"},
-                status=404
-            )
-
-        serializer = TestRequestSerializer(
-            data=request.data
-        )
-
-        if serializer.is_valid():
-
-            serializer.save(
-                appointment=appointment
-            )
-
-            return Response({
-
-                "message": "Test requested successfully",
-
-                "data": serializer.data
-
-            }, status=201)
-
-        return Response(
-            serializer.errors,
-            status=400
-        )
