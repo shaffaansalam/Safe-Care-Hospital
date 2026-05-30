@@ -219,7 +219,6 @@ class RequestMedicalTestAPIView(APIView):
 
         }, status=200)
     
-
 class PatientUploadReportAPIView(APIView):
 
     permission_classes = [permissions.IsAuthenticated]
@@ -254,27 +253,32 @@ class PatientUploadReportAPIView(APIView):
 
         if serializer.is_valid():
 
-            serializer.save(
-
+            report = serializer.save(
                 test_request=test_request,
-
                 patient=request.user.patient,
-
                 doctor=test_request.appointment.doctor
             )
 
+            # ==========================
+            # AUTO COMPLETE TEST REQUEST
+            # ==========================
+
+            test_request.status = "completed"
+
+            test_request.save()
+
             return Response({
-
                 "message": "Report uploaded successfully",
-
                 "data": serializer.data
-
             }, status=201)
 
         return Response(
             serializer.errors,
             status=400
         )
+
+
+          
 
  # =========================================
 # PATIENT TEST REQUESTS

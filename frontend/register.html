@@ -12,252 +12,354 @@
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
       rel="stylesheet"
     />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
+    />
 
     <link rel="stylesheet" href="navbar.css" />
     <link rel="stylesheet" href="footer.css" />
     <link rel="stylesheet" href="auth.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
   </head>
   <body>
-    <header class="navbar fixed-top px-5">
+    <header class="navbar">
       <div class="left-logo">
         SAFE CARE
         <div class="down">Hospital</div>
       </div>
-      <nav>
-        <ul class="nav-links">
-          <li><a href="home.html">Home</a></li>
-          <li><a href="about.html">About</a></li>
-          <li><a href="departments.html">Departments</a></li>
-          <li><a href="contact.html">Contact</a></li>
-          <li><a href="login.html">Login</a></li>
-          <li>
-            <a
-              href="register.html"
-              class="btn btn-primary btn-sm text-white text-sm"
-              >Register</a
-            >
-          </li>
-        </ul>
-      </nav>
+
+      <div class="menu-toggle" id="menuToggle">
+        <i class="fa-solid fa-bars"></i>
+      </div>
+
+      <ul class="nav-links" id="navLinks">
+        <li><a href="home.html">Home</a></li>
+
+        <li><a href="about.html">About</a></li>
+
+        <li><a href="departments.html">Departments</a></li>
+
+        <li><a href="search-doctors.html">Find Doctors</a></li>
+
+        <li><a href="patient-booking.html">Appointment</a></li>
+
+        <li><a href="contact.html">Contact</a></li>
+
+        <li><a href="login.html">Login</a></li>
+
+        <li>
+          <a href="register.html" class="register-btn"> Register </a>
+        </li>
+      </ul>
     </header>
     <div class="navbar-space"></div>
 
-    <div class="auth-wrapper">
-      <div class="auth-box" style="max-width: 600px">
-        <h3>Create Account</h3>
+    <section class="auth-section register-section">
+      <div class="container">
+        <div class="row justify-content-center">
+          <div class="col-xl-8 col-lg-9">
+            <div class="auth-card register-card">
+              <div class="d-flex justify-content-center mb-4">
+                <div class="btn-group w-100" role="group">
+                  <input
+                    type="radio"
+                    class="btn-check"
+                    name="roleToggle"
+                    id="rolePatient"
+                    value="patient"
+                    checked
+                  />
+                  <label class="btn btn-outline-primary w-50" for="rolePatient">
+                    Register as Patient
+                  </label>
 
-        <div class="d-flex justify-content-center mb-4">
-          <div class="btn-group" role="group">
-            <input
-              type="radio"
-              class="btn-check"
-              name="roleToggle"
-              id="rolePatient"
-              value="patient"
-              checked
-            />
-            <label class="btn btn-outline-primary" for="rolePatient"
-              >Register as Patient</label
-            >
+                  <input
+                    type="radio"
+                    class="btn-check"
+                    name="roleToggle"
+                    id="roleDoctor"
+                    value="doctor"
+                  />
+                  <label class="btn btn-outline-primary w-50" for="roleDoctor">
+                    Register as Doctor
+                  </label>
+                </div>
+              </div>
 
-            <input
-              type="radio"
-              class="btn-check"
-              name="roleToggle"
-              id="roleDoctor"
-              value="doctor"
-            />
-            <label class="btn btn-outline-primary" for="roleDoctor"
-              >Register as Doctor</label
-            >
+              <form id="registerForm" novalidate>
+                <div class="row">
+                  <div class="col-md-6">
+                    <input
+                      id="firstName"
+                      class="form-control mb-1"
+                      placeholder="First Name"
+                    />
+                    <div class="text-danger small" id="firstNameError"></div>
+                  </div>
+                  <div class="col-md-6">
+                    <input
+                      id="lastName"
+                      class="form-control mb-1"
+                      placeholder="Last Name"
+                    />
+                    <div class="text-danger small" id="lastNameError"></div>
+                  </div>
+                </div>
+
+                <input
+                  id="email"
+                  class="form-control mb-1"
+                  placeholder="Email"
+                />
+                <div class="text-danger small" id="emailError"></div>
+
+                <input
+                  id="password"
+                  class="form-control mb-1"
+                  type="password"
+                  placeholder="Password"
+                />
+                <div class="text-danger small" id="passwordError"></div>
+
+                <hr />
+
+                <div id="patientFields">
+                  <div class="row">
+                    <div class="col-md-6">
+                      <input
+                        id="phone"
+                        class="form-control"
+                        placeholder="Phone Number"
+                      />
+                    </div>
+
+                    <div class="col-md-6">
+                      <select id="gender" class="form-select">
+                        <option value="">Gender</option>
+
+                        <option value="male">Male</option>
+
+                        <option value="female">Female</option>
+
+                        <option value="female">Others</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div class="row mt-3">
+                    <div class="col-md-6">
+                      <input id="dob" type="date" class="form-control" />
+                    </div>
+
+                    <div class="col-md-6">
+                      <input
+                        id="bloodGroup"
+                        class="form-control"
+                        placeholder="Blood Group"
+                      />
+                    </div>
+                  </div>
+
+                  <div class="row mt-3">
+                    <div class="col-md-6">
+                      <textarea
+                        id="address"
+                        rows="2"
+                        class="form-control"
+                        placeholder="Address"
+                      ></textarea>
+                    </div>
+
+                    <div class="col-md-6">
+                      <textarea
+                        id="medical_history"
+                        rows="2"
+                        class="form-control"
+                        placeholder="Medical History"
+                      ></textarea>
+                    </div>
+                  </div>
+                </div>
+
+                <div id="doctorFields" style="display: none">
+                  <div class="row">
+                    <div class="col-md-6">
+                      <input
+                        id="specialization"
+                        class="form-control"
+                        placeholder="Specialization"
+                      />
+                    </div>
+
+                    <div class="col-md-6">
+                      <input
+                        id="qualification"
+                        class="form-control"
+                        placeholder="Qualification"
+                      />
+                    </div>
+                  </div>
+
+                  <div class="row mt-3">
+                    <div class="col-md-6">
+                      <input
+                        id="experience"
+                        type="number"
+                        class="form-control"
+                        placeholder="Years of Experience"
+                      />
+                    </div>
+
+                    <div class="col-md-6">
+                      <input
+                        id="fee"
+                        type="number"
+                        class="form-control"
+                        placeholder="Consultation Fee"
+                      />
+                    </div>
+                  </div>
+
+                  <div class="row mt-3">
+                    <div class="col-md-6">
+                      <input
+                        id="doctorPhone"
+                        class="form-control"
+                        placeholder="Phone Number"
+                      />
+                    </div>
+
+                    <div class="col-md-6">
+                      <textarea
+                        rows="2"
+                        id="bio"
+                        class="form-control"
+                        placeholder="Short Bio"
+                      ></textarea>
+                    </div>
+                  </div>
+
+                  <div class="row mt-2">
+                    <div class="col-md-6">
+                      <label class="small">Available Start Time</label>
+                      <input
+                        id="availableStart"
+                        type="time"
+                        class="form-control mb-1"
+                      />
+                    </div>
+
+                    <div class="col-md-6">
+                      <label class="small">Available End Time</label>
+                      <input
+                        id="availableEnd"
+                        type="time"
+                        class="form-control mb-1"
+                      />
+                    </div>
+                  </div>
+
+                  <div class="alert alert-warning small mt-2">
+                    <strong>Note:</strong> Your account will require Admin
+                    approval before you can log in.
+                  </div>
+                  <div class="text-danger small" id="doctorError"></div>
+                </div>
+
+                <button type="submit" class="btn btn-success w-100 mt-2">
+                  Register
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div class="container">
+        <div class="row gy-4">
+          <div class="col-lg-4">
+            <h3>SAFE CARE Hospital</h3>
+
+            <p>
+              Advanced healthcare platform providing modern medical services,
+              digital consultations, patient management, and emergency support.
+            </p>
+          </div>
+
+          <div class="col-lg-2">
+            <h5>Quick Links</h5>
+
+            <ul>
+              <li><a href="home.html">Home</a></li>
+              <li><a href="about.html">About</a></li>
+              <li><a href="departments.html">Departments</a></li>
+              <li><a href="contact.html">Contact</a></li>
+            </ul>
+          </div>
+
+          <div class="col-lg-3">
+            <h5>Services</h5>
+
+            <ul>
+              <li>Online Consultation</li>
+              <li>Emergency Care</li>
+              <li>Appointment Booking</li>
+              <li>Digital Reports</li>
+            </ul>
+          </div>
+
+          <div class="col-lg-3">
+            <h5>Contact Info</h5>
+
+            <p>
+              <i class="fa-solid fa-location-dot"></i>
+              Kochi, Kerala
+            </p>
+
+            <p>
+              <i class="fa-solid fa-phone"></i>
+              +91 9876543210
+            </p>
+
+            <p>
+              <i class="fa-solid fa-envelope"></i>
+              support@safecarehospital.com
+            </p>
           </div>
         </div>
 
-        <form id="registerForm" novalidate>
-          <div class="row">
-            <div class="col-md-6">
-              <input
-                id="firstName"
-                class="form-control mb-1"
-                placeholder="First Name"
-              />
-              <div class="text-danger small mb-2" id="firstNameError"></div>
-            </div>
-            <div class="col-md-6">
-              <input
-                id="lastName"
-                class="form-control mb-1"
-                placeholder="Last Name"
-              />
-              <div class="text-danger small mb-2" id="lastNameError"></div>
-            </div>
+        <hr />
+
+        <div class="footer-bottom">
+          <p>© 2026 Safe Care Hospital | All Rights Reserved</p>
+
+          <div class="social-icons">
+            <i class="fab fa-facebook-f"></i>
+
+            <i class="fab fa-instagram"></i>
+
+            <i class="fab fa-linkedin-in"></i>
+
+            <i class="fab fa-twitter"></i>
           </div>
-
-          <input id="email" class="form-control mb-1" placeholder="Email" />
-          <div class="text-danger small mb-2" id="emailError"></div>
-
-          <input
-            id="password"
-            class="form-control mb-1"
-            type="password"
-            placeholder="Password"
-          />
-          <div class="text-danger small mb-2" id="passwordError"></div>
-
-          <hr />
-
-          <div id="patientFields">
-            <!-- <h5 class="text-muted">Patient Details</h5> -->
-            <div class="row">
-              <div class="col-md-6">
-                <input
-                  id="phone"
-                  class="form-control mb-1"
-                  placeholder="Phone Number"
-                />
-              </div>
-              <div class="col-md-6">
-                <select id="gender" class="form-control mb-1">
-                  <option value="">Select Gender</option>
-                  <option value="male">Male</option>
-                  <option value="female">Female</option>
-                  <option value="other">Other</option>
-                </select>
-              </div>
-            </div>
-            <div class="row mt-2">
-              <div class="col-md-6">
-                <label class="small">Date of Birth</label>
-                <input id="dob" type="date" class="form-control mb-1" />
-              </div>
-              <div class="col-md-6">
-                <label class="small">Blood Group</label>
-                <input
-                  id="bloodGroup"
-                  class="form-control mb-1"
-                  placeholder="e.g. O+"
-                />
-              </div>
-            </div>
-            <div class="text-danger small" id="patientError"></div>
-
-            <div class="row mt-2">
-              <div class="col-md-6">
-                <textarea
-                  id="address"
-                  class="form-control mb-1"
-                  placeholder="Address"
-                ></textarea>
-              </div>
-              <div class="col-md-6">
-                <textarea
-                  id="medical_history"
-                  class="form-control mb-1"
-                  placeholder="Medical History"
-                ></textarea>
-              </div>
-            </div>
-            <div class="text-danger small" id="patientError"></div>
-          </div>
-
-          <div id="doctorFields" style="display: none">
-            <!-- <h5 class="text-muted">Doctor Details</h5> -->
-            <input
-              id="specialization"
-              class="form-control mb-1"
-              placeholder="Specialization"
-            />
-            <input
-              id="qualification"
-              class="form-control mb-1"
-              placeholder="Qualification"
-            />
-            <div class="row">
-              <div class="col-md-6">
-                <input
-                  id="experience"
-                  type="number"
-                  class="form-control mb-1"
-                  placeholder="Years of Experience"
-                />
-              </div>
-              <div class="col-md-6">
-                <input
-                  id="fee"
-                  type="number"
-                  class="form-control mb-1"
-                  placeholder="Consultation Fee"
-                />
-              </div>
-            </div>
-
-            <div class="row">
-              <div class="col-md-6">
-                <input
-                  id="doctorPhone"
-                  class="form-control mb-1"
-                  placeholder="Phone Number"
-                />
-              </div>
-
-              <div class="col-md-6">
-                <textarea
-                  id="bio"
-                  class="form-control mb-1"
-                  placeholder="Short Bio"
-                ></textarea>
-              </div>
-            </div>
-
-            <div class="row mt-2">
-              <div class="col-md-6">
-                <label class="small">Available Start Time</label>
-                <input
-                  id="availableStart"
-                  type="time"
-                  class="form-control mb-1"
-                />
-              </div>
-
-              <div class="col-md-6">
-                <label class="small">Available End Time</label>
-                <input
-                  id="availableEnd"
-                  type="time"
-                  class="form-control mb-1"
-                />
-              </div>
-            </div>
-
-            <!-- <div class="row mt-2">
-              <div class="col-md-6">
-            <input type="file" id="profile_image" accept="image/*"/>
-            </div>
-            </div> -->
-
-            <div class="alert alert-warning small mt-2">
-              <strong>Note:</strong> Your account will require Admin approval
-              before you can log in.
-            </div>
-            <div class="text-danger small" id="doctorError"></div>
-          </div>
-
-          <button type="submit" class="btn btn-success w-100 mt-4">
-            <!-- <button type="button" id="registerBtn" class="btn btn-success w-100 mt-4">  -->
-            Register
-          </button>
-        </form>
-      </div>
-    </div>
-
-    <footer class="footer text-center">
-      <p>© 2025 Safe Care Hospital | All Rights Reserved</p>
-      <div>
-        <i class="fab fa-facebook"></i>
-        <i class="fab fa-instagram"></i>
-        <i class="fab fa-linkedin"></i>
+        </div>
       </div>
     </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    <script src="navbar.js"></script>
 
     <script src="register.js"></script>
   </body>

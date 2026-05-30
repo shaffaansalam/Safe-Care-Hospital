@@ -194,27 +194,6 @@ class PatientRegisterAPIView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)    
 
 
-
-# class AdminDashboardAPIView(APIView):
-#     permission_classes = [IsAdminUser]
-
-#     def get(self, request):
-#         # print("TOTAL DOCTORS:", total_doctors.count())
-#         # print("DOCTOR IDS:", list(total_doctors.values_list("id", flat=True)))
-#         total_doctors = DoctorProfile.objects.count()
-#         total_patients = PatientProfile.objects.count()
-#         total_departments = Department.objects.count()
-#         total_appointments = Appointment.objects.count()
-#         total_payments = Payment.objects.count()
-
-#         return Response({
-#             "total_doctors": total_doctors,
-#             "total_patients": total_patients,
-#             "total_departments": total_departments,
-#             "total_appointments": total_appointments,
-#             "total_payments": total_payments
-#         })
-
 class AdminDashboardAPIView(APIView):
     permission_classes = [IsAdminUser]
 
@@ -262,13 +241,6 @@ class AdminDoctorApprovalAPIView(APIView):
             "message": "Doctor approved successfully"
         })          
 
-# class AdminDoctorListAPIView(APIView):
-#     permission_classes = [IsAdminUser]
-
-#     def get(self, request):
-#         doctors = DoctorProfile.objects.all()
-#         serializer = DoctorProfileSerializer(doctors, many=True)
-#         return Response(serializer.data)
 
 class AdminDoctorListAPIView(APIView):
 
@@ -315,13 +287,6 @@ class AdminDoctorDetailAPIView(APIView):
         return Response({"message": "Doctor deleted"}, status=204)  
 
 
-# class AdminPatientListAPIView(APIView):
-#     permission_classes = [IsAdminUser]
-
-#     def get(self, request):
-#         patients = PatientProfile.objects.all()
-#         serializer = PatientProfileSerializer(patients, many=True)
-#         return Response(serializer.data)
     
 class AdminPatientListAPIView(APIView):
 

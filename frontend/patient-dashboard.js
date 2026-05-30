@@ -45,7 +45,7 @@ if (token) {
     return;
   }
 
-  showToast(`Welcome ${storedUser.name}`, "#16a34a");
+  showToast(`Welcome Patient : ${storedUser.name}`, "#16a34a");
 
   document.getElementById("welcomeUser").innerHTML = `
 
@@ -307,6 +307,7 @@ async function uploadReport() {
     alert("Report Uploaded Successfully");
 
     loadReports();
+    
 
   } catch(error) {
 

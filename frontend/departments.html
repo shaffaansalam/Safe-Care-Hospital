@@ -1,60 +1,383 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Departments</title>
+  <head>
+    <meta charset="UTF-8" />
 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<script src="https://cdn.tailwindcss.com"></script>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Safe Care Hospital - Departments</title>
 
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
 
-<link rel="stylesheet" href="navbar.css">
-<link rel="stylesheet" href="footer.css">
-<link rel="stylesheet" href="departments.css">
-</head>
-<body>
+    <!-- Tailwind -->
 
+    <script src="https://cdn.tailwindcss.com"></script>
 
-<header class="navbar fixed-top px-5">
-<div class="left-logo">SAFE CARE<div class="down">Hospital</div></div>
-<nav>
-<ul class="nav-links">
-<li><a href="{% url 'home' %}">Home</a></li>
-<li><a href="{% url 'about' %}">About</a></li>
-<li><a href="{% url 'departments' %}">Departments</a></li>
-<li><a href="{% url 'contact' %}">Contact</a></li>
-<li><a href="{% url 'login' %}">Login</a></li>
-<li><a href="{% url 'authentication:register' %}" class="btn btn-primary btn-sm text-white text-sm">Register</a></li>
-</ul>
-</nav>
-</header>
-<div class="navbar-space"></div>
+    <!-- Font Awesome -->
 
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
+    />
 
-<section class="container my-5">
-<h2 class="text-center mb-4">Our Departments</h2>
-<div class="row">
-{% for dept in departments %}
-<div class="col-md-4 mb-4">
-<div class="department-card">
-<h5>{{ dept.name }}</h5>
-<p>{{ dept.description }}</p>
-</div>
-</div>
-{% endfor %}
-</div>
-</section>
+    <!-- CSS -->
 
-<footer class="footer text-center">
-<p>© 2025 Safe Care Hospital | All Rights Reserved</p>
-<div>
-<i class="fab fa-facebook"></i>
-<i class="fab fa-instagram"></i>
-<i class="fab fa-linkedin"></i>
-</div>
-</footer>
+    <link rel="stylesheet" href="navbar.css" />
 
-</body>
+    <link rel="stylesheet" href="footer.css" />
+
+    <link rel="stylesheet" href="departments.css" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+
+  <body>
+    <!-- ========================= -->
+    <!-- NAVBAR -->
+    <!-- ========================= -->
+
+    <header class="navbar">
+      <div class="left-logo">
+        SAFE CARE
+        <div class="down">Hospital</div>
+      </div>
+
+      <div class="menu-toggle" id="menuToggle">
+        <i class="fa-solid fa-bars"></i>
+      </div>
+
+      <ul class="nav-links" id="navLinks">
+        <li><a href="home.html">Home</a></li>
+
+        <li><a href="about.html">About</a></li>
+
+        <li><a href="departments.html">Departments</a></li>
+
+        <li><a href="search-doctors.html">Find Doctors</a></li>
+
+        <li><a href="patient-booking.html">Appointment</a></li>
+
+        <li><a href="contact.html">Contact</a></li>
+
+        <li><a href="login.html">Login</a></li>
+
+        <li>
+          <a href="register.html" class="register-btn"> Register </a>
+        </li>
+      </ul>
+    </header>
+
+    <div class="navbar-space"></div>
+
+    <!-- ========================= -->
+    <!-- HERO SECTION -->
+    <!-- ========================= -->
+
+    <section class="department-hero">
+      <div class="container">
+        <div class="row justify-content-center">
+          <div class="col-lg-8 col-md-10">
+            <div class="hero-content">
+              <h1>Our Medical Departments</h1>
+
+              <p>
+                Explore specialized healthcare departments with experienced
+                doctors, modern facilities, and advanced treatment services for
+                every patient.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================= -->
+    <!-- DEPARTMENTS SECTION -->
+    <!-- ========================= -->
+
+    <section class="departments-section py-5">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-badge"> Hospital Services </span>
+
+          <h2>Specialized Medical Departments</h2>
+
+          <p>
+            Our hospital offers comprehensive healthcare services across
+            multiple departments with modern medical technologies and expert
+            professionals.
+          </p>
+        </div>
+
+        <div class="row g-4">
+          <!-- CARD 1 -->
+
+          <div class="col-lg-4 col-md-6">
+            <div class="department-card h-100">
+              <div class="department-icon cardiology-bg">
+                <i class="fa-solid fa-heart-pulse"></i>
+              </div>
+
+              <h3>Cardiology</h3>
+
+              <p>
+                Advanced heart care, ECG, cardiac consultation, emergency
+                cardiac treatment, and preventive care.
+              </p>
+
+              <a href="patient-booking.html" class="department-btn"
+                >View Details</a
+              >
+            </div>
+          </div>
+
+          <!-- CARD 2 -->
+
+          <div class="col-lg-4 col-md-6">
+            <div class="department-card h-100">
+              <div class="department-icon neuro-bg">
+                <i class="fa-solid fa-brain"></i>
+              </div>
+
+              <h3>Neurology</h3>
+
+              <p>
+                Diagnosis and treatment for neurological, brain , nervous system
+                diseases.
+              </p>
+
+              <a href="patient-booking.html" class="department-btn"
+                >View Details</a
+              >
+            </div>
+          </div>
+
+          <!-- CARD 3 -->
+
+          <div class="col-lg-4 col-md-6">
+            <div class="department-card h-100">
+              <div class="department-icon ortho-bg">
+                <i class="fa-solid fa-bone"></i>
+              </div>
+
+              <h3>Orthopedics</h3>
+
+              <p>
+                Bone, joint, muscle, and spine treatment with modern orthopedic
+                procedures and rehabilitation.
+              </p>
+
+              <a href="patient-booking.html" class="department-btn"
+                >View Details</a
+              >
+            </div>
+          </div>
+
+          <!-- CARD 4 -->
+
+          <div class="col-lg-4 col-md-6">
+            <div class="department-card h-100">
+              <div class="department-icon pediatric-bg">
+                <i class="fa-solid fa-child-reaching"></i>
+              </div>
+
+              <h3>Pediatrics</h3>
+
+              <p>
+                Specialized healthcare services for infants, children, and
+                adolescents with compassionate care.
+              </p>
+
+              <a href="patient-booking.html" class="department-btn"
+                >View Details</a
+              >
+            </div>
+          </div>
+
+          <!-- CARD 5 -->
+
+          <div class="col-lg-4 col-md-6">
+            <div class="department-card h-100">
+              <div class="department-icon dental-bg">
+                <i class="fa-solid fa-tooth"></i>
+              </div>
+
+              <h3>Dental Care</h3>
+
+              <p>
+                Complete dental solutions including cleaning, cosmetic
+                dentistry, root canal, and oral surgery.
+              </p>
+
+              <a href="patient-booking.html" class="department-btn"
+                >View Details</a
+              >
+            </div>
+          </div>
+
+          <!-- CARD 6 -->
+
+          <div class="col-lg-4 col-md-6">
+            <div class="department-card h-100">
+              <div class="department-icon emergency-bg">
+                <i class="fa-solid fa-truck-medical"></i>
+              </div>
+
+              <h3>Emergency Care</h3>
+
+              <p>
+                24/7 emergency support with rapid response medical teams and
+                critical patient treatment services.
+              </p>
+
+              <a href="patient-booking.html" class="department-btn"
+                >View Details</a
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================= -->
+    <!-- FEATURES -->
+    <!-- ========================= -->
+
+    <section class="features-section py-5">
+      <div class="container">
+        <div class="row g-4">
+          <div class="col-lg-3 col-md-6">
+            <div class="feature-box h-100">
+              <i class="fa-solid fa-user-doctor"></i>
+
+              <h4>Expert Doctors</h4>
+
+              <p>Experienced specialists across all departments.</p>
+            </div>
+          </div>
+
+          <div class="col-lg-3 col-md-6">
+            <div class="feature-box h-100">
+              <i class="fa-solid fa-hospital"></i>
+
+              <h4>Modern Facilities</h4>
+
+              <p>Advanced infrastructure and treatment equipment.</p>
+            </div>
+          </div>
+
+          <div class="col-lg-3 col-md-6">
+            <div class="feature-box h-100">
+              <i class="fa-solid fa-clock"></i>
+
+              <h4>24/7 Support</h4>
+
+              <p>Emergency medical services available anytime.</p>
+            </div>
+          </div>
+
+          <div class="col-lg-3 col-md-6">
+            <div class="feature-box h-100">
+              <i class="fa-solid fa-shield-heart"></i>
+
+              <h4>Quality Care</h4>
+
+              <p>Patient-centered treatment with maximum safety.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================= -->
+    <!-- FOOTER -->
+    <!-- ========================= -->
+
+    <footer class="footer">
+      <div class="container">
+        <div class="row gy-4">
+          <div class="col-lg-4">
+            <h3>SAFE CARE Hospital</h3>
+
+            <p>
+              Advanced healthcare platform providing modern medical services,
+              digital consultations, patient management, and emergency support.
+            </p>
+          </div>
+
+          <div class="col-lg-2">
+            <h5>Quick Links</h5>
+
+            <ul>
+              <li><a href="home.html">Home</a></li>
+              <li><a href="about.html">About</a></li>
+              <li><a href="departments.html">Departments</a></li>
+              <li><a href="contact.html">Contact</a></li>
+            </ul>
+          </div>
+
+          <div class="col-lg-3">
+            <h5>Services</h5>
+
+            <ul>
+              <li>Online Consultation</li>
+              <li>Emergency Care</li>
+              <li>Appointment Booking</li>
+              <li>Digital Reports</li>
+            </ul>
+          </div>
+
+          <div class="col-lg-3">
+            <h5>Contact Info</h5>
+
+            <p>
+              <i class="fa-solid fa-location-dot"></i>
+              Kochi, Kerala
+            </p>
+
+            <p>
+              <i class="fa-solid fa-phone"></i>
+              +91 9876543210
+            </p>
+
+            <p>
+              <i class="fa-solid fa-envelope"></i>
+              support@safecarehospital.com
+            </p>
+          </div>
+        </div>
+
+        <hr />
+
+        <div class="footer-bottom">
+          <p>© 2026 Safe Care Hospital | All Rights Reserved</p>
+
+          <div class="social-icons">
+            <i class="fab fa-facebook-f"></i>
+
+            <i class="fab fa-instagram"></i>
+
+            <i class="fab fa-linkedin-in"></i>
+
+            <i class="fab fa-twitter"></i>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    <script src="navbar.js"></script>
+  </body>
 </html>

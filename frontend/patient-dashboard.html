@@ -1,114 +1,253 @@
 <!doctype html>
-<html>
+<html lang="en">
   <head>
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Safe Care Hospital</title>
+
+    <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Axios -->
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    <!-- Font Awesome -->
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
     />
+
+    <!-- Bootstrap -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+
+    <!-- CSS -->
     <link rel="stylesheet" href="navbar.css" />
     <link rel="stylesheet" href="footer.css" />
+    <link rel="stylesheet" href="patient-dashboard.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
   </head>
 
-  <body class="bg-gray-100">
-    <header class="navbar fixed-top px-5">
+  <body>
+    <!-- NAVBAR -->
+
+    <header class="navbar">
       <div class="left-logo">
         SAFE CARE
         <div class="down">Hospital</div>
       </div>
-      <nav>
-        <ul class="nav-links">
-          <li><a href="home.html">Home</a></li>
-          <li><a href="about.html">About</a></li>
-          <li><a href="departments.html">Departments</a></li>
-          <li><a href="contact.html">Contact</a></li>
-          <li><a href="search-doctors.html">Find Doctors</a></li>
-          <li><a href="patient-booking.html">Appointment Booking</a></li>
 
-          <li id="loginNav">
-            <a href="login.html">Login</a>
-          </li>
+      <!-- Mobile Toggle -->
+      <div class="menu-toggle" id="menuToggle">
+        <i class="fa-solid fa-bars"></i>
+      </div>
 
-          <li id="logoutNav" style="display: none">
-            <a href="#" onclick="logoutUser()">Logout</a>
-          </li>
+      <!-- Navigation -->
+      <ul class="nav-links" id="navLinks">
+        <li>
+          <a href="home.html">Home</a>
+        </li>
 
-          <li id="registerNav">
-            <a
-              href="register.html"
-              class="btn btn-primary btn-sm text-white text-sm"
-            >
-              Register
-            </a>
-          </li>
-        </ul>
-      </nav>
+        <li>
+          <a href="about.html">About</a>
+        </li>
+
+        <li>
+          <a href="departments.html">Departments</a>
+        </li>
+
+        <li>
+          <a href="search-doctors.html">Find Doctors</a>
+        </li>
+
+        <li>
+          <a href="patient-booking.html">Appointment</a>
+        </li>
+
+        <li>
+          <a href="contact.html">Contact</a>
+        </li>
+
+        <!-- LOGIN -->
+        <li id="loginNav">
+          <a href="login.html">Login</a>
+        </li>
+
+        <!-- LOGOUT -->
+        <li id="logoutNav" style="display: none">
+          <a href="#" onclick="logoutUser()"> Logout </a>
+        </li>
+
+        <!-- REGISTER -->
+        <li id="registerNav">
+          <a href="register.html" class="register-btn"> Register </a>
+        </li>
+      </ul>
     </header>
 
     <div class="navbar-space"></div>
 
-    <div class="max-w-4xl mx-auto mt-10 bg-white shadow-lg rounded-xl p-8">
-      <h1 class="text-3xl font-bold mb-4 text-blue-600">Patient Dashboard</h1>
-      <div id="welcomeUser" class="mb-4"></div>
-      <div id="patientData" class="space-y-3"></div>
+    <div class="patient-dashboard-container">
+      <div class="dashboard-card">
+        <h1 class="dashboard-title text-center">Patient Dashboard</h1>
+
+        <div id="welcomeUser" class="text-center mb-4"></div>
+
+        <div id="patientData"></div>
+      </div>
     </div>
 
     <!-- PRESCRIPTIONS -->
 
-    <div class="bg-white p-6 rounded-xl shadow mt-8">
-      <h2 class="text-2xl font-bold mb-5">My Prescriptions</h2>
+    <div class="patient-dashboard-container">
+      <div class="dashboard-section">
+        <h2 class="section-title">My Prescriptions</h2>
 
-      <div id="prescriptionsContainer"></div>
+        <div id="prescriptionsContainer"></div>
+      </div>
     </div>
 
     <!-- TEST REQUESTS -->
 
-    <div class="bg-white p-6 rounded-xl shadow mt-8">
-      <h2 class="text-2xl font-bold mb-5">Requested Tests</h2>
+    <div class="patient-dashboard-container">
+      <div class="dashboard-section">
+        <h2 class="section-title">Requested Tests</h2>
 
-      <div id="testsContainer"></div>
+        <div id="testsContainer"></div>
+      </div>
     </div>
 
     <!-- UPLOAD REPORT -->
 
-    <div class="bg-white p-6 rounded-xl shadow mt-8">
-      <h2 class="text-2xl font-bold mb-5">Upload Medical Report</h2>
+    <div class="patient-dashboard-container">
+      <div class="dashboard-section">
+        <h2 class="text-2xl font-bold mb-5">Upload Medical Report</h2>
 
-      <input type="file" id="reportFile" class="mb-3" />
+        <input type="file" id="reportFile" class="form-control mb-3" />
 
-      <input
-        type="text"
-        id="reportTitle"
-        placeholder="Report Title"
-        class="w-full border p-3 rounded mb-3"
-      />
+        <input
+          type="text"
+          id="reportTitle"
+          placeholder="Report Title"
+          class="w-full border p-3 rounded mb-3"
+        />
 
-      <input
-        type="number"
-        id="testRequestId"
-        placeholder="Test Request ID"
-        class="w-full border p-3 rounded mb-3"
-      />
+        <input
+          type="number"
+          id="testRequestId"
+          placeholder="Test Request ID"
+          class="w-full border p-3 rounded mb-3"
+        />
 
-      <button
-        onclick="uploadReport()"
-        class="bg-blue-600 text-white px-5 py-2 rounded"
-      >
-        Upload Report
-      </button>
+        <button
+          onclick="uploadReport()"
+          class="dashboard-btn bg-blue-600 text-white px-5 py-2 rounded"
+        >
+          Upload Report
+        </button>
+      </div>
     </div>
 
     <!-- REPORTS -->
 
-    <div class="bg-white p-6 rounded-xl shadow mt-8">
-      <h2 class="text-2xl font-bold mb-5">My Reports</h2>
+    <div class="patient-dashboard-container">
+      <div class="dashboard-section">
+        <h2 class="section-title">My Reports</h2>
 
-      <div id="reportsContainer"></div>
+        <div id="reportsContainer"></div>
+      </div>
     </div>
 
     <!--  Only one script -->
-    <!-- <script src="{% static 'patient-dashboard.js' %}"></script> -->
+
     <script src="patient-dashboard.js"></script>
+
+    <footer class="footer">
+      <div class="container">
+        <div class="row gy-4">
+          <div class="col-lg-4">
+            <h3>SAFE CARE Hospital</h3>
+
+            <p>
+              Advanced healthcare platform providing modern medical services,
+              digital consultations, patient management, and emergency support.
+            </p>
+          </div>
+
+          <div class="col-lg-2">
+            <h5>Quick Links</h5>
+
+            <ul>
+              <li><a href="home.html">Home</a></li>
+              <li><a href="about.html">About</a></li>
+              <li><a href="departments.html">Departments</a></li>
+              <li><a href="contact.html">Contact</a></li>
+            </ul>
+          </div>
+
+          <div class="col-lg-3">
+            <h5>Services</h5>
+
+            <ul>
+              <li>Online Consultation</li>
+              <li>Emergency Care</li>
+              <li>Appointment Booking</li>
+              <li>Digital Reports</li>
+            </ul>
+          </div>
+
+          <div class="col-lg-3">
+            <h5>Contact Info</h5>
+
+            <p>
+              <i class="fa-solid fa-location-dot"></i>
+              Kochi, Kerala
+            </p>
+
+            <p>
+              <i class="fa-solid fa-phone"></i>
+              +91 9876543210
+            </p>
+
+            <p>
+              <i class="fa-solid fa-envelope"></i>
+              support@safecarehospital.com
+            </p>
+          </div>
+        </div>
+
+        <hr />
+
+        <div class="footer-bottom">
+          <p>© 2026 Safe Care Hospital | All Rights Reserved</p>
+
+          <div class="social-icons">
+            <i class="fab fa-facebook-f"></i>
+
+            <i class="fab fa-instagram"></i>
+
+            <i class="fab fa-linkedin-in"></i>
+
+            <i class="fab fa-twitter"></i>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    <script src="navbar.js"></script>
   </body>
 </html>

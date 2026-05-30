@@ -194,20 +194,23 @@ class DoctorAppointmentsAPIView(APIView):
         doctor = request.user.doctor
 
         appointments = Appointment.objects.filter(
-            doctor=doctor
+                    doctor=doctor
         ).select_related(
-            'patient',
-            'patient__user'
+              'patient',
+              'patient__user'
         )
 
         data = []
 
         for appointment in appointments:
 
+
             data.append({
 
                 # IMPORTANT
                 "appointment_id": appointment.id,
+
+
 
                 # IMPORTANT
                 "patient_id": appointment.patient.id,
@@ -370,6 +373,7 @@ class DoctorPatientReportsAPIView(APIView):
         )
 
         return Response(serializer.data)
+    
     
 
 class DoctorDashboardTemplateView(TemplateView):

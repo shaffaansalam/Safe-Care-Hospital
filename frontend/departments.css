@@ -1,45 +1,239 @@
-/* Departments Page */
+/* ========================= */
+/* GLOBAL */
+/* ========================= */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: #f4f7fb;
+  font-family: Inter, sans-serif;
+  color: #222;
+}
+
+/* ========================= */
+/* HERO */
+/* ========================= */
+
+.department-hero {
+  position: relative;
+  min-height: 420px;
+  padding: 120px 0;
+  background:
+    linear-gradient(rgba(5, 28, 55, 0.72), rgba(5, 28, 55, 0.72)),
+    url("https://images.unsplash.com/photo-1586773860418-d37222d8fce3?q=80&w=1600&auto=format&fit=crop")
+      center/cover no-repeat;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.hero-content {
+  width: 100%;
+  max-width: 850px;
+  margin: auto;
+}
+
+.hero-content h1 {
+  font-size: clamp(32px, 5vw, 54px);
+
+  font-weight: 800;
+  margin-bottom: 20px;
+  color: white;
+}
+
+.hero-content p {
+  font-size: 18px;
+  line-height: 1.8;
+  color: #f1f1f1;
+}
+
+/* ========================= */
+/* SECTION HEADER */
+/* ========================= */
 
 .departments-section {
-  padding: 80px 0;
-  background-color: #f8f9fa;
+  padding: 90px 8%;
 }
 
-.departments-section h2 {
-  color: #007bff;
-  font-weight: 600;
-  margin-bottom: 40px;
+.section-header {
+  text-align: center;
+  margin-bottom: 60px;
 }
+
+.section-badge {
+  background: #dceeff;
+  color: #0f4c81;
+  padding: 8px 18px;
+  border-radius: 30px;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.section-header h2 {
+  font-size: 42px;
+  margin-top: 20px;
+  margin-bottom: 15px;
+  color: #0f172a;
+  font-weight: 800;
+}
+
+.section-header p {
+  max-width: 720px;
+  margin: auto;
+  color: #666;
+  line-height: 1.8;
+  font-size: 16px;
+}
+
+/* ========================= */
+/* DEPARTMENT GRID */
+/* ========================= */
 
 .department-card {
-  background: #ffffff;
-  border-radius: 10px;
-  padding: 30px 20px;
-  text-align: center;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  transition: all 0.3s ease;
-  height: 100%;
+  background: #fff;
+  border-radius: 22px;
+  padding: 40px 30px;
+  transition: 0.4s;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.07);
+  position: relative;
+  overflow: hidden;
 }
 
 .department-card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  transform: translateY(-10px);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
 }
 
-.department-card i {
-  font-size: 42px;
-  color: #007bff;
+.department-icon {
+  width: 85px;
+  height: 85px;
+  border-radius: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+.department-icon i {
+  font-size: 34px;
+  color: #fff;
+}
+
+.cardiology-bg {
+  background: linear-gradient(135deg, #ff5f6d, #ff9966);
+}
+
+.neuro-bg {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+}
+
+.ortho-bg {
+  background: linear-gradient(135deg, #11998e, #38ef7d);
+}
+
+.pediatric-bg {
+  background: linear-gradient(135deg, #fc6076, #ff9a44);
+}
+
+.dental-bg {
+  background: linear-gradient(135deg, #00c6ff, #0072ff);
+}
+
+.emergency-bg {
+  background: linear-gradient(135deg, #ff512f, #dd2476);
+}
+
+.department-card h3 {
+  font-size: 28px;
+  font-weight: 700;
   margin-bottom: 15px;
-}
-
-.department-card h5 {
-  font-weight: 600;
-  margin-bottom: 10px;
-  color: #333;
+  color: #0f172a;
 }
 
 .department-card p {
-  font-size: 0.95rem;
   color: #666;
-  line-height: 1.6;
+  line-height: 1.8;
+  margin-bottom: 25px;
+}
+
+.department-btn {
+  display: inline-block;
+  text-decoration: none;
+  border: none;
+  background: #0f4c81;
+  color: white;
+  padding: 12px 24px;
+  border-radius: 10px;
+  font-weight: 600;
+  transition: 0.3s;
+}
+
+.department-btn:hover {
+  background: #08365d;
+}
+
+/* ========================= */
+/* FEATURES */
+/* ========================= */
+
+.features-section {
+  background: #ffffff;
+}
+
+.feature-box {
+  text-align: center;
+  padding: 35px 25px;
+  border-radius: 20px;
+  background: #f8fbff;
+  transition: 0.3s;
+}
+
+.feature-box:hover {
+  transform: translateY(-8px);
+}
+
+.feature-box i {
+  font-size: 40px;
+  color: #0f4c81;
+  margin-bottom: 18px;
+}
+
+.feature-box h4 {
+  font-size: 22px;
+  margin-bottom: 10px;
+  color: #111827;
+}
+
+.feature-box p {
+  color: #666;
+  line-height: 1.7;
+}
+
+/* ========================= */
+/* RESPONSIVE */
+/* ========================= */
+
+@media (max-width: 768px) {
+  .hero-content h1 {
+    font-size: 32px;
+  }
+
+  .hero-content p {
+    font-size: 15px;
+  }
+
+  .section-header h2 {
+    font-size: 30px;
+  }
+}
+
+html,
+body {
+  overflow-x: hidden;
 }

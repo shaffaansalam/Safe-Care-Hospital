@@ -206,6 +206,12 @@ class Prescription(models.Model):
 
 class TestRequest(models.Model):
 
+    STATUS_CHOICES = [
+        ("pending", "Pending"),
+        ("uploaded", "Uploaded"),
+        ("completed", "Completed"),
+    ]
+
     appointment = models.ForeignKey(
         Appointment,
         on_delete=models.CASCADE
@@ -217,15 +223,13 @@ class TestRequest(models.Model):
 
     status = models.CharField(
         max_length=50,
+        choices=STATUS_CHOICES,
         default="pending"
     )
 
     requested_at = models.DateTimeField(
         auto_now_add=True
     )
-
-    def __str__(self):
-        return self.test_name
     
     
 class MedicalReport(models.Model):

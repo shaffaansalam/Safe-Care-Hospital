@@ -1,189 +1,761 @@
-<!DOCTYPE html>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Home | Safe Care Hospital</title>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
+    <title>Home | Safe Care Hospital</title>
 
-<script src="https://cdn.tailwindcss.com"></script>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
 
+    <!-- Bootstrap -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
 
-<link rel="stylesheet" href="navbar.css">
-<link rel="stylesheet" href="footer.css">
-<link rel="stylesheet" href="home.css">
-</head>
-<body>
+    <!-- Font Awesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
+    />
 
+    <!-- CSS -->
+    <link rel="stylesheet" href="navbar.css" />
+    <link rel="stylesheet" href="footer.css" />
+    <link rel="stylesheet" href="home.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
 
-#NAVBAR
-<header class="navbar fixed-top px-5">
-<div class="left-logo">SAFE CARE<div class="down">Hospital</div></div>
-<nav>
-<ul class="nav-links">
-<li><a href="home.html">Home</a></li>
-<li><a href="about.html">About</a></li>
-<li><a href="departments.html">Departments</a></li>
-<li><a href="contact.html">Contact</a></li>
-<li><a href="patient-booking.html">Appointment Booking</a></li>
-<li><a href="search-doctors.html">Find Doctors</a></li>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
-<li id="loginNav">
-  <a href="login.html">Login</a>
-</li>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+  </head>
 
-<li id="logoutNav" style="display:none;">
-  <a href="#" onclick="logoutUser()">Logout</a>
-</li>
+  <body>
+    <!-- =========================================
+RESPONSIVE NAVBAR
+========================================= -->
+    <header class="navbar">
+      <div class="left-logo">
+        SAFE CARE
+        <div class="down">Hospital</div>
+      </div>
 
-<li>
-  <a href="{% url 'authentication:register' %}" 
-     class="btn btn-primary btn-sm text-white text-sm">
-     Register
-  </a>
-</li>
-</ul>
+      <div class="menu-toggle" id="menuToggle">
+        <i class="fa-solid fa-bars"></i>
+      </div>
 
-</nav>
-</header>
-<div class="navbar-space"></div>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="home.html">Home</a></li>
 
+        <li><a href="about.html">About</a></li>
 
-<!-- HERO -->
-<section class="banner d-flex align-items-center min-vh-100">
-<div class="banner-overlay w-100">
-<div class="container text-center">
-<div class="sub mx-auto">
-<p class="lead">We believe in providing you with the best</p>
-<h1 class="display-4 fw-bold">Caring For Life</h1>
-</div>
-</div>
-</div>
-</section>
+        <li><a href="departments.html">Departments</a></li>
 
+        <li><a href="search-doctors.html">Find Doctors</a></li>
 
-<!-- FEATURES -->
-<section class="container my-5">
-<div class="row text-center">
-<div class="col-md-4">
-<i class="fa-solid fa-user-doctor fa-3x text-primary"></i>
-<h4 class="mt-3">Expert Doctors</h4>
-<p>Certified and experienced specialists.</p>
-</div>
-<div class="col-md-4">
-<i class="fa-solid fa-video fa-3x text-primary"></i>
-<h4 class="mt-3">Online Consultation</h4>
-<p>Consult anytime from anywhere.</p>
-</div>
-<div class="col-md-4">
-<i class="fa-solid fa-heart-pulse fa-3x text-primary"></i>
-<h4 class="mt-3">Patient Care</h4>
-<p>We treat patients with compassion.</p>
-</div>
-</div>
-</section>
+        <li><a href="patient-booking.html">Appointment</a></li>
 
+        <li><a href="contact.html">Contact</a></li>
 
-<!-- FOOTER -->
-<footer class="footer text-center">
-<p>© 2025 Safe Care Hospital | All Rights Reserved</p>
-<div>
-<i class="fab fa-facebook"></i>
-<i class="fab fa-instagram"></i>
-<i class="fab fa-linkedin"></i>
-</div>
-</footer>
+        <li><a href="login.html">Login</a></li>
 
+        <li>
+          <a href="register.html" class="register-btn"> Register </a>
+        </li>
+      </ul>
+    </header>
 
-<script>
-// document.addEventListener("DOMContentLoaded", () => {
+    <div class="navbar-space"></div>
 
-//   const accessToken = localStorage.getItem("access_token");
+    <!-- =========================================
+HERO SECTION
+========================================= -->
 
-//   const loginNav = document.getElementById("loginNav");
-//   const logoutNav = document.getElementById("logoutNav");
+    <section class="hero-section">
+      <div class="container">
+        <div class="row align-items-center gy-5 hero-row">
+          <!-- LEFT CONTENT -->
 
-//   if (accessToken) {
-//     loginNav.style.display = "none";
-//     logoutNav.style.display = "block";
-//   } else {
-//     loginNav.style.display = "block";
-//     logoutNav.style.display = "none";
-//   }
+          <div class="col-lg-6 col-md-12">
+            <div class="hero-content">
+              <span class="hero-badge">
+                Trusted Multi Speciality Hospital
+              </span>
 
-// });
+              <h1>
+                Advanced Healthcare <br />
+                For Modern Families
+              </h1>
 
-// function logoutUser() {
+              <p>
+                Safe Care Hospital provides expert doctors, digital
+                consultations, emergency care, online appointments, medical
+                reports, and patient-focused healthcare services.
+              </p>
 
-//   localStorage.removeItem("access_token");
-//   localStorage.removeItem("refresh_token");
-//   localStorage.removeItem("user");
-//   localStorage.removeItem("isLoggedIn");
+              <div class="hero-buttons">
+                <a href="patient-booking.html" class="primary-btn">
+                  Book an Appointment
+                </a>
 
-//   alert("Logged out successfully");
+                <a href="search-doctors.html" class="secondary-btn">
+                  Find Doctors
+                </a>
+              </div>
+            </div>
+          </div>
 
-//   window.location.href = "http://127.0.0.1:8001/auth/login/";
-// }
-</script>
+          <!-- RIGHT IMAGE -->
 
-<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+          <div class="col-lg-6 col-md-12">
+            <div class="hero-image">
+              <img
+                src="https://images.unsplash.com/photo-1778230123972-07eafe417fc4?q=80&w=778&auto=format&fit=crop"
+                alt="Professional Doctors Team"
+              />
+            </div>
+          </div>
+        </div>
 
-<script>
-document.addEventListener("DOMContentLoaded", () => {
+        <!-- HERO STATS -->
 
-  console.log("Navbar script loaded ✅");
+        <div class="hero-stats-wrapper">
+          <div class="row g-4 justify-content-center">
+            <div class="col-lg-4 col-md-4 col-12">
+              <div class="hero-stat-card">
+                <h3>25+</h3>
 
-  const token = localStorage.getItem("access_token");
+                <p>Medical Departments</p>
+              </div>
+            </div>
 
-  const loginNav = document.getElementById("loginNav");
-  const logoutNav = document.getElementById("logoutNav");
+            <div class="col-lg-4 col-md-4 col-12">
+              <div class="hero-stat-card">
+                <h3>150+</h3>
 
-  if (token && token !== "undefined" && token !== "null") {
-    loginNav.style.display = "none";
-    logoutNav.style.display = "block";
-  } else {
-    loginNav.style.display = "block";
-    logoutNav.style.display = "none";
-  }
+                <p>Expert Doctors</p>
+              </div>
+            </div>
 
-});
+            <div class="col-lg-4 col-md-4 col-12">
+              <div class="hero-stat-card">
+                <h3>24/7</h3>
 
-async function logoutUser() {
+                <p>Emergency Support</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
 
-  console.log("Logout clicked 🔥");
+    <!-- =========================================
+QUICK SERVICES
+========================================= -->
 
-  const refreshToken = localStorage.getItem("refresh_token");
-  const accessToken = localStorage.getItem("access_token");
+    <section class="quick-services">
+      <div class="container">
+        <div class="row g-4">
+          <div class="col-lg-3 col-md-6">
+            <div class="service-card">
+              <div class="service-image">
+                <img
+                  src="https://images.unsplash.com/photo-1584982751601-97dcc096659c?q=80&w=800&auto=format&fit=crop"
+                  alt="Hospital Appointment Booking"
+                />
+              </div>
 
-  try {
-    if (refreshToken) {
-      await axios.post(
-        "http://127.0.0.1:8001/auth/logout/",
-        { refresh: refreshToken },
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`
-          }
-        }
-      );
-    }
-  } catch (error) {
-    console.log("Logout API error (ignored):", error);
-  }
+              <div class="service-icon">
+                <i class="fa-solid fa-calendar-check"></i>
+              </div>
 
-  // 🔥 Always clear storage
-  localStorage.clear();
+              <h4>Easy Appointments</h4>
 
-  alert("Logged out successfully ✅");
+              <p>
+                Book doctor consultations online anytime with quick scheduling
+                support.
+              </p>
+            </div>
+          </div>
 
-  // 🔄 Redirect to HOME PAGE
-  window.location.href = "/";
+          <div class="col-lg-3 col-md-6">
+            <div class="service-card">
+              <div class="service-image">
+                <img
+                  src="https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?q=80&w=800&auto=format&fit=crop"
+                  alt="Professional Doctors Team"
+                />
+              </div>
 
-}
-</script>
+              <div class="service-icon">
+                <i class="fa-solid fa-user-doctor"></i>
+              </div>
 
+              <h4>Expert Doctors</h4>
 
+              <p>
+                Experienced specialists across multiple medical departments and
+                treatments.
+              </p>
+            </div>
+          </div>
 
+          <div class="col-lg-3 col-md-6">
+            <div class="service-card">
+              <div class="service-image">
+                <img
+                  src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?q=80&w=800&auto=format&fit=crop"
+                  alt="Digital Medical Reports"
+                />
+              </div>
 
-</body>
+              <div class="service-icon">
+                <i class="fa-solid fa-file-waveform"></i>
+              </div>
+
+              <h4>Digital Reports</h4>
+
+              <p>
+                Access prescriptions, reports, and medical history securely
+                online.
+              </p>
+            </div>
+          </div>
+
+          <div class="col-lg-3 col-md-6">
+            <div class="service-card">
+              <div class="service-image">
+                <img
+                  src="https://images.unsplash.com/photo-1587745416684-47953f16f02f?q=80&w=800&auto=format&fit=crop"
+                  alt="Emergency Healthcare Service"
+                />
+              </div>
+
+              <div class="service-icon">
+                <i class="fa-solid fa-truck-medical"></i>
+              </div>
+
+              <h4>Emergency Care</h4>
+
+              <p>
+                24/7 emergency response with dedicated medical assistance and
+                support.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================
+ABOUT SECTION
+========================================= -->
+
+    <section class="about-home">
+      <div class="container">
+        <div class="row align-items-center">
+          <div class="col-lg-6">
+            <div class="about-image">
+              <img
+                src="https://images.unsplash.com/photo-1587351021759-3e566b6af7cc?q=80&w=1200&auto=format&fit=crop"
+                alt="Hospital"
+              />
+            </div>
+          </div>
+
+          <div class="col-lg-6">
+            <div class="about-content">
+              <span class="section-tag"> About Safe Care </span>
+
+              <h2>Delivering Quality Healthcare Solutions</h2>
+
+              <p>
+                Safe Care Hospital combines advanced medical technology with
+                compassionate patient care. Our hospital management system
+                enables seamless appointments, doctor consultations, medical
+                report uploads, digital prescriptions, and patient history
+                tracking.
+              </p>
+
+              <div class="about-features">
+                <div class="feature-item">
+                  <i class="fa-solid fa-check"></i>
+                  Advanced Diagnostic Services
+                </div>
+
+                <div class="feature-item">
+                  <i class="fa-solid fa-check"></i>
+                  Online Doctor Consultations
+                </div>
+
+                <div class="feature-item">
+                  <i class="fa-solid fa-check"></i>
+                  Digital Prescription System
+                </div>
+
+                <div class="feature-item">
+                  <i class="fa-solid fa-check"></i>
+                  Modern Patient Management
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================
+WHY CHOOSE US
+========================================= -->
+
+    <section class="why-choose-us">
+      <div class="container">
+        <div class="section-header text-center">
+          <span class="section-tag"> Why Choose Us </span>
+
+          <h2>Healthcare Built Around Patients</h2>
+
+          <p>
+            We focus on patient comfort, digital healthcare innovation, and
+            professional medical support.
+          </p>
+        </div>
+
+        <div class="row g-4">
+          <div class="col-lg-4">
+            <div class="choose-card">
+              <div class="choose-image">
+                <img
+                  src="https://images.unsplash.com/photo-1666214280557-f1b5022eb634?q=80&w=1000&auto=format&fit=crop"
+                  alt="Patient Centered Care"
+                />
+              </div>
+
+              <div class="choose-icon">
+                <i class="fa-solid fa-heart-circle-check"></i>
+              </div>
+
+              <h4>Patient-Centered Care</h4>
+
+              <p>
+                Compassionate treatment plans personalized for every patient.
+              </p>
+            </div>
+          </div>
+
+          <div class="col-lg-4">
+            <div class="choose-card">
+              <div class="choose-image">
+                <img
+                  src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?q=80&w=1000&auto=format&fit=crop"
+                  alt="Digital Healthcare"
+                />
+              </div>
+
+              <div class="choose-icon">
+                <i class="fa-solid fa-laptop-medical"></i>
+              </div>
+
+              <h4>Digital Healthcare</h4>
+
+              <p>
+                Modern online healthcare platform with secure digital services.
+              </p>
+            </div>
+          </div>
+
+          <div class="col-lg-4">
+            <div class="choose-card">
+              <div class="choose-image">
+                <img
+                  src="https://plus.unsplash.com/premium_photo-1681843126728-04eab730febe?q=80&w=870&auto=format&fit=crop"
+                  alt="Experienced Specialists"
+                />
+              </div>
+
+              <div class="choose-icon">
+                <i class="fa-solid fa-stethoscope"></i>
+              </div>
+
+              <h4>Experienced Specialists</h4>
+
+              <p>
+                Highly skilled doctors delivering advanced medical treatment.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================
+DEPARTMENTS
+========================================= -->
+
+    <section class="departments-home">
+      <div class="container">
+        <div class="section-header text-center">
+          <span class="section-tag"> Medical Departments </span>
+
+          <h2>Specialized Healthcare Services</h2>
+        </div>
+
+        <div class="row g-4">
+          <div class="col-lg-3 col-md-6">
+            <div class="department-card">
+              <div class="department-image">
+                <img
+                  src="https://images.unsplash.com/photo-1628348068343-c6a848d2b6dd?q=80&w=1000&auto=format&fit=crop"
+                  alt="Cardiology Department"
+                />
+              </div>
+
+              <div class="department-icon">
+                <i class="fa-solid fa-heart-pulse"></i>
+              </div>
+
+              <h5>Cardiology</h5>
+
+              <p>Heart care and cardiac treatments.</p>
+            </div>
+          </div>
+
+          <div class="col-lg-3 col-md-6">
+            <div class="department-card">
+              <div class="department-image">
+                <img
+                  src="https://images.unsplash.com/photo-1559757175-0eb30cd8c063?q=80&w=1000&auto=format&fit=crop"
+                  alt="Neurology Department"
+                />
+              </div>
+
+              <div class="department-icon">
+                <i class="fa-solid fa-brain"></i>
+              </div>
+
+              <h5>Neurology</h5>
+
+              <p>Brain and nervous system treatments.</p>
+            </div>
+          </div>
+
+          <div class="col-lg-3 col-md-6">
+            <div class="department-card">
+              <div class="department-image">
+                <img
+                  src="https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?q=80&w=1000&auto=format&fit=crop"
+                  alt="Pediatrics Department"
+                />
+              </div>
+
+              <div class="department-icon">
+                <i class="fa-solid fa-baby"></i>
+              </div>
+
+              <h5>Pediatrics</h5>
+
+              <p>Healthcare services for children.</p>
+            </div>
+          </div>
+
+          <div class="col-lg-3 col-md-6">
+            <div class="department-card">
+              <div class="department-image">
+                <img
+                  src="https://images.unsplash.com/photo-1579684385127-1ef15d508118?q=80&w=1000&auto=format&fit=crop"
+                  alt="Orthopedics Department"
+                />
+              </div>
+
+              <div class="department-icon">
+                <i class="fa-solid fa-bone"></i>
+              </div>
+
+              <h5>Orthopedics</h5>
+
+              <p>Bone, joint, and muscle treatments.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================
+SUCCESS STORIES
+========================================= -->
+
+    <section class="success-section">
+      <div class="container">
+        <div class="section-header text-center">
+          <span class="section-tag"> Our Achievements </span>
+
+          <h2>Trusted By Thousands Of Patients</h2>
+        </div>
+
+        <div class="row text-center g-4">
+          <div class="col-lg-3 col-md-6">
+            <div class="success-card">
+              <h3>10K+</h3>
+
+              <p>Happy Patients</p>
+            </div>
+          </div>
+
+          <div class="col-lg-3 col-md-6">
+            <div class="success-card">
+              <h3>5000+</h3>
+
+              <p>Appointments Completed</p>
+            </div>
+          </div>
+
+          <div class="col-lg-3 col-md-6">
+            <div class="success-card">
+              <h3>150+</h3>
+
+              <p>Doctors Available</p>
+            </div>
+          </div>
+
+          <div class="col-lg-3 col-md-6">
+            <div class="success-card">
+              <h3>98%</h3>
+
+              <p>Patient Satisfaction</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================
+TESTIMONIALS
+========================================= -->
+
+    <section class="testimonial-section">
+      <div class="container">
+        <div class="section-header text-center">
+          <span class="section-tag"> Testimonials </span>
+
+          <h2>What Our Patients Say</h2>
+        </div>
+
+        <div class="row g-4">
+          <!-- REVIEW 1 -->
+
+          <div class="col-lg-4 col-md-6">
+            <div class="testimonial-card">
+              <div class="review-top">
+                <div class="review-profile">
+                  <img
+                    src="https://randomuser.me/api/portraits/men/32.jpg"
+                    alt="Rahul Menon"
+                  />
+
+                  <div>
+                    <h5>Rahul Menon</h5>
+
+                    <span>Kochi, Kerala</span>
+                  </div>
+                </div>
+
+                <div class="google-icon">
+                  <i class="fa-brands fa-google"></i>
+                </div>
+              </div>
+
+              <div class="review-stars">
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+              </div>
+
+              <p>
+                Excellent consultation experience and quick appointment booking
+                process. Doctors were very professional and caring.
+              </p>
+            </div>
+          </div>
+
+          <!-- REVIEW 2 -->
+
+          <div class="col-lg-4 col-md-6">
+            <div class="testimonial-card">
+              <div class="review-top">
+                <div class="review-profile">
+                  <img
+                    src="https://randomuser.me/api/portraits/women/44.jpg"
+                    alt="Amina Fathima"
+                  />
+
+                  <div>
+                    <h5>Amina Fathima</h5>
+
+                    <span>Calicut, Kerala</span>
+                  </div>
+                </div>
+
+                <div class="google-icon">
+                  <i class="fa-brands fa-google"></i>
+                </div>
+              </div>
+
+              <div class="review-stars">
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+              </div>
+
+              <p>
+                Very modern hospital services with supportive staff. Digital
+                reports and appointment booking were extremely easy.
+              </p>
+            </div>
+          </div>
+
+          <!-- REVIEW 3 -->
+
+          <div class="col-lg-4 col-md-6">
+            <div class="testimonial-card">
+              <div class="review-top">
+                <div class="review-profile">
+                  <img
+                    src="https://randomuser.me/api/portraits/men/75.jpg"
+                    alt="Arjun Nair"
+                  />
+
+                  <div>
+                    <h5>Arjun Nair</h5>
+
+                    <span>Trivandrum, Kerala</span>
+                  </div>
+                </div>
+
+                <div class="google-icon">
+                  <i class="fa-brands fa-google"></i>
+                </div>
+              </div>
+
+              <div class="review-stars">
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star-half-stroke"></i>
+              </div>
+
+              <p>
+                Doctors explained every treatment clearly. Emergency support and
+                patient care were excellent throughout.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================
+CTA SECTION
+========================================= -->
+
+    <section class="cta-section">
+      <div class="container text-center">
+        <h2>Your Health Is Our Top Priority</h2>
+
+        <p>Book appointments and consult experienced doctors today.</p>
+
+        <a href="patient-booking.html" class="cta-btn"> Get Started </a>
+      </div>
+    </section>
+
+    <!-- =========================================
+FOOTER
+========================================= -->
+
+    <footer class="footer">
+      <div class="container">
+        <div class="row gy-4">
+          <div class="col-lg-4">
+            <h3>SAFE CARE Hospital</h3>
+
+            <p>
+              Advanced healthcare platform providing modern medical services,
+              digital consultations, patient management, and emergency support.
+            </p>
+          </div>
+
+          <div class="col-lg-2">
+            <h5>Quick Links</h5>
+
+            <ul>
+              <li><a href="home.html">Home</a></li>
+              <li><a href="about.html">About</a></li>
+              <li><a href="departments.html">Departments</a></li>
+              <li><a href="contact.html">Contact</a></li>
+            </ul>
+          </div>
+
+          <div class="col-lg-3">
+            <h5>Services</h5>
+
+            <ul>
+              <li>Online Consultation</li>
+              <li>Emergency Care</li>
+              <li>Appointment Booking</li>
+              <li>Digital Reports</li>
+            </ul>
+          </div>
+
+          <div class="col-lg-3">
+            <h5>Contact Info</h5>
+
+            <p>
+              <i class="fa-solid fa-location-dot"></i>
+              Kochi, Kerala
+            </p>
+
+            <p>
+              <i class="fa-solid fa-phone"></i>
+              +91 9876543210
+            </p>
+
+            <p>
+              <i class="fa-solid fa-envelope"></i>
+              support@safecarehospital.com
+            </p>
+          </div>
+        </div>
+
+        <hr />
+
+        <div class="footer-bottom">
+          <p>© 2026 Safe Care Hospital | All Rights Reserved</p>
+
+          <div class="social-icons">
+            <i class="fab fa-facebook-f"></i>
+
+            <i class="fab fa-instagram"></i>
+
+            <i class="fab fa-linkedin-in"></i>
+
+            <i class="fab fa-twitter"></i>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    <script src="navbar.js"></script>
+  </body>
 </html>

@@ -1,604 +1,584 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-<head>
-
+  <head>
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
 
-    <link rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
+    />
 
-    <link rel="stylesheet" href="navbar.css">
-    <link rel="stylesheet" href="footer.css">
-    <link rel="stylesheet" href="home.css">
+    <link rel="stylesheet" href="navbar.css" />
+    <link rel="stylesheet" href="footer.css" />
+    <link rel="stylesheet" href="patient-booking.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
 
-</head>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
-<body class="bg-gray-100">
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+  </head>
 
-<!-- ========================================= -->
-<!-- NAVBAR -->
-<!-- ========================================= -->
+  <body>
+    <!-- ========================================= -->
+    <!-- NAVBAR -->
+    <!-- ========================================= -->
 
-<header class="navbar fixed-top px-5">
-
-    <div class="left-logo">
+    <header class="navbar">
+      <div class="left-logo">
         SAFE CARE
         <div class="down">Hospital</div>
-    </div>
+      </div>
 
-    <nav>
+      <div class="menu-toggle" id="menuToggle">
+        <i class="fa-solid fa-bars"></i>
+      </div>
 
-        <ul class="nav-links">
+      <ul class="nav-links" id="navLinks">
+        <li><a href="home.html">Home</a></li>
 
-            <li><a href="home.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
 
-            <li><a href="about.html">About</a></li>
+        <li><a href="departments.html">Departments</a></li>
 
-            <li><a href="{% url 'departments' %}">Departments</a></li>
+        <li><a href="search-doctors.html">Find Doctors</a></li>
 
-            <li><a href="{% url 'contact' %}">Contact</a></li>
+        <li><a href="patient-booking.html">Appointment</a></li>
 
-            <li><a href="patient-booking.html">Booking</a></li>
+        <li><a href="contact.html">Contact</a></li>
 
-            <li id="loginNav">
-                <a href="{% url 'login-page' %}">
-                    Login
-                </a>
-            </li>
+        <li><a href="login.html">Login</a></li>
 
-            <li id="logoutNav" style="display:none;">
-                <a href="#" onclick="logoutUser()">
-                    Logout
-                </a>
-            </li>
+        <li>
+          <a href="register.html" class="register-btn"> Register </a>
+        </li>
+      </ul>
+    </header>
 
-            <li>
-                <a href="{% url 'authentication:register' %}"
-                class="btn btn-primary btn-sm text-white text-sm">
-                    Register
-                </a>
-            </li>
+    <div class="navbar-space"></div>
 
-        </ul>
+    <!-- ========================================= -->
+    <!-- BOOKING CARD -->
+    <!-- ========================================= -->
 
-    </nav>
+    <section class="booking-section d-flex align-items-center">
+      <div class="container">
+        <div class="row g-4 align-items-center justify-content-center">
+          <!-- LEFT SIDE -->
 
-</header>
+          <div class="col-lg-4">
+            <div class="booking-left">
+              <span class="booking-badge"> Safe Care Hospital </span>
 
-<div class="navbar-space"></div>
+              <h1>Book Doctor Appointment</h1>
 
+              <p>
+                Schedule consultations with experienced specialists through our
+                secure healthcare platform.
+              </p>
 
-<!-- ========================================= -->
-<!-- BOOKING CARD -->
-<!-- ========================================= -->
+              <div class="booking-features">
+                <div class="booking-feature">
+                  <i class="fa-solid fa-user-doctor"></i>
 
-<div class="max-w-xl mx-auto mt-20 bg-white p-6 rounded-xl shadow-lg">
+                  <span> Expert Specialists </span>
+                </div>
 
-    <h2 class="text-3xl font-bold mb-6">
-        Book Appointment
-    </h2>
+                <div class="booking-feature">
+                  <i class="fa-solid fa-calendar-check"></i>
 
-    <form id="bookingForm" class="space-y-4">
+                  <span> Instant Booking </span>
+                </div>
 
-        <!-- DEPARTMENT -->
+                <div class="booking-feature">
+                  <i class="fa-solid fa-shield-heart"></i>
 
-        <select id="department"
-            class="w-full p-3 border rounded-lg">
+                  <span> Secure Consultation </span>
+                </div>
+              </div>
+            </div>
+          </div>
 
-            <option value="">
-                Select Department
-            </option>
+          <!-- RIGHT SIDE FORM -->
 
-        </select>
+          <div class="col-lg-7">
+            <div class="booking-card">
+              <div class="booking-header">
+                <h2>Appointment Form</h2>
+              </div>
 
+              <form id="bookingForm">
+                <div class="row g-3">
+                  <!-- Department -->
 
-        <!-- DOCTOR -->
+                  <div class="col-md-6">
+                    <label class="form-label"> Department </label>
 
-        <select id="doctor"
-            class="w-full p-3 border rounded-lg">
+                    <select id="department" class="form-select custom-input">
+                      <option value="">Select Department</option>
+                    </select>
+                  </div>
 
-            <option value="">
-                Select Doctor
-            </option>
+                  <!-- Doctor -->
 
-        </select>
+                  <div class="col-md-6">
+                    <label class="form-label"> Doctor </label>
 
+                    <select id="doctor" class="form-select custom-input">
+                      <option value="">Select Doctor</option>
+                    </select>
+                  </div>
 
-        <!-- DATE -->
+                  <!-- Date -->
 
-        <input
-            type="date"
-            id="date"
-            class="w-full p-3 border rounded-lg"
-        >
+                  <div class="col-md-6">
+                    <label class="form-label"> Appointment Date </label>
 
+                    <input
+                      type="date"
+                      id="date"
+                      class="form-control custom-input"
+                    />
+                  </div>
 
-        <!-- TIME SLOT -->
+                  <!-- Time -->
 
-        <select id="time"
-            class="w-full p-3 border rounded-lg">
+                  <div class="col-md-6">
+                    <label class="form-label"> Time Slot </label>
 
-            <option value="">
-                Select Time Slot
-            </option>
+                    <select id="time" class="form-select custom-input">
+                      <option value="">Select Time Slot</option>
+                    </select>
+                  </div>
 
-        </select>
+                  <!-- Reason -->
 
+                  <div class="col-12">
+                    <label class="form-label"> Consultation Reason </label>
 
-        <!-- REASON -->
+                    <textarea
+                      id="reason"
+                      rows="3"
+                      placeholder="Describe your symptoms"
+                      class="form-control custom-input"
+                    ></textarea>
+                  </div>
 
-        <textarea
-            id="reason"
-            placeholder="Reason for consultation"
-            class="w-full p-3 border rounded-lg"
-        ></textarea>
+                  <!-- Button -->
 
+                  <div class="col-12">
+                    <button type="submit" class="booking-btn">
+                      <i class="fa-solid fa-calendar-check"></i>
 
-        <!-- BUTTON -->
+                      Confirm Appointment
+                    </button>
+                  </div>
+                </div>
+              </form>
 
-        <button
-            type="submit"
-            class="bg-blue-600 text-white w-full py-3 rounded-lg hover:bg-blue-700">
+              <p id="message" class="booking-message"></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
 
-            Book Appointment
+    <!-- TOAST -->
 
-        </button>
+    <div id="toast" class="custom-toast"></div>
 
-    </form>
+    <!-- ========================================= -->
+    <!-- SCRIPT -->
+    <!-- ========================================= -->
 
+    <script>
+      // ======================================
+      // TOKEN
+      // ======================================
 
-    <!-- NORMAL MESSAGE -->
+      const token = localStorage.getItem("access_token");
 
-    <p id="message"
-       class="mt-4 text-green-600 font-semibold">
-    </p>
+      console.log("TOKEN:", token);
 
-</div>
+      document.getElementById("date").min = new Date()
+        .toISOString()
+        .split("T")[0];
 
+      // ======================================
+      // TOAST FUNCTION
+      // ======================================
 
+      function showToast(message, type = "success") {
+        const toast = document.getElementById("toast");
 
-<!-- ========================================= -->
-<!-- TOAST POPUP -->
-<!-- ========================================= -->
+        toast.innerText = message;
 
-<div id="toast"
+        toast.style.display = "block";
 
-     class="fixed top-5 right-5 hidden px-6 py-4 rounded-lg shadow-lg text-white font-semibold z-50">
+        if (type === "success") {
+          toast.style.background = "#16a34a";
+        } else {
+          toast.style.background = "#dc2626";
+        }
 
-</div>
+        setTimeout(() => {
+          toast.style.display = "none";
+        }, 3000);
+      }
 
+      // ======================================
+      // LOAD DEPARTMENTS
+      // ======================================
 
+      async function loadDepartments() {
+        try {
+          const response = await fetch(
+            "http://127.0.0.1:8001/auth/departments/dropdown/",
+          );
 
-<!-- ========================================= -->
-<!-- SCRIPT -->
-<!-- ========================================= -->
+          const data = await response.json();
 
-<script>
+          console.log("DEPARTMENTS:", data);
 
-// ======================================
-// TOKEN
-// ======================================
+          const departmentSelect = document.getElementById("department");
 
-const token =
-    localStorage.getItem("access_token");
-
-console.log("TOKEN:", token);
-
-
-// ======================================
-// TOAST FUNCTION
-// ======================================
-
-function showToast(message, type="success") {
-
-    const toast =
-        document.getElementById("toast");
-
-    toast.innerText = message;
-
-    toast.classList.remove(
-        "hidden",
-        "bg-green-600",
-        "bg-red-600"
-    );
-
-    if (type === "success") {
-
-        toast.classList.add("bg-green-600");
-    }
-
-    else {
-
-        toast.classList.add("bg-red-600");
-    }
-
-    toast.classList.remove("hidden");
-
-    setTimeout(() => {
-
-        toast.classList.add("hidden");
-
-    }, 3000);
-}
-
-
-
-// ======================================
-// LOAD DEPARTMENTS
-// ======================================
-
-async function loadDepartments() {
-
-    try {
-
-        const response = await fetch(
-            "http://127.0.0.1:8001/auth/departments/dropdown/"
-        );
-
-        const data = await response.json();
-
-        console.log("DEPARTMENTS:", data);
-
-        const departmentSelect =
-            document.getElementById("department");
-
-        departmentSelect.innerHTML = `
+          departmentSelect.innerHTML = `
             <option value="">
                 Select Department
             </option>
         `;
 
-        data.forEach(dept => {
-
-            const option =
-                document.createElement("option");
+          data.forEach((dept) => {
+            const option = document.createElement("option");
 
             option.value = dept.id;
 
             option.text = dept.name;
 
             departmentSelect.appendChild(option);
-        });
+          });
+        } catch (error) {
+          console.log("Department Error:", error);
+        }
+      }
 
-    }
+      loadDepartments();
 
-    catch(error) {
+      // ======================================
+      // LOAD DOCTORS
+      // ======================================
 
-        console.log("Department Error:", error);
-    }
-}
+      document
+        .getElementById("department")
+        .addEventListener("change", async function () {
+          const departmentId = this.value;
 
-loadDepartments();
+          if (!departmentId) return;
 
+          try {
+            const response = await fetch(
+              `http://127.0.0.1:8001/auth/departments/${departmentId}/doctors/`,
+            );
 
+            const data = await response.json();
 
-// ======================================
-// LOAD DOCTORS
-// ======================================
+            console.log("DOCTORS:", data);
 
-document.getElementById("department")
-.addEventListener("change", async function() {
+            const doctorSelect = document.getElementById("doctor");
 
-    const departmentId = this.value;
-
-    if (!departmentId) return;
-
-    try {
-
-        const response = await fetch(
-            `http://127.0.0.1:8001/auth/departments/${departmentId}/doctors/`
-        );
-
-        const data = await response.json();
-
-        console.log("DOCTORS:", data);
-
-        const doctorSelect =
-            document.getElementById("doctor");
-
-        doctorSelect.innerHTML = `
+            doctorSelect.innerHTML = `
             <option value="">
                 Select Doctor
             </option>
         `;
 
-        data.forEach(doctor => {
+            data.forEach((doctor) => {
+              const option = document.createElement("option");
 
-            const option =
-                document.createElement("option");
+              option.value = doctor.id;
 
-            option.value = doctor.id;
+              option.text = `${doctor.name} (${doctor.specialization})`;
 
-            option.text =
-                `${doctor.name} (${doctor.specialization})`;
-
-            doctorSelect.appendChild(option);
+              doctorSelect.appendChild(option);
+            });
+          } catch (error) {
+            console.log("Doctor Error:", error);
+          }
         });
 
-    }
+      // ======================================
+      // LOAD SLOTS FUNCTION
+      // ======================================
 
-    catch(error) {
+      async function loadSlots() {
+        const doctorId = document.getElementById("doctor").value;
 
-        console.log("Doctor Error:", error);
-    }
-});
+        const date = document.getElementById("date").value;
 
+        if (!doctorId || !date) {
+          return;
+        }
 
+        try {
+          const response = await fetch(
+            `http://127.0.0.1:8001/auth/doctor/${doctorId}/slots/?date=${date}`,
+          );
 
-// ======================================
-// LOAD SLOTS FUNCTION
-// ======================================
+          const data = await response.json();
 
-async function loadSlots() {
+          console.log("SLOTS:", data);
 
-    const doctorId =
-        document.getElementById("doctor").value;
+          const timeSelect = document.getElementById("time");
 
-    const date =
-        document.getElementById("date").value;
-
-    if (!doctorId || !date) {
-
-        return;
-    }
-
-    try {
-
-        const response = await fetch(
-            `http://127.0.0.1:8001/auth/doctor/${doctorId}/slots/?date=${date}`
-        );
-
-        const data = await response.json();
-
-        console.log("SLOTS:", data);
-
-        const timeSelect =
-            document.getElementById("time");
-
-        timeSelect.innerHTML = `
+          timeSelect.innerHTML = `
             <option value="">
                 Select Time Slot
             </option>
         `;
 
-        // NO SLOTS
+          // NO SLOTS
 
-        if (!data.available_slots ||
-            data.available_slots.length === 0) {
+          if (!data.available_slots || data.available_slots.length === 0) {
+            const option = document.createElement("option");
 
-            const option =
-                document.createElement("option");
-
-            option.text =
-                "No slots available";
+            option.text = "No slots available";
 
             option.disabled = true;
 
             timeSelect.appendChild(option);
 
             return;
-        }
+          }
 
-        // LOAD SLOTS
+          // LOAD SLOTS
 
-        data.available_slots.forEach(slot => {
-
-            const option =
-                document.createElement("option");
+          data.available_slots.forEach((slot) => {
+            const option = document.createElement("option");
 
             option.value = slot;
 
             option.text = slot;
 
             timeSelect.appendChild(option);
+          });
+        } catch (error) {
+          console.log("Slot Error:", error);
+        }
+      }
+
+      // ======================================
+      // DATE CHANGE
+      // ======================================
+
+      document.getElementById("date").addEventListener("change", loadSlots);
+
+      // ======================================
+      // DOCTOR CHANGE
+      // ======================================
+
+      document
+        .getElementById("doctor")
+        .addEventListener("change", async function () {
+          const date = document.getElementById("date").value;
+
+          if (date) {
+            loadSlots();
+          }
         });
 
-    }
+      // ======================================
+      // BOOK APPOINTMENT
+      // ======================================
 
-    catch(error) {
+      document
+        .getElementById("bookingForm")
+        .addEventListener("submit", async function (e) {
+          e.preventDefault();
 
-        console.log("Slot Error:", error);
-    }
-}
+          const token = localStorage.getItem("access_token");
 
+          console.log("BOOKING TOKEN:", token);
 
+          // LOGIN CHECK
 
-// ======================================
-// DATE CHANGE
-// ======================================
+          if (!token) {
+            showToast("Please login as patient first", "error");
 
-document.getElementById("date")
-.addEventListener("change", loadSlots);
+            document.getElementById("message").className =
+              "mt-4 text-red-600 font-semibold";
 
+            document.getElementById("message").innerText =
+              "Please login as patient first";
 
+            return;
+          }
 
-// ======================================
-// DOCTOR CHANGE
-// ======================================
-
-document.getElementById("doctor")
-.addEventListener("change", async function() {
-
-    const date =
-        document.getElementById("date").value;
-
-    if (date) {
-
-        loadSlots();
-    }
-});
-
-
-
-
-// ======================================
-// BOOK APPOINTMENT
-// ======================================
-
-document.getElementById("bookingForm")
-.addEventListener("submit", async function(e) {
-
-    e.preventDefault();
-
-    const token =
-        localStorage.getItem("access_token");
-
-    console.log("BOOKING TOKEN:", token);
-
-    // LOGIN CHECK
-
-    if (!token) {
-
-        showToast(
-            "Please login as patient first",
-            "error"
-        );
-
-        document.getElementById("message")
-        .className =
-            "mt-4 text-red-600 font-semibold";
-
-        document.getElementById("message")
-        .innerText =
-            "Please login as patient first";
-
-        return;
-    }
-
-    try {
-
-        const response = await fetch(
-            "http://127.0.0.1:8001/auth/appointments/book/",
-            {
+          try {
+            const response = await fetch(
+              "http://127.0.0.1:8001/auth/appointments/book/",
+              {
                 method: "POST",
 
                 headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${token}`,
                 },
 
                 body: JSON.stringify({
+                  doctor: document.getElementById("doctor").value,
 
-                    doctor:
-                        document.getElementById("doctor").value,
+                  appointment_date: document.getElementById("date").value,
 
-                    appointment_date:
-                        document.getElementById("date").value,
+                  appointment_time: document.getElementById("time").value,
 
-                    appointment_time:
-                        document.getElementById("time").value,
-
-                    reason:
-                        document.getElementById("reason").value
-                })
-            }
-        );
-
-        const data =
-            await response.json();
-
-        console.log(
-            "BOOKING RESPONSE:",
-            data
-        );
-
-
-
-        // SUCCESS
-
-        if (response.ok) {
-
-            console.log(
-                "✅ Appointment booked successfully"
+                  reason: document.getElementById("reason").value,
+                }),
+              },
             );
 
-            showToast(
-                data.message ||
-                "Appointment booked successfully",
-                "success"
-            );
+            const data = await response.json();
 
-            document.getElementById("message")
-            .className =
+            console.log("BOOKING RESPONSE:", data);
+
+            // SUCCESS
+
+            if (response.ok) {
+              console.log("✅ Appointment booked successfully");
+
+              showToast(
+                data.message || "Appointment booked successfully",
+                "success",
+              );
+
+              document.getElementById("message").className =
                 "mt-4 text-green-600 font-semibold";
 
-            document.getElementById("message")
-            .innerText =
-                data.message ||
-                "Appointment booked successfully";
+              document.getElementById("message").innerText =
+                data.message || "Appointment booked successfully";
 
-            document.getElementById("bookingForm")
-            .reset();
+              document.getElementById("bookingForm").reset();
 
-            // RESET SLOT DROPDOWN
+              // RESET SLOT DROPDOWN
 
-            document.getElementById("time")
-            .innerHTML = `
+              document.getElementById("time").innerHTML = `
                 <option value="">
                     Select Time Slot
                 </option>
             `;
-        }
+            }
 
+            // ERROR
+            else {
+              console.log("❌ Booking Failed");
 
-
-        // ERROR
-
-        else {
-
-            console.log(
-                "❌ Booking Failed"
-            );
-
-            const errorMessage =
-
+              const errorMessage =
                 data.error ||
                 data.detail ||
                 JSON.stringify(data) ||
                 "Booking failed";
 
-            showToast(
-                errorMessage,
-                "error"
-            );
+              showToast(errorMessage, "error");
 
-            document.getElementById("message")
-            .className =
+              document.getElementById("message").className =
                 "mt-4 text-red-600 font-semibold";
 
-            document.getElementById("message")
-            .innerText =
-                errorMessage;
-        }
+              document.getElementById("message").innerText = errorMessage;
+            }
+          } catch (error) {
+            console.log("Booking Error:", error);
 
-    }
+            showToast("Server error", "error");
 
-    catch(error) {
+            document.getElementById("message").className =
+              "mt-4 text-red-600 font-semibold";
 
-        console.log(
-            "Booking Error:",
-            error
-        );
+            document.getElementById("message").innerText = "Server error";
+          }
+        });
+    </script>
 
-        showToast(
-            "Server error",
-            "error"
-        );
+    <footer class="footer">
+      <div class="container">
+        <div class="row gy-4">
+          <div class="col-lg-4">
+            <h3>SAFE CARE Hospital</h3>
 
-        document.getElementById("message")
-        .className =
-            "mt-4 text-red-600 font-semibold";
+            <p>
+              Advanced healthcare platform providing modern medical services,
+              digital consultations, patient management, and emergency support.
+            </p>
+          </div>
 
-        document.getElementById("message")
-        .innerText =
-            "Server error";
-    }
+          <div class="col-lg-2">
+            <h5>Quick Links</h5>
 
-});
+            <ul>
+              <li><a href="home.html">Home</a></li>
+              <li><a href="about.html">About</a></li>
+              <li><a href="departments.html">Departments</a></li>
+              <li><a href="contact.html">Contact</a></li>
+            </ul>
+          </div>
 
-</script>
+          <div class="col-lg-3">
+            <h5>Services</h5>
 
-</body>
+            <ul>
+              <li>Online Consultation</li>
+              <li>Emergency Care</li>
+              <li>Appointment Booking</li>
+              <li>Digital Reports</li>
+            </ul>
+          </div>
+
+          <div class="col-lg-3">
+            <h5>Contact Info</h5>
+
+            <p>
+              <i class="fa-solid fa-location-dot"></i>
+              Kochi, Kerala
+            </p>
+
+            <p>
+              <i class="fa-solid fa-phone"></i>
+              +91 9876543210
+            </p>
+
+            <p>
+              <i class="fa-solid fa-envelope"></i>
+              support@safecarehospital.com
+            </p>
+          </div>
+        </div>
+
+        <hr />
+
+        <div class="footer-bottom">
+          <p>© 2026 Safe Care Hospital | All Rights Reserved</p>
+
+          <div class="social-icons">
+            <i class="fab fa-facebook-f"></i>
+
+            <i class="fab fa-instagram"></i>
+
+            <i class="fab fa-linkedin-in"></i>
+
+            <i class="fab fa-twitter"></i>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    <script src="navbar.js"></script>
+  </body>
 </html>

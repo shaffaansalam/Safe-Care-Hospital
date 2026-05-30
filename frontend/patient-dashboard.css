@@ -1,0 +1,170 @@
+/* ==========================
+GLOBAL
+========================== */
+
+body {
+    font-family: 'Inter', sans-serif;
+    background: #f8fafc;
+}
+
+/* ==========================
+CONTAINER
+========================== */
+
+.patient-dashboard-container {
+    max-width: 1100px;
+    margin: 20px auto;
+    padding: 0 20px;
+}
+
+/* ==========================
+CARDS
+========================== */
+
+.dashboard-card,
+.dashboard-section {
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 10px 25px rgba(0,0,0,.08);
+}
+
+/* ==========================
+TITLE
+========================== */
+
+.dashboard-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #2563eb;
+    margin-bottom: 20px;
+}
+
+.section-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+}
+
+/* ==========================
+PATIENT DATA
+========================== */
+
+#patientData p,
+#welcomeUser p {
+    word-break: break-word;
+}
+
+/* ==========================
+FORMS
+========================== */
+
+input,
+textarea {
+    width: 100%;
+}
+
+textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+.form-control {
+    border-radius: 12px;
+}
+
+/* ==========================
+BUTTONS
+========================== */
+
+.dashboard-btn {
+    min-height: 48px;
+    border-radius: 12px;
+    font-weight: 600;
+}
+
+/* ==========================
+REPORTS
+========================== */
+
+#reportsContainer,
+#prescriptionsContainer,
+#testsContainer {
+    word-break: break-word;
+}
+
+/* ==========================
+TABLET
+========================== */
+
+@media (max-width: 991px) {
+
+    .dashboard-card,
+    .dashboard-section {
+        padding: 24px;
+    }
+
+    .dashboard-title {
+        font-size: 1.8rem;
+    }
+}
+
+/* ==========================
+MOBILE
+========================== */
+
+@media (max-width: 768px) {
+
+    .patient-dashboard-container {
+        padding: 0 15px;
+    }
+
+    .dashboard-card,
+    .dashboard-section {
+        padding: 20px;
+    }
+
+    .dashboard-title {
+        text-align: center;
+        font-size: 1.6rem;
+    }
+
+    .section-title {
+        font-size: 1.3rem;
+    }
+
+    .dashboard-btn {
+        width: 100%;
+    }
+
+    input,
+    textarea,
+    button {
+        font-size: 14px;
+    }
+}
+
+/* ==========================
+SMALL MOBILE
+========================== */
+
+@media (max-width: 576px) {
+
+    .patient-dashboard-container {
+        padding: 0 10px;
+    }
+
+    .dashboard-card,
+    .dashboard-section {
+        padding: 15px;
+        border-radius: 15px;
+    }
+
+    .dashboard-title {
+        font-size: 1.4rem;
+    }
+
+    .section-title {
+        font-size: 1.2rem;
+    }
+}

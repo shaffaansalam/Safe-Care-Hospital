@@ -1,0 +1,207 @@
+/* =========================
+GLOBAL
+========================= */
+
+body {
+    font-family: 'Inter', sans-serif;
+    background: #f8fafc;
+}
+
+/* =========================
+DASHBOARD WRAPPER
+========================= */
+
+.dashboard-container {
+    max-width: 1400px;
+    margin: auto;
+    padding: 30px;
+    width: 100%;
+}
+
+/* =========================
+PAGE TITLE
+========================= */
+
+.dashboard-title {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: #2563eb;
+    margin-bottom: 30px;
+}
+
+/* =========================
+SECTION CARD
+========================= */
+
+.dashboard-section {
+    background: white;
+    padding: 24px;
+    border-radius: 18px;
+    box-shadow: 0 8px 20px rgba(0,0,0,.06);
+    margin-bottom: 25px;
+}
+
+/* =========================
+APPOINTMENT CARD
+========================= */
+
+.appointment-card {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 18px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.patient-name {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #2563eb;
+}
+
+
+.appointment-card p {
+    margin-bottom: 8px;
+    word-break: break-word;
+    overflow-wrap: break-word;
+}
+
+/* =========================
+TEXTAREAS
+========================= */
+
+.appointment-card textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+/* =========================
+INPUTS
+========================= */
+
+.appointment-card input,
+.appointment-card textarea {
+    border: 1px solid #dbe4f0;
+    border-radius: 12px;
+}
+
+/* =========================
+BUTTONS
+========================= */
+
+.dashboard-btn {
+    min-height: 45px;
+    border-radius: 12px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+/* =========================
+REPORT CARD
+========================= */
+
+.report-card {
+    word-break: break-word;
+}
+
+/* =========================
+MOBILE
+========================= */
+
+@media (max-width: 991px) {
+
+    .dashboard-container {
+        padding: 20px;
+    }
+
+    .dashboard-title {
+        font-size: 1.9rem;
+    }
+
+    .dashboard-section {
+        padding: 18px;
+    }
+}
+
+@media (max-width: 768px) {
+
+    .dashboard-container {
+        padding: 15px;
+    }
+
+    .dashboard-title {
+        font-size: 1.6rem;
+        text-align: center;
+    }
+
+    .patient-name {
+        font-size: 1.2rem;
+    }
+
+    .dashboard-section h2 {
+        font-size: 1.3rem;
+    }
+
+    .dashboard-btn {
+        width: 100%;
+        margin-top: 10px;
+    }
+
+    .appointment-card {
+        padding: 15px;
+    }
+}
+
+@media (max-width: 576px) {
+
+    .dashboard-container {
+        padding: 12px;
+    }
+
+    .appointment-card {
+        padding: 12px;
+    }
+
+    .dashboard-section {
+        padding: 15px;
+    }
+
+    .dashboard-title {
+        font-size: 1.4rem;
+    }
+}
+
+.appointment-card input,
+.appointment-card textarea {
+    width: 100%;
+    max-width: 100%;
+}
+
+.appointment-card span {
+    display: inline-block;
+    margin-top: 5px;
+}
+
+@media (max-width: 400px) {
+
+    .dashboard-title {
+        font-size: 1.2rem;
+    }
+
+    .dashboard-section h2 {
+        font-size: 1.1rem;
+    }
+
+    .patient-name {
+        font-size: 1rem;
+    }
+
+    .dashboard-btn {
+        font-size: 14px;
+        padding: 10px;
+    }
+
+}
