@@ -32,8 +32,8 @@ document.addEventListener("DOMContentLoaded", () => {
       const { access, refresh, user, role } = response.data;
 
       // STORE TOKENS
-      localStorage.setItem("access_token", access);
-      localStorage.setItem("refresh_token", refresh);
+      localStorage.setItem("access", access);
+      localStorage.setItem("refresh", refresh);
       console.log("TOKEN SAVED:", localStorage.getItem("access_token"));
 
       localStorage.setItem("user", JSON.stringify(user));
@@ -59,7 +59,7 @@ document.addEventListener("DOMContentLoaded", () => {
       } 
       else if (userRole === "admin") {
 
-        window.location.href = "admin-dashboard.html";
+        window.location.href = "admin/admin-dashboard.html";
 
       }
       else {

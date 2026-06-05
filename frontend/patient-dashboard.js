@@ -1,10 +1,7 @@
-
-
-const token = localStorage.getItem("access_token");
+const token = localStorage.getItem("access");
 const storedUser = JSON.parse(localStorage.getItem("user"));
 
 document.addEventListener("DOMContentLoaded", () => {
-
   console.log("Patient dashboard JS loaded ✅");
 
   const loginNav = document.getElementById("loginNav");
@@ -12,22 +9,19 @@ document.addEventListener("DOMContentLoaded", () => {
   const registerNav = document.getElementById("registerNav");
 
   // NAVBAR TOGGLE
-if (token) {
+  if (token) {
+    loginNav.style.display = "none";
 
-  loginNav.style.display = "none";
+    logoutNav.style.display = "block";
 
-  logoutNav.style.display = "block";
+    registerNav.style.display = "none";
+  } else {
+    loginNav.style.display = "block";
 
-  registerNav.style.display = "none";
+    logoutNav.style.display = "none";
 
-} else {
-
-  loginNav.style.display = "block";
-
-  logoutNav.style.display = "none";
-
-  registerNav.style.display = "block";
-}
+    registerNav.style.display = "block";
+  }
 
   // ROLE VALIDATION
   let role = storedUser?.role;
@@ -39,7 +33,6 @@ if (token) {
   role = role?.toLowerCase().trim();
 
   if (!token || !storedUser || role !== "patient") {
-
     window.location.href = "login.html";
 
     return;
@@ -61,99 +54,296 @@ if (token) {
   loadReports();
 });
 
-
-
 // =====================================
 // LOAD PATIENT DASHBOARD
 // =====================================
 
 async function loadPatientDashboard() {
-
   try {
-
     const response = await axios.get(
-
       "http://127.0.0.1:8001/auth/dashboard/patient/",
 
       {
         headers: {
-          Authorization: `Bearer ${token}`
-        }
-      }
+          Authorization: `Bearer ${token}`,
+        },
+      },
     );
 
-    const data = response.data;
+    const patient = response.data;
 
-    let imageUrl = data.profile_image;
+    
+
+    let imageUrl = patient.profile_image;
 
     if (imageUrl && !imageUrl.startsWith("http")) {
-
       imageUrl = `http://127.0.0.1:8001${imageUrl}`;
+    }
 
-    } else if (!imageUrl) {
-
-      imageUrl =
-        "https://ui-avatars.com/api/?name=" + data.user.name;
+    if (!imageUrl) {
+      imageUrl = `https://ui-avatars.com/api/?name=${patient.user.name}`;
     }
 
     document.getElementById("patientData").innerHTML = `
 
-      <p><strong>Name :</strong> ${data.user.name}</p>
+<div class="row align-items-center">
 
-      <p><strong>Email :</strong> ${data.user.email}</p>
+    <div class="col-lg-3 text-center">
 
-      <p><strong>Phone :</strong> ${data.phone || "N/A"}</p>
+        <img
+            src="${imageUrl}"
+            style="
+                width:180px;
+                height:180px;
+                border-radius:50%;
+                object-fit:cover;
+                border:4px solid #2563eb;
+            "
+        >
 
-      <p><strong>Gender :</strong> ${data.gender || "N/A"}</p>
+    </div>
 
-      <p><strong>Age :</strong> ${data.age || "N/A"}</p>
+    <div class="col-lg-9">
 
-      <p><strong>Blood Group :</strong> ${data.blood_group || "N/A"}</p>
+        <h2 class="mb-3">
+            ${patient.user.name}
+        </h2>
 
-      <p><strong>Address :</strong> ${data.address || "N/A"}</p>
+        <p>
+            <strong>Email :</strong>
+            ${patient.user.email}
+        </p>
 
-      <p><strong>Medical History :</strong> ${data.medical_history || "N/A"}</p>
+        <p>
+            <strong>Phone :</strong>
+            ${patient.phone || "N/A"}
+        </p>
 
-      <img
-        src="${imageUrl}"
-        class="w-32 h-32 rounded-full object-cover border mt-4"
-      />
+        <p>
+            <strong>Gender :</strong>
+            ${patient.gender || "N/A"}
+        </p>
 
-    `;
+        <p>
+            <strong>DOB :</strong>
+            ${patient.dob || "N/A"}
+        </p>
 
-  } catch(error) {
+        <p>
+            <strong>Blood Group :</strong>
+            ${patient.blood_group || "N/A"}
+        </p>
 
+        <p>
+            <strong>Address :</strong>
+            ${patient.address || "N/A"}
+        </p>
+
+        <p>
+            <strong>Medical History :</strong>
+            ${patient.medical_history || "None"}
+        </p>
+
+        <button
+            class="btn btn-primary mt-3"
+            onclick="togglePatientEditForm()">
+
+            Edit Profile
+
+        </button>
+
+        <div
+    id="patientEditForm"
+    style="display:none;"
+    class="mt-4 border-top pt-4">
+</div>
+
+
+    </div>
+
+</div>
+`;
+  } catch (error) {
     console.log(error);
 
     alert("Failed to load patient dashboard");
   }
 }
 
+function togglePatientEditForm() {
+  const form = document.getElementById("patientEditForm");
 
+  if (form.style.display === "none") {
+    form.style.display = "block";
+
+    loadPatientEditForm();
+  } else {
+    form.style.display = "none";
+  }
+}
+
+async function loadPatientEditForm() {
+  try {
+    const response = await axios.get(
+      "http://127.0.0.1:8001/auth/patient/profile/",
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    const patient = response.data;
+
+    document.getElementById("patientEditForm").innerHTML = `
+
+        <h4 class="mb-4">
+            Update Patient Profile
+        </h4>
+
+        <input
+            id="patientPhone"
+            class="form-control mb-3"
+            value="${patient.phone || ""}"
+            placeholder="Phone">
+
+        <input
+            id="patientAddress"
+            class="form-control mb-3"
+            value="${patient.address || ""}"
+            placeholder="Address">
+
+        <select
+    id="patientGender"
+    class="form-control mb-3">
+
+    <option value="male"
+    ${patient.gender === "male" ? "selected" : ""}>
+    Male
+    </option>
+
+    <option value="female"
+    ${patient.gender === "female" ? "selected" : ""}>
+    Female
+    </option>
+
+    <option value="other"
+    ${patient.gender === "other" ? "selected" : ""}>
+    Other
+    </option>
+
+</select>
+
+        <input
+            type="date"
+            id="patientDob"
+            class="form-control mb-3"
+            value="${patient.dob || ""}">
+
+        <input
+            id="patientBloodGroup"
+            class="form-control mb-3"
+            value="${patient.blood_group || ""}"
+            placeholder="Blood Group">
+
+        <textarea
+            id="patientHistory"
+            class="form-control mb-3"
+            placeholder="Medical History">${patient.medical_history || ""}</textarea>
+
+        <input
+            type="file"
+            id="patientImage"
+            class="form-control mb-3">
+
+        <button
+            onclick="updatePatientProfile()"
+            class="btn btn-success">
+
+            Update Profile
+
+        </button>
+        `;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+async function updatePatientProfile() {
+  const formData = new FormData();
+
+  formData.append("phone", document.getElementById("patientPhone").value);
+
+  formData.append("address", document.getElementById("patientAddress").value);
+
+  formData.append("gender", document.getElementById("patientGender").value);
+
+  formData.append("dob", document.getElementById("patientDob").value);
+
+  formData.append(
+    "blood_group",
+    document.getElementById("patientBloodGroup").value,
+  );
+
+  formData.append(
+    "medical_history",
+    document.getElementById("patientHistory").value,
+  );
+
+  const image = document.getElementById("patientImage").files[0];
+
+  if (image) {
+    formData.append("profile_image", image);
+  }
+
+  try {
+    await axios.put(
+      "http://127.0.0.1:8001/auth/patient/profile/update/",
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      },
+    );
+
+    alert("Profile Updated Successfully");
+
+    loadPatientDashboard();
+
+    //  → hide edit form after update
+    document.getElementById("patientEditForm").style.display = "none";
+  } catch (error) {
+
+
+    console.log(error);
+
+    console.log("Backend Error:", error.response?.data);
+
+    alert(JSON.stringify(error.response?.data || "Update Failed"));
+  }
+}
 
 // =====================================
 // LOAD PRESCRIPTIONS
 // =====================================
 
 async function loadPrescriptions() {
-
   try {
-
     const response = await axios.get(
-
       "http://127.0.0.1:8001/auth/patient/prescriptions/",
 
       {
         headers: {
-          Authorization: `Bearer ${token}`
-        }
-      }
+          Authorization: `Bearer ${token}`,
+        },
+      },
     );
 
     let html = "";
 
-    response.data.forEach(item => {
-
+    response.data.forEach((item) => {
       html += `
 
       <div class="border p-4 rounded mb-4">
@@ -178,43 +368,33 @@ async function loadPrescriptions() {
       `;
     });
 
-    document.getElementById(
-      "prescriptionsContainer"
-    ).innerHTML = html;
-
-  } catch(error) {
-
+    document.getElementById("prescriptionsContainer").innerHTML = html;
+  } catch (error) {
     console.log(error);
 
     alert("Failed to load prescriptions");
   }
 }
 
-
-
 // =====================================
 // LOAD TEST REQUESTS
 // =====================================
 
 async function loadTests() {
-
   try {
-
     const response = await axios.get(
-
       "http://127.0.0.1:8001/auth/patient/test-requests/",
 
       {
         headers: {
-          Authorization: `Bearer ${token}`
-        }
-      }
+          Authorization: `Bearer ${token}`,
+        },
+      },
     );
 
     let html = "";
 
-    response.data.forEach(item => {
-
+    response.data.forEach((item) => {
       html += `
 
       <div class="border p-4 rounded mb-4">
@@ -244,37 +424,26 @@ async function loadTests() {
       `;
     });
 
-    document.getElementById(
-      "testsContainer"
-    ).innerHTML = html;
-
-  } catch(error) {
-
+    document.getElementById("testsContainer").innerHTML = html;
+  } catch (error) {
     console.log(error);
 
     alert("Failed to load tests");
   }
 }
 
-
-
 // =====================================
 // UPLOAD REPORT
 // =====================================
 
 async function uploadReport() {
+  const file = document.getElementById("reportFile").files[0];
 
-  const file =
-    document.getElementById("reportFile").files[0];
+  const report_title = document.getElementById("reportTitle").value;
 
-  const report_title =
-    document.getElementById("reportTitle").value;
-
-  const testRequestId =
-    document.getElementById("testRequestId").value;
+  const testRequestId = document.getElementById("testRequestId").value;
 
   if (!file || !report_title || !testRequestId) {
-
     alert("Please fill all fields");
 
     return;
@@ -287,30 +456,24 @@ async function uploadReport() {
   formData.append("report_file", file);
 
   try {
-
     await axios.post(
-
       `http://127.0.0.1:8001/auth/patient/upload-report/${testRequestId}/`,
 
       formData,
 
       {
         headers: {
-
           Authorization: `Bearer ${token}`,
 
-          "Content-Type": "multipart/form-data"
-        }
-      }
+          "Content-Type": "multipart/form-data",
+        },
+      },
     );
 
     alert("Report Uploaded Successfully");
 
     loadReports();
-    
-
-  } catch(error) {
-
+  } catch (error) {
     console.log(error);
 
     console.log(error.response?.data);
@@ -319,37 +482,29 @@ async function uploadReport() {
   }
 }
 
-
-
 // =====================================
 // LOAD REPORTS
 // =====================================
 
 async function loadReports() {
-
   try {
-
     const response = await axios.get(
-
       "http://127.0.0.1:8001/auth/patient/reports/",
 
       {
         headers: {
-          Authorization: `Bearer ${token}`
-        }
-      }
+          Authorization: `Bearer ${token}`,
+        },
+      },
     );
 
     let html = "";
 
-    response.data.forEach(report => {
-
+    response.data.forEach((report) => {
       let reportUrl = report.report_file;
 
       if (reportUrl && !reportUrl.startsWith("http")) {
-
-        reportUrl =
-          `http://127.0.0.1:8001${reportUrl}`;
+        reportUrl = `http://127.0.0.1:8001${reportUrl}`;
       }
 
       html += `
@@ -374,48 +529,36 @@ async function loadReports() {
       `;
     });
 
-    document.getElementById(
-      "reportsContainer"
-    ).innerHTML = html;
-
-  } catch(error) {
-
+    document.getElementById("reportsContainer").innerHTML = html;
+  } catch (error) {
     console.log(error);
 
     alert("Failed to load reports");
   }
 }
 
-
-
 // =====================================
 // LOGOUT
 // =====================================
 
 async function logoutUser() {
-
-  const refreshToken =
-    localStorage.getItem("refresh_token");
+  const refresh = localStorage.getItem("refresh");
 
   try {
-
     await axios.post(
-
       "http://127.0.0.1:8001/auth/logout/",
 
       {
-        refresh: refreshToken
+        refresh: refresh,
       },
 
       {
         headers: {
-          Authorization: `Bearer ${token}`
-        }
-      }
+          Authorization: `Bearer ${token}`,
+        },
+      },
     );
-
-  } catch(error) {
-
+  } catch (error) {
     console.log(error);
   }
 
@@ -424,14 +567,11 @@ async function logoutUser() {
   window.location.href = "login.html";
 }
 
-
-
 // =====================================
 // TOAST
 // =====================================
 
 function showToast(message, color) {
-
   const toast = document.createElement("div");
 
   toast.innerText = message;
@@ -452,4 +592,3 @@ function showToast(message, color) {
     toast.remove();
   }, 3000);
 }
-

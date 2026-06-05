@@ -54,9 +54,15 @@
 
         <li><a href="contact.html">Contact</a></li>
 
-        <li><a href="login.html">Login</a></li>
+        <li id="loginNav">
+          <a href="login.html">Login</a>
+        </li>
 
-        <li>
+        <li id="logoutNav" style="display: none">
+          <a href="#" onclick="logoutUser()">Logout</a>
+        </li>
+
+        <li id="registerNav">
           <a href="register.html" class="register-btn"> Register </a>
         </li>
       </ul>
@@ -203,9 +209,10 @@
       // TOKEN
       // ======================================
 
-      const token = localStorage.getItem("access_token");
+      const token = localStorage.getItem("access");
 
       console.log("TOKEN:", token);
+      console.log("USER:", localStorage.getItem("user"));
 
       document.getElementById("date").min = new Date()
         .toISOString()
@@ -233,6 +240,28 @@
         }, 3000);
       }
 
+      const loginNav = document.getElementById("loginNav");
+      const logoutNav = document.getElementById("logoutNav");
+      const registerNav = document.getElementById("registerNav");
+
+      if (token) {
+        loginNav.style.display = "none";
+        logoutNav.style.display = "block";
+        registerNav.style.display = "none";
+      } else {
+        loginNav.style.display = "block";
+        logoutNav.style.display = "none";
+        registerNav.style.display = "block";
+      }
+
+      function logoutUser() {
+        localStorage.removeItem("access");
+        localStorage.removeItem("refresh");
+        localStorage.removeItem("user");
+        localStorage.clear();
+        window.location.href = "login.html";
+      }
+
       // ======================================
       // LOAD DEPARTMENTS
       // ======================================
@@ -250,10 +279,10 @@
           const departmentSelect = document.getElementById("department");
 
           departmentSelect.innerHTML = `
-            <option value="">
-                Select Department
-            </option>
-        `;
+                  <option value="">
+                      Select Department
+                  </option>
+              `;
 
           data.forEach((dept) => {
             const option = document.createElement("option");
@@ -294,10 +323,10 @@
             const doctorSelect = document.getElementById("doctor");
 
             doctorSelect.innerHTML = `
-            <option value="">
-                Select Doctor
-            </option>
-        `;
+                  <option value="">
+                      Select Doctor
+                  </option>
+              `;
 
             data.forEach((doctor) => {
               const option = document.createElement("option");
@@ -338,10 +367,10 @@
           const timeSelect = document.getElementById("time");
 
           timeSelect.innerHTML = `
-            <option value="">
-                Select Time Slot
-            </option>
-        `;
+                  <option value="">
+                      Select Time Slot
+                  </option>
+              `;
 
           // NO SLOTS
 
@@ -402,7 +431,7 @@
         .addEventListener("submit", async function (e) {
           e.preventDefault();
 
-          const token = localStorage.getItem("access_token");
+          const token = localStorage.getItem("access");
 
           console.log("BOOKING TOKEN:", token);
 
@@ -421,6 +450,15 @@
           }
 
           try {
+            const bookingData = {
+              doctor: document.getElementById("doctor").value,
+              appointment_date: document.getElementById("date").value,
+              appointment_time: document.getElementById("time").value,
+              reason: document.getElementById("reason").value,
+            };
+
+            console.log("BOOKING DATA:", bookingData);
+
             const response = await fetch(
               "http://127.0.0.1:8001/auth/appointments/book/",
               {
@@ -431,15 +469,7 @@
                   Authorization: `Bearer ${token}`,
                 },
 
-                body: JSON.stringify({
-                  doctor: document.getElementById("doctor").value,
-
-                  appointment_date: document.getElementById("date").value,
-
-                  appointment_time: document.getElementById("time").value,
-
-                  reason: document.getElementById("reason").value,
-                }),
+                body: JSON.stringify(bookingData),
               },
             );
 
@@ -468,10 +498,10 @@
               // RESET SLOT DROPDOWN
 
               document.getElementById("time").innerHTML = `
-                <option value="">
-                    Select Time Slot
-                </option>
-            `;
+                      <option value="">
+                          Select Time Slot
+                      </option>
+                  `;
             }
 
             // ERROR
@@ -553,7 +583,7 @@
 
             <p>
               <i class="fa-solid fa-envelope"></i>
-              support@safecarehospital.com
+              safecarehospital236@gmail.com
             </p>
           </div>
         </div>

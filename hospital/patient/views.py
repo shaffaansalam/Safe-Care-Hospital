@@ -7,7 +7,11 @@ from doctor.serializers import *
 from patient.serializers import *
 from django.db import IntegrityError
 from authentication.models import Prescription,MedicalReport,TestRequest
-from .serializers import PrescriptionSerializer,MedicalReportSerializer
+from .serializers import PrescriptionSerializer,MedicalReportSerializer,PatientProfileUpdateSerializer
+from rest_framework import generics
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.parsers import MultiPartParser, FormParser
+from django.db import IntegrityError
 
 
 
@@ -23,6 +27,41 @@ class PatientDashboardAPIView(APIView):
         serializer = PatientDashboardSerializer(patient, context={'request': request})
         return Response(serializer.data, status=200)
     
+    
+class PatientProfileUpdateAPIView(
+    generics.UpdateAPIView
+):
+
+    serializer_class = (
+        PatientProfileUpdateSerializer
+    )
+
+    permission_classes = [
+        IsAuthenticated
+    ]
+
+    parser_classes = [
+        MultiPartParser,
+        FormParser
+    ]
+
+    def get_object(self):
+
+        return self.request.user.patient
+    
+
+class PatientProfileAPIView(APIView):
+
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+
+        patient = request.user.patient
+
+        serializer = PatientProfileSerializer(patient)
+
+        return Response(serializer.data)
+    
 
 
 class BookAppointmentAPIView(APIView):
@@ -31,46 +70,144 @@ class BookAppointmentAPIView(APIView):
 
     def post(self, request):
 
-        if request.user.profile.role != "patient":
+        print("\n========== BOOK APPOINTMENT ==========")
+
+        print("REQUEST USER:", request.user)
+
+        print("USER ID:", request.user.id)
+
+        print("REQUEST DATA:", request.data)
+
+        # Role check
+
+        try:
+
+            print("ROLE:", request.user.profile.role)
+
+            if request.user.profile.role != "patient":
+
+                return Response(
+                    {
+                        "error": "Only patients can book appointments"
+                    },
+                    status=403
+                )
+
+        except Exception as e:
+
+            print("PROFILE ERROR:", str(e))
+
             return Response(
-                {"error": "Only patients can book appointments"},
-                status=403
+                {
+                    "error": "Patient profile not found"
+                },
+                status=400
+            )
+
+        # Patient check
+
+        try:
+
+            patient = request.user.patient
+
+            print("PATIENT ID:", patient.id)
+
+        except Exception as e:
+
+            print("PATIENT ERROR:", str(e))
+
+            return Response(
+                {
+                    "error": "Patient object not found"
+                },
+                status=400
             )
 
         serializer = AppointmentSerializer(
             data=request.data,
-            context={'request': request}
+            context={"request": request}
         )
 
-        if serializer.is_valid():
+        is_valid = serializer.is_valid()
 
-            try:
-                appointment = serializer.save()
+        print("SERIALIZER VALID:", is_valid)
 
+        if not is_valid:
 
+            print("SERIALIZER ERRORS:", serializer.errors)
 
-                return Response({
+            return Response(
+                serializer.errors,
+                status=400
+            )
 
-                   "message": "Appointment booked successfully",
+        print("VALIDATED DATA:")
+        print(serializer.validated_data)
 
-                   "appointment": {
-                   "id": appointment.id,
-                   "doctor": appointment.doctor.user.get_full_name(),
-                   "date": appointment.appointment_date,
-                   "time": appointment.appointment_time,
-                   "status": appointment.status
-                    }
+        try:
 
-               }, status=201)
+            appointment = serializer.save()
 
-            except IntegrityError:
-                return Response({
-                    "error": "This appointment slot is already booked"
-                }, status=400)
+            print("APPOINTMENT CREATED SUCCESSFULLY")
 
-        return Response(serializer.errors, status=400)
-            
+            print("APPOINTMENT ID:", appointment.id)
 
+            print("DOCTOR:", appointment.doctor.id)
+
+            print("PATIENT:", appointment.patient.id)
+
+            print("DATE:", appointment.appointment_date)
+
+            print("TIME:", appointment.appointment_time)
+
+            print("=====================================\n")
+
+            return Response({
+
+                "message": "Appointment booked successfully",
+
+                "appointment": {
+
+                    "id": appointment.id,
+
+                    "doctor":
+                    appointment.doctor.user.get_full_name(),
+
+                    "date":
+                    appointment.appointment_date,
+
+                    "time":
+                    appointment.appointment_time,
+
+                    "status":
+                    appointment.status
+                }
+
+            }, status=201)
+
+        except IntegrityError as e:
+
+            print("INTEGRITY ERROR:", str(e))
+
+            return Response({
+
+                "error":
+                "This appointment slot is already booked"
+
+            }, status=400)
+
+        except Exception as e:
+
+            print("SAVE ERROR:", str(e))
+
+            return Response({
+
+                "error": str(e)
+
+            }, status=400)
+        
+    
+                
 
 class PatientAppointmentsAPIView(APIView):
 

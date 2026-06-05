@@ -1,0 +1,302 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Admin Dashboard</title>
+
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+      rel="stylesheet"
+    />
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  </head>
+
+  <body class="bg-light">
+    <div class="container-fluid">
+      <div class="row">
+        <!-- SIDEBAR -->
+
+        <div class="col-lg-2 bg-dark text-white min-vh-100 p-0">
+          <div class="p-3 border-bottom">
+            <h4>SafeCare HMS</h4>
+          </div>
+
+          <div class="list-group rounded-0">
+            <button
+              class="list-group-item list-group-item-action"
+              onclick="showSection('dashboardSection')"
+            >
+              Dashboard
+            </button>
+
+            <button
+              class="list-group-item list-group-item-action"
+              onclick="showSection('doctorSection')"
+            >
+              Doctors
+            </button>
+
+            <button
+              class="list-group-item list-group-item-action"
+              onclick="showSection('patientSection')"
+            >
+              Patients
+            </button>
+
+            <button
+              class="list-group-item list-group-item-action"
+              onclick="showSection('departmentSection')"
+            >
+              Departments
+            </button>
+
+            <button
+              class="list-group-item list-group-item-action"
+              onclick="showSection('appointmentSection')"
+            >
+              Appointments
+            </button>
+
+            <button
+              class="list-group-item list-group-item-action"
+              onclick="showSection('paymentSection')"
+            >
+              Payments
+            </button>
+
+            <button
+              class="list-group-item list-group-item-action text-danger"
+              onclick="logoutAdmin()"
+            >
+              Logout
+            </button>
+          </div>
+        </div>
+
+        <!-- MAIN CONTENT -->
+
+        <div class="col-lg-10">
+          <!-- TOPBAR -->
+
+          <nav class="navbar bg-white shadow-sm">
+            <div class="container-fluid">
+              <h4>Admin Dashboard</h4>
+
+             <div class="d-flex align-items-center gap-3">
+
+<span class="fw-semibold" id="adminName">
+Admin
+</span>
+
+<button
+class="btn btn-danger btn-sm"
+onclick="logoutAdmin()">
+
+Logout
+
+</button>
+
+</div>
+            </div>
+          </nav>
+
+          <div class="p-4">
+            <div id="dashboardSection">
+              <div class="row g-4 mb-4">
+                <div class="col-md-3">
+                 <div class="card text-white bg-primary shadow">
+                    <div class="card-body">
+                      <h6>Total Doctors</h6>
+                      <h2 id="totalDoctors">0</h2>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-md-3">
+                 <div class="card text-white bg-success shadow">
+                    <div class="card-body">
+                      <h6>Total Patients</h6>
+                      <h2 id="totalPatients">0</h2>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-md-3">
+                <div class="card text-white bg-warning shadow">
+                    <div class="card-body">
+                      <h6>Total Departments</h6>
+                      <h2 id="totalDepartments">0</h2>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-md-3">
+                  <div class="card text-white bg-danger shadow">
+                    <div class="card-body">
+                      <h6>Total Payments</h6>
+                      <h2 id="totalPayments">0</h2>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card shadow-sm">
+                <div class="card-header">Pending Doctor Approvals</div>
+
+                <div class="card-body">
+                 <div class="table-responsive">
+<table class="table table-striped table-hover">
+                    <thead>
+                      <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Specialization</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+          
+
+                    <tbody id="pendingDoctorTable"></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+            </div>
+            <div id="doctorSection" style="display: none">
+              <div class="card">
+                <div class="card-header">Manage Doctors</div>
+
+                <div class="card-body">
+                
+                    <div class="table-responsive">
+<table class="table table-striped table-hover">
+
+                    <thead>
+                      <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Department</th>
+                        <th>Specialization</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+            
+                    
+
+                    <tbody id="doctorTable"></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+            </div>
+            <div id="patientSection" style="display: none">
+              <div class="card">
+                <div class="card-header">Manage Patients</div>
+
+                <div class="card-body">
+                  <div class="table-responsive">
+                  <table class="table table-striped table-hover">
+                    <thead>
+                      <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+           
+
+                    <tbody id="patientTable"></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+            </div>
+            <div id="departmentSection" style="display: none">
+              <div class="card">
+                <div class="card-header">Departments</div>
+
+                <div class="card-body">
+                  <div class="table-responsive">
+<table class="table table-striped table-hover">
+                    <thead>
+                      <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+          
+
+                    <tbody id="departmentTable"></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+            </div>
+            <div id="appointmentSection" style="display: none">
+              <div class="card">
+                <div class="card-header">Appointments</div>
+
+                <div class="card-body">
+                  <div class="table-responsive">
+<table class="table table-striped table-hover">
+                    <thead>
+                      <tr>
+                        <th>Patient</th>
+                        <th>Doctor</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                      </tr>
+                    </thead>
+            
+                    <tbody id="appointmentTable"></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+            </div>
+            <div id="paymentSection" style="display: none">
+              <div class="card">
+                <div class="card-header">Payment Reports</div>
+
+                <div class="card-body">
+                  <div class="table-responsive">
+<table class="table table-striped table-hover">
+                    <thead>
+                      <tr>
+                        <th>ID</th>
+                        <th>Patient</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                      </tr>
+                    </thead>
+           
+
+                    <tbody id="paymentTable"></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+            
+          </div>
+        </div>
+      </div>
+    
+
+    <script src="admin-dashboard.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  </body>
+</html>

@@ -81,6 +81,14 @@ path('patient/upload-report/<int:test_request_id>/',PatientUploadReportAPIView.a
 
 path('doctor/patient-reports/<int:patient_id>/',DoctorPatientReportsAPIView.as_view()),
 
+path('patient/profile/update/',PatientProfileUpdateAPIView.as_view(),name='patient-profile-update'),
+
+path('doctor/profile/update/',DoctorProfileUpdateAPIView.as_view(),name='doctor-profile-update'),
+
+path('patient/profile/',PatientProfileAPIView.as_view(),name='patient-profile'),
+
+path('doctor/profile/',DoctorProfileAPIView.as_view(),name='doctor-profile'),
+
 
 
 ]

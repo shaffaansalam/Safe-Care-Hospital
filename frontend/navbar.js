@@ -48,7 +48,7 @@ function logoutUser() {
 
     localStorage.clear();
 
-    // alert("Logged out successfully");
+    
 
     window.location.reload();
 }

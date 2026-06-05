@@ -450,14 +450,19 @@ class AdminPaymentListAPIView(APIView):
 
         payments = Payment.objects.all()
 
+        serializer = PaymentSerializer(
+            payments,
+            many=True
+        )
+
         total_revenue = payments.aggregate(
             total=Sum("amount")
         )["total"] or 0
 
         return Response({
-            "payments": total_revenue
+            "payments": serializer.data,
+            "total_revenue": total_revenue
         })
-
 
 
 class DoctorDashboardTemplateView(TemplateView):

@@ -77,6 +77,35 @@ class DoctorDashboardSerializer(serializers.ModelSerializer):
         }
 
 
+class DoctorProfileUpdateSerializer(
+    serializers.ModelSerializer
+):
+
+    class Meta:
+
+        model = DoctorProfile
+
+        fields = [
+
+            "phone",
+
+            "specialization",
+
+            "qualification",
+
+            "experience",
+
+            "consultation_fee",
+
+            "bio",
+
+            "available_start_time",
+
+            "available_end_time",
+
+            "profile_image"
+        ]
+
 
 class DepartmentSerializer(serializers.ModelSerializer):
     class Meta:

@@ -193,6 +193,23 @@ class PatientDashboardSerializer(serializers.ModelSerializer):
             "role": obj.user.profile.role
         } 
        
+class PatientProfileUpdateSerializer(
+    serializers.ModelSerializer
+):
+
+    class Meta:
+
+        model = PatientProfile
+
+        fields = [
+            "phone",
+            "gender",
+            "dob",
+            "blood_group",
+            "address",
+            "medical_history",
+            "profile_image"
+        ]
 
 
 class AppointmentSerializer(serializers.ModelSerializer):
@@ -271,6 +288,17 @@ class AppointmentSerializer(serializers.ModelSerializer):
             'patient',
             'status'
         ]
+
+    def create(self, validated_data):
+
+        request = self.context['request']
+
+        patient = request.user.patient
+
+        return Appointment.objects.create(
+            patient=patient,
+            **validated_data
+        )
     
     from authentication.models import Prescription, MedicalReport
 

@@ -103,6 +103,16 @@
     <div class="dashboard-container">
       <h1 class="dashboard-title">Doctor Dashboard</h1>
 
+      <!-- DOCTOR PROFILE -->
+
+      <div class="row justify-content-center mb-4">
+        <div class="col-xl-8 col-lg-10 col-md-12">
+          <div class="doctor-profile-card">
+            <div id="doctorProfileContainer"></div>
+          </div>
+        </div>
+      </div>
+
       <!-- PENDING APPOINTMENTS -->
 
       <div class="dashboard-section">
@@ -110,7 +120,10 @@
           Pending Appointments
         </h2>
 
-        <div id="pendingAppointmentsContainer"></div>
+        <div
+          id="pendingAppointmentsContainer"
+          class="appointments-scroll"
+        ></div>
       </div>
 
       <!-- COMPLETED APPOINTMENTS -->
@@ -120,12 +133,15 @@
           Completed Appointments
         </h2>
 
-        <div id="completedAppointmentsContainer"></div>
+        <div
+          id="completedAppointmentsContainer"
+          class="appointments-scroll"
+        ></div>
       </div>
     </div>
 
     <script>
-      const token = localStorage.getItem("access_token");
+      const token = localStorage.getItem("access");
       if (!token) {
         window.location.replace("login.html");
       }
@@ -455,6 +471,300 @@
         }
       }
 
+      async function loadDoctorProfile() {
+        try {
+          const response = await axios.get(
+            "http://127.0.0.1:8001/auth/dashboard/doctor/",
+
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            },
+          );
+
+          const doctor = response.data;
+
+          let imageUrl = doctor.profile_image;
+
+          if (imageUrl && !imageUrl.startsWith("http")) {
+            imageUrl = `http://127.0.0.1:8001${imageUrl}`;
+          }
+
+          if (!imageUrl) {
+            imageUrl = `https://ui-avatars.com/api/?name=${doctor.user.name}`;
+          }
+
+          document.getElementById("doctorProfileContainer").innerHTML = `
+
+<div class="row align-items-center">
+
+    <div class="col-lg-3 text-center">
+
+        <img
+            src="${imageUrl}"
+            class="doctor-profile-image"
+        >
+
+    </div>
+
+    <div class="col-lg-9">
+
+        <h2 class="profile-name">
+            ${doctor.user.name}
+        </h2>
+
+        <div class="row mt-3">
+
+            <div class="col-md-6">
+
+                <p><strong>Department :</strong> ${doctor.department || "N/A"}</p>
+
+                <p><strong>Specialization :</strong> ${doctor.specialization || "N/A"}</p>
+
+                <p><strong>Qualification :</strong> ${doctor.qualification || "N/A"}</p>
+
+                <p><strong>Experience :</strong> ${doctor.experience || 0} Years</p>
+
+            </div>
+
+            <div class="col-md-6">
+
+                <p><strong>Phone :</strong> ${doctor.phone || "N/A"}</p>
+
+                <p><strong>Fee :</strong> ₹${doctor.consultation_fee || 0}</p>
+
+                <p><strong>Available :</strong>
+                ${doctor.available_start_time || "--"}
+                -
+                ${doctor.available_end_time || "--"}
+                </p>
+
+            </div>
+
+        </div>
+
+        <hr>
+
+        <p>${doctor.bio || "No Bio Available"}</p>
+
+        <button
+            class="btn btn-primary mt-3"
+            onclick="toggleDoctorEditForm()">
+
+            <i class="fa-solid fa-user-pen"></i>
+            Edit Profile
+
+        </button>
+
+    </div>
+
+</div>
+
+<div
+    id="doctorEditForm"
+    style="display:none;"
+    class="mt-4 border-top pt-4">
+
+</div>
+
+`;
+        } catch (error) {
+          console.log(error);
+        }
+      }
+
+      loadDoctorProfile();
+
+      function toggleDoctorEditForm() {
+        const form = document.getElementById("doctorEditForm");
+
+        if (form.style.display === "none") {
+          form.style.display = "block";
+
+          loadDoctorEditForm();
+        } else {
+          form.style.display = "none";
+        }
+      }
+
+      async function loadDoctorEditForm() {
+        try {
+          const response = await axios.get(
+            "http://127.0.0.1:8001/auth/doctor/profile/",
+
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            },
+          );
+
+          const doctor = response.data;
+
+          document.getElementById("doctorEditForm").innerHTML = `
+
+<h4 class="mb-4">
+    Update Doctor Profile
+</h4>
+
+<input
+    id="doctorPhone"
+    class="form-control mb-3"
+    value="${doctor.phone || ""}"
+    placeholder="Phone">
+
+<input
+    id="doctorDepartment"
+    class="form-control mb-3"
+    value="${doctor.department || ""}"
+    placeholder="Department">
+
+<input
+    id="doctorQualification"
+    class="form-control mb-3"
+    value="${doctor.qualification || ""}"
+    placeholder="Qualification">
+
+<input
+    id="doctorSpecialization"
+    class="form-control mb-3"
+    value="${doctor.specialization || ""}"
+    placeholder="Specialization">
+
+<input
+    id="doctorExperience"
+    type="number"
+    class="form-control mb-3"
+    value="${doctor.experience || ""}"
+    placeholder="Experience">
+
+<input
+    id="doctorFee"
+    type="number"
+    class="form-control mb-3"
+    value="${doctor.consultation_fee || ""}"
+    placeholder="Consultation Fee">
+
+<label class="mb-1">
+    Available Start Time
+</label>
+
+<input
+    id="doctorStartTime"
+    type="time"
+    class="form-control mb-3"
+    value="${doctor.available_start_time || ""}">
+
+<label class="mb-1">
+    Available End Time
+</label>
+
+<input
+    id="doctorEndTime"
+    type="time"
+    class="form-control mb-3"
+    value="${doctor.available_end_time || ""}">
+
+<textarea
+    id="doctorBio"
+    class="form-control mb-3"
+    placeholder="Bio">${doctor.bio || ""}</textarea>
+
+<input
+    type="file"
+    id="doctorImage"
+    class="form-control mb-3">
+
+<button
+    onclick="updateDoctorProfile()"
+    class="btn btn-success">
+
+    Update Profile
+
+</button>
+
+`;
+        } catch (error) {
+          console.log(error);
+        }
+      }
+
+      async function updateDoctorProfile() {
+        const formData = new FormData();
+
+        formData.append(
+          "department",
+          document.getElementById("doctorDepartment").value,
+        );
+
+        formData.append(
+          "qualification",
+          document.getElementById("doctorQualification").value,
+        );
+
+        formData.append(
+          "specialization",
+          document.getElementById("doctorSpecialization").value,
+        );
+
+        formData.append(
+          "experience",
+          parseInt(document.getElementById("doctorExperience").value) || 0,
+        );
+
+        formData.append(
+          "consultation_fee",
+          parseFloat(document.getElementById("doctorFee").value) || 0,
+        );
+
+        formData.append(
+          "available_start_time",
+          document.getElementById("doctorStartTime").value,
+        );
+
+        formData.append(
+          "available_end_time",
+          document.getElementById("doctorEndTime").value,
+        );
+
+        formData.append("bio", document.getElementById("doctorBio").value);
+
+        const image = document.getElementById("doctorImage").files[0];
+
+        if (image) {
+          formData.append("profile_image", image);
+        }
+
+        try {
+          await axios.put(
+            "http://127.0.0.1:8001/auth/doctor/profile/update/",
+
+            formData,
+
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "multipart/form-data",
+              },
+            },
+          );
+
+          alert("Profile Updated");
+
+          loadDoctorProfile();
+
+          //  → hide edit form after update
+          document.getElementById("doctorEditForm").style.display = "none";
+        } catch (error) {
+          console.log(error);
+
+          console.log("Doctor Update Error:", error.response?.data);
+
+          alert(JSON.stringify(error.response?.data || "Update Failed"));
+        }
+      }
+
       loadAppointments();
 
       // =========================================
@@ -719,7 +1029,7 @@
 
             <p>
               <i class="fa-solid fa-envelope"></i>
-              support@safecarehospital.com
+              safecarehospital236@gmail.com
             </p>
           </div>
         </div>

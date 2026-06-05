@@ -7,8 +7,14 @@ from patient.serializers import *
 from datetime import datetime, timedelta
 from rest_framework.views import APIView
 from authentication.models import DoctorProfile, Appointment,Department,Prescription,MedicalReport
-from .serializers import DoctorProfileSerializer
+from .serializers import DoctorProfileSerializer,DoctorProfileUpdateSerializer
 from patient.serializers import PrescriptionSerializer,MedicalReportSerializer
+from django.core.mail import send_mail,EmailMultiAlternatives
+from django.conf import settings
+from rest_framework import generics
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.parsers import MultiPartParser, FormParser
+
 
 from django.views.generic import TemplateView
 
@@ -37,6 +43,40 @@ class DoctorDashboardAPIView(APIView):
         return Response(serializer.data, status=200)
 
 
+class DoctorProfileUpdateAPIView(
+    generics.UpdateAPIView
+):
+
+    serializer_class = (
+        DoctorProfileUpdateSerializer
+    )
+
+    permission_classes = [
+        IsAuthenticated
+    ]
+
+    parser_classes = [
+        MultiPartParser,
+        FormParser
+    ]
+
+    def get_object(self):
+
+        return self.request.user.doctor
+    
+
+class DoctorProfileAPIView(APIView):
+
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+
+        doctor = request.user.doctor
+
+        serializer = DoctorProfileSerializer(doctor)
+
+        return Response(serializer.data)
+    
 
 class DepartmentListCreateAPIView(APIView):
     permission_classes = [IsAdminUser]
@@ -252,6 +292,8 @@ class DoctorAppointmentsAPIView(APIView):
 
 class AddPrescriptionAPIView(APIView):
 
+    permission_classes = [permissions.IsAuthenticated]
+
     def post(self, request, appointment_id):
 
         try:
@@ -275,50 +317,255 @@ class AddPrescriptionAPIView(APIView):
 
         notes = request.data.get("notes")
 
+        # CREATE OR UPDATE PRESCRIPTION
 
-
-        # CREATE / UPDATE PRESCRIPTION
         prescription, created = Prescription.objects.update_or_create(
 
             appointment=appointment,
 
             defaults={
-
                 "diagnosis": diagnosis,
-
                 "medicines": medicines,
-
                 "notes": notes
             }
         )
 
-
-        # =========================================
-        # UPDATE APPOINTMENT STATUS
-        # =========================================
+        # MARK APPOINTMENT COMPLETED
 
         appointment.status = "completed"
 
         appointment.save()
 
+        # =========================================
+        # SEND PROFESSIONAL HTML EMAIL
+        # =========================================
+
+        try:
+
+            patient_email = appointment.patient.user.email
+
+            patient_name = appointment.patient.user.get_full_name()
+
+            doctor_name = appointment.doctor.user.get_full_name()
+
+            subject = "Safe Care Hospital - Prescription Details"
+
+            html_content = f"""
+            <!DOCTYPE html>
+            <html>
+            <body style="margin:0;padding:0;background:#f4f7fb;font-family:Arial,sans-serif;">
+
+                <div style="max-width:800px;margin:30px auto;background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 0 15px rgba(0,0,0,0.1);">
+
+                    <!-- HEADER -->
+
+                    <div style="background:#0d6efd;padding:25px;text-align:center;color:white;">
+
+                        <h1 style="margin:0;">
+                            Safe Care Hospital
+                        </h1>
+
+                        <p style="margin-top:10px;">
+                            Digital Healthcare Management System
+                        </p>
+
+                    </div>
+
+                    <!-- BODY -->
+
+                    <div style="padding:30px;">
+
+                        <h2>
+                            Hello {patient_name},
+                        </h2>
+
+                        <p>
+                            Your consultation has been completed successfully.
+                            Please find your prescription details below.
+                        </p>
+
+                        <!-- DOCTOR CARD -->
+
+                        <div style="
+                            background:#e8f1ff;
+                            border-left:5px solid #0d6efd;
+                            padding:15px;
+                            margin-top:20px;
+                            border-radius:8px;
+                        ">
+
+                            <h3 style="margin-top:0;">
+                                Doctor Information
+                            </h3>
+
+                            <p>
+                                <strong>Doctor:</strong>
+                                {doctor_name}
+                            </p>
+
+                        </div>
+
+                        <!-- DIAGNOSIS CARD -->
+
+                        <div style="
+                            background:#e8f5e9;
+                            border-left:5px solid #28a745;
+                            padding:15px;
+                            margin-top:20px;
+                            border-radius:8px;
+                        ">
+
+                            <h3 style="margin-top:0;">
+                                Diagnosis
+                            </h3>
+
+                            <p>
+                                {diagnosis}
+                            </p>
+
+                        </div>
+
+                        <!-- MEDICINES TABLE -->
+
+                        <div style="margin-top:20px;">
+
+                            <h3>
+                                Prescribed Medicines
+                            </h3>
+
+                            <table style="
+                                width:100%;
+                                border-collapse:collapse;
+                            ">
+
+                                <tr style="background:#0d6efd;color:white;">
+
+                                    <th style="padding:12px;border:1px solid #ddd;">
+                                        Medicines
+                                    </th>
+
+                                </tr>
+
+                                <tr>
+
+                                    <td style="padding:12px;border:1px solid #ddd;">
+                                        {medicines}
+                                    </td>
+
+                                </tr>
+
+                            </table>
+
+                        </div>
+
+                        <!-- NOTES -->
+
+                        <div style="
+                            background:#fff3cd;
+                            border-left:5px solid #ffc107;
+                            padding:15px;
+                            margin-top:20px;
+                            border-radius:8px;
+                        ">
+
+                            <h3 style="margin-top:0;">
+                                Doctor Notes
+                            </h3>
+
+                            <p>
+                                {notes}
+                            </p>
+
+                        </div>
+
+                        <p style="margin-top:25px;">
+
+                            We wish you a speedy recovery.
+
+                        </p>
+
+                        <p>
+
+                            Thank you for choosing
+                            <strong>Safe Care Hospital</strong>.
+
+                        </p>
+
+                    </div>
+
+                    <!-- FOOTER -->
+
+                    <div style="
+                        background:#212529;
+                        color:white;
+                        text-align:center;
+                        padding:20px;
+                    ">
+
+                        <h3 style="margin:0;">
+                            Safe Care Hospital
+                        </h3>
+
+                        <p style="margin-top:8px;">
+                            Advanced Healthcare Management System
+                        </p>
+
+                        <p style="margin-top:8px;">
+                            Email: safecarehospital236@gmail.com
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </body>
+            </html>
+            """
+
+            email = EmailMultiAlternatives(
+
+                subject,
+
+                "Prescription Details",
+
+                settings.DEFAULT_FROM_EMAIL,
+
+                [patient_email]
+
+            )
+
+            email.attach_alternative(
+                html_content,
+                "text/html"
+            )
+
+            email.send()
+
+        except Exception as e:
+
+            print("EMAIL ERROR:", str(e))
+
+        # =========================================
+        # RESPONSE
+        # =========================================
 
         if created:
 
             return Response(
                 {
-                    "message": "Prescription Added Successfully"
+                    "message":
+                    "Prescription Added Successfully and Email Sent"
                 },
                 status=status.HTTP_201_CREATED
             )
 
-
         return Response(
             {
-                "message": "Prescription Updated Successfully"
+                "message":
+                "Prescription Updated Successfully and Email Sent"
             },
             status=status.HTTP_200_OK
-        )
-    
+        )    
 
     # =========================================
 # PATIENT MEDICAL HISTORY
