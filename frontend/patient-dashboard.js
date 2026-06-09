@@ -2,7 +2,7 @@ const token = localStorage.getItem("access");
 const storedUser = JSON.parse(localStorage.getItem("user"));
 
 document.addEventListener("DOMContentLoaded", () => {
-  console.log("Patient dashboard JS loaded ✅");
+  // console.log("Patient dashboard JS loaded ✅");
 
   const loginNav = document.getElementById("loginNav");
   const logoutNav = document.getElementById("logoutNav");
@@ -164,7 +164,7 @@ async function loadPatientDashboard() {
 </div>
 `;
   } catch (error) {
-    console.log(error);
+    // console.log(error);
 
     alert("Failed to load patient dashboard");
   }
@@ -265,7 +265,7 @@ async function loadPatientEditForm() {
         </button>
         `;
   } catch (error) {
-    console.log(error);
+    // console.log(error);
   }
 }
 
@@ -317,9 +317,9 @@ async function updatePatientProfile() {
   } catch (error) {
 
 
-    console.log(error);
+    // console.log(error);
 
-    console.log("Backend Error:", error.response?.data);
+    // console.log("Backend Error:", error.response?.data);
 
     alert(JSON.stringify(error.response?.data || "Update Failed"));
   }
@@ -370,7 +370,7 @@ async function loadPrescriptions() {
 
     document.getElementById("prescriptionsContainer").innerHTML = html;
   } catch (error) {
-    console.log(error);
+    // console.log(error);
 
     alert("Failed to load prescriptions");
   }
@@ -426,7 +426,7 @@ async function loadTests() {
 
     document.getElementById("testsContainer").innerHTML = html;
   } catch (error) {
-    console.log(error);
+    // console.log(error);
 
     alert("Failed to load tests");
   }
@@ -474,7 +474,7 @@ async function uploadReport() {
 
     loadReports();
   } catch (error) {
-    console.log(error);
+    // console.log(error);
 
     console.log(error.response?.data);
 
@@ -531,7 +531,7 @@ async function loadReports() {
 
     document.getElementById("reportsContainer").innerHTML = html;
   } catch (error) {
-    console.log(error);
+    // console.log(error);
 
     alert("Failed to load reports");
   }
@@ -559,7 +559,7 @@ async function logoutUser() {
       },
     );
   } catch (error) {
-    console.log(error);
+    // console.log(error);
   }
 
   localStorage.clear();

@@ -16,6 +16,7 @@ from django.db import IntegrityError
 
 
 
+
 class PatientDashboardAPIView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
@@ -164,26 +165,31 @@ class BookAppointmentAPIView(APIView):
 
             return Response({
 
-                "message": "Appointment booked successfully",
+    "message": "Appointment booked successfully",
 
-                "appointment": {
+    "appointment_id":
+    appointment.id,
 
-                    "id": appointment.id,
+    "appointment": {
 
-                    "doctor":
-                    appointment.doctor.user.get_full_name(),
+        "id":
+        appointment.id,
 
-                    "date":
-                    appointment.appointment_date,
+        "doctor":
+        appointment.doctor.user.get_full_name(),
 
-                    "time":
-                    appointment.appointment_time,
+        "date":
+        appointment.appointment_date,
 
-                    "status":
-                    appointment.status
-                }
+        "time":
+        appointment.appointment_time,
 
-            }, status=201)
+        "status":
+        appointment.status
+
+    }
+
+}, status=201)
 
         except IntegrityError as e:
 
@@ -444,4 +450,6 @@ class PatientTestRequestsAPIView(APIView):
         )
 
         return Response(serializer.data)
+    
+
 

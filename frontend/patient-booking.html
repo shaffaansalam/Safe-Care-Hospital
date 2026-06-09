@@ -211,8 +211,8 @@
 
       const token = localStorage.getItem("access");
 
-      console.log("TOKEN:", token);
-      console.log("USER:", localStorage.getItem("user"));
+      // console.log("TOKEN:", token);
+      // console.log("USER:", localStorage.getItem("user"));
 
       document.getElementById("date").min = new Date()
         .toISOString()
@@ -274,15 +274,15 @@
 
           const data = await response.json();
 
-          console.log("DEPARTMENTS:", data);
+          // console.log("DEPARTMENTS:", data);
 
           const departmentSelect = document.getElementById("department");
 
           departmentSelect.innerHTML = `
-                  <option value="">
-                      Select Department
-                  </option>
-              `;
+                              <option value="">
+                                  Select Department
+                              </option>
+                          `;
 
           data.forEach((dept) => {
             const option = document.createElement("option");
@@ -294,7 +294,7 @@
             departmentSelect.appendChild(option);
           });
         } catch (error) {
-          console.log("Department Error:", error);
+          // console.log("Department Error:", error);
         }
       }
 
@@ -318,15 +318,15 @@
 
             const data = await response.json();
 
-            console.log("DOCTORS:", data);
+            // console.log("DOCTORS:", data);
 
             const doctorSelect = document.getElementById("doctor");
 
             doctorSelect.innerHTML = `
-                  <option value="">
-                      Select Doctor
-                  </option>
-              `;
+                              <option value="">
+                                  Select Doctor
+                              </option>
+                          `;
 
             data.forEach((doctor) => {
               const option = document.createElement("option");
@@ -338,7 +338,7 @@
               doctorSelect.appendChild(option);
             });
           } catch (error) {
-            console.log("Doctor Error:", error);
+            // console.log("Doctor Error:", error);
           }
         });
 
@@ -362,15 +362,15 @@
 
           const data = await response.json();
 
-          console.log("SLOTS:", data);
+          // console.log("SLOTS:", data);
 
           const timeSelect = document.getElementById("time");
 
           timeSelect.innerHTML = `
-                  <option value="">
-                      Select Time Slot
-                  </option>
-              `;
+                              <option value="">
+                                  Select Time Slot
+                              </option>
+                          `;
 
           // NO SLOTS
 
@@ -398,7 +398,7 @@
             timeSelect.appendChild(option);
           });
         } catch (error) {
-          console.log("Slot Error:", error);
+          // console.log("Slot Error:", error);
         }
       }
 
@@ -433,7 +433,7 @@
 
           const token = localStorage.getItem("access");
 
-          console.log("BOOKING TOKEN:", token);
+          // console.log("BOOKING TOKEN:", token);
 
           // LOGIN CHECK
 
@@ -457,7 +457,7 @@
               reason: document.getElementById("reason").value,
             };
 
-            console.log("BOOKING DATA:", bookingData);
+            // console.log("BOOKING DATA:", bookingData);
 
             const response = await fetch(
               "http://127.0.0.1:8001/auth/appointments/book/",
@@ -475,17 +475,22 @@
 
             const data = await response.json();
 
-            console.log("BOOKING RESPONSE:", data);
+            // console.log("BOOKING RESPONSE:", data);
+            // console.log("SUCCESS BLOCK RUNNING");
 
-            // SUCCESS
+            console.log(data);
 
             if (response.ok) {
-              console.log("✅ Appointment booked successfully");
+              //  alert("SUCCESS BLOCK");
 
-              showToast(
-                data.message || "Appointment booked successfully",
-                "success",
-              );
+              localStorage.setItem("appointment_id", data.appointment_id);
+
+              // console.log(
+              //   "Saved appointment id:",
+              //   localStorage.getItem("appointment_id"),
+              // );
+
+              showToast("Appointment booked successfully", "success");
 
               document.getElementById("message").className =
                 "mt-4 text-green-600 font-semibold";
@@ -495,18 +500,23 @@
 
               document.getElementById("bookingForm").reset();
 
-              // RESET SLOT DROPDOWN
-
               document.getElementById("time").innerHTML = `
-                      <option value="">
-                          Select Time Slot
-                      </option>
-                  `;
-            }
 
-            // ERROR
-            else {
-              console.log("❌ Booking Failed");
+              <option value="">
+                  Select Time Slot
+              </option>
+
+          `;
+
+              // console.log("BEFORE REDIRECT");
+
+              window.location.replace(
+                "http://127.0.0.1:5500/frontend/payment.html",
+              );
+
+              // console.log("AFTER REDIRECT");
+            } else {
+              // console.log("Booking Failed");
 
               const errorMessage =
                 data.error ||
@@ -522,7 +532,7 @@
               document.getElementById("message").innerText = errorMessage;
             }
           } catch (error) {
-            console.log("Booking Error:", error);
+            // console.log("Booking Error:", error);
 
             showToast("Server error", "error");
 

@@ -17,6 +17,9 @@ PaymentSerializer)
 from doctor.serializers import (DoctorProfileSerializer,DepartmentSerializer)
 from patient.serializers import (PatientProfileSerializer,AppointmentSerializer,UserRegSerializer)
 
+from django.conf import settings
+from .payment_utils import client
+
 from django.views.generic import TemplateView
 
 
@@ -439,7 +442,137 @@ class PaymentDetailAPIView(APIView):
 
         serializer = PaymentSerializer(payment)
 
-        return Response(serializer.data)    
+        return Response(serializer.data)  
+
+
+class CreateRazorpayOrderAPIView(APIView):
+
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+
+        appointment_id = request.data.get(
+            "appointment_id"
+        )
+
+        try:
+
+            appointment = Appointment.objects.get(
+                id=appointment_id
+            )
+
+        except Appointment.DoesNotExist:
+
+            return Response(
+                {
+                    "error":"Appointment not found"
+                },
+                status=404
+            )
+
+        amount = int(
+            appointment.doctor.consultation_fee * 100
+        )
+
+        order = client.order.create({
+
+            "amount": amount,
+
+            "currency": "INR",
+
+            "payment_capture": 1
+
+        })
+
+        return Response({
+
+            "order_id": order["id"],
+
+            "amount": amount,
+
+            "key": settings.RAZORPAY_KEY_ID,
+
+            "doctor":
+            appointment.doctor.user.get_full_name(),
+
+            "patient":
+            appointment.patient.user.get_full_name(),
+
+            "department":
+            appointment.doctor.department.name,
+
+            "date":
+           appointment.appointment_date,
+
+           "time":
+           appointment.appointment_time
+
+        })
+    
+
+
+class VerifyPaymentAPIView(APIView):
+
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+
+        appointment_id = request.data.get(
+            "appointment_id"
+        )
+
+        try:
+
+            appointment = Appointment.objects.get(
+                id=appointment_id
+            )
+
+        except Appointment.DoesNotExist:
+
+            return Response(
+                {
+                    "error":"Appointment not found"
+                },
+                status=404
+            )
+
+        payment = Payment.objects.create(
+
+            appointment=appointment,
+
+            patient=appointment.patient,
+
+            doctor=appointment.doctor,
+
+           amount=appointment.doctor.consultation_fee,
+
+            payment_status="paid",
+
+            payment_method="upi",
+
+            transaction_id=request.data.get(
+                "razorpay_payment_id"
+            ),
+
+            razorpay_order_id=request.data.get(
+                "razorpay_order_id"
+            ),
+
+            razorpay_payment_id=request.data.get(
+                "razorpay_payment_id"
+            )
+
+        )
+
+        return Response({
+
+            "message":"Payment Successful",
+
+            "payment_id":payment.id
+
+        })        
+
+
     
 
 class AdminPaymentListAPIView(APIView):
@@ -460,10 +593,14 @@ class AdminPaymentListAPIView(APIView):
         )["total"] or 0
 
         return Response({
-            "payments": serializer.data,
-            "total_revenue": total_revenue
-        })
 
+            "payments":
+            serializer.data,
+
+            "total_revenue":
+            total_revenue
+
+        })
 
 class DoctorDashboardTemplateView(TemplateView):
 

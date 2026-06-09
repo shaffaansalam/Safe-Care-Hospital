@@ -110,11 +110,11 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     for (let pair of data.entries()) {
-      console.log(pair[0], pair[1]);
+      // console.log(pair[0], pair[1]);
     }
 
     try {
-      console.log("🚀 Sending request...");
+      // console.log("🚀 Sending request...");
 
       const res = await axios.post(
         "http://127.0.0.1:8001/auth/register/",
@@ -126,8 +126,8 @@ document.addEventListener("DOMContentLoaded", () => {
         },
       );
 
-      console.log("Full response:", res);
-      console.log("Status:", res.status);
+      // console.log("Full response:", res);
+      // console.log("Status:", res.status);
 
       const userRole = role.toLowerCase();
 
@@ -145,7 +145,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       form.reset();
 
-      console.log("Redirecting to login.html...");
+      // console.log("Redirecting to login.html...");
 
       window.location.href = "login.html";
     } catch (err) {

@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
-  console.log("✅ JS Loaded");
+  // console.log("✅ JS Loaded");
 
   const loginForm = document.getElementById("loginForm");
   const errorMsg = document.getElementById("errorMsg");
@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
   loginForm.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    console.log("🚀 Form submitted properly");
+    // console.log("🚀 Form submitted properly");
 
     errorMsg.classList.add("hidden");
 
@@ -34,17 +34,17 @@ document.addEventListener("DOMContentLoaded", () => {
       // STORE TOKENS
       localStorage.setItem("access", access);
       localStorage.setItem("refresh", refresh);
-      console.log("TOKEN SAVED:", localStorage.getItem("access_token"));
+      console.log("TOKEN SAVED:", localStorage.getItem("access"));
 
       localStorage.setItem("user", JSON.stringify(user));
       localStorage.setItem("role", role);
       localStorage.setItem("isLoggedIn", "true");
 
-      console.log("💾 Tokens stored successfully");
+      // console.log("💾 Tokens stored successfully");
 
       const userRole = role?.toLowerCase().trim();
 
-      console.log("🎯 Redirecting as:", userRole);
+      // console.log("🎯 Redirecting as:", userRole);
 
       // ROLE BASED REDIRECT
       if (userRole === "patient") {

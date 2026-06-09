@@ -89,6 +89,10 @@ path('patient/profile/',PatientProfileAPIView.as_view(),name='patient-profile'),
 
 path('doctor/profile/',DoctorProfileAPIView.as_view(),name='doctor-profile'),
 
+path("payments/create-order/",CreateRazorpayOrderAPIView.as_view()),
+
+path("payments/verify/",VerifyPaymentAPIView.as_view()),
+
 
 
 ]

@@ -46,17 +46,22 @@ class LogoutSerializer(serializers.Serializer):
     refresh = serializers.CharField()        
 
     
-class PaymentSerializer(serializers.ModelSerializer):
+class PaymentSerializer(
+    serializers.ModelSerializer
+):
+
+    patient_name = serializers.CharField(
+        source="patient.user.email",
+        read_only=True
+    )
+
+    doctor_name = serializers.CharField(
+        source="doctor.user.email",
+        read_only=True
+    )
 
     class Meta:
+
         model = Payment
-        fields = '__all__'
 
-    def validate_amount(self, value):
-
-        if value <= 0:
-            raise serializers.ValidationError(
-                "Amount must be greater than zero"
-            )
-
-        return value  
+        fields = "__all__" 

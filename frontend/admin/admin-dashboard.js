@@ -5,7 +5,7 @@ const api = axios.create({
   },
 });
 
-console.log("ACCESS TOKEN:", localStorage.getItem("access"));
+// console.log("ACCESS TOKEN:", localStorage.getItem("access"));
 
 async function loadDashboard() {
   try {
@@ -13,7 +13,7 @@ async function loadDashboard() {
 
     const data = response.data;
 
-    console.log("DASHBOARD:", data);
+    // console.log("DASHBOARD:", data);
 
     document.getElementById("totalDoctors").innerText = data.total_doctors || 0;
 
@@ -26,7 +26,7 @@ async function loadDashboard() {
     document.getElementById("totalPayments").innerText =
       data.total_payments || 0;
   } catch (error) {
-    console.log("Dashboard Error:", error.response?.data || error);
+    // console.log("Dashboard Error:", error.response?.data || error);
   }
 }
 
@@ -52,7 +52,7 @@ async function loadDoctors() {
   try {
     const response = await api.get("admin/doctors/");
 
-    console.log("DOCTORS:", response.data);
+    // console.log("DOCTORS:", response.data);
 
     const doctors = response.data.doctors;
 
@@ -102,7 +102,7 @@ async function loadDoctors() {
 
     document.getElementById("pendingDoctorTable").innerHTML = html;
   } catch (error) {
-    console.log("Doctor Error:", error.response?.data || error);
+    // console.log("Doctor Error:", error.response?.data || error);
   }
 }
 
@@ -114,7 +114,7 @@ async function approveDoctor(id) {
 
     loadDoctors();
   } catch (error) {
-    console.log(error.response?.data || error);
+    // console.log(error.response?.data || error);
   }
 }
 
@@ -156,11 +156,11 @@ ${patient.user?.last_name || ""}
             `;
     });
 
-    console.log(html);
+   
 
     document.getElementById("patientTable").innerHTML = html;
   } catch (error) {
-    console.log("PATIENT ERROR:", error.response?.data);
+    // console.log("PATIENT ERROR:", error.response?.data);
   }
 }
 
@@ -197,11 +197,11 @@ async function loadDepartments() {
             `;
     });
 
-    console.log(html);
+   
 
     document.getElementById("departmentTable").innerHTML = html;
   } catch (error) {
-    console.log("DEPARTMENT ERROR:", error.response?.data);
+    // console.log("DEPARTMENT ERROR:", error.response?.data);
   }
 }
 
@@ -209,7 +209,7 @@ async function loadAppointments() {
   try {
     const response = await api.get("admin/appointments/");
 
-    console.log("APPOINTMENTS:", response.data);
+    // console.log("APPOINTMENTS:", response.data);
 
     const appointments = response.data.appointments;
 
@@ -243,31 +243,46 @@ async function loadAppointments() {
 
     document.getElementById("appointmentTable").innerHTML = html;
   } catch (error) {
-    console.log("APPOINTMENT ERROR:", error.response?.data || error);
+    // console.log("APPOINTMENT ERROR:", error.response?.data || error);
   }
 }
 
 async function loadPayments() {
   try {
     const response = await api.get("admin/payments/");
+    // console.log("PAYMENTS RESPONSE:",response.data);
 
-    document.getElementById("paymentTable").innerHTML = `
+    let html = "";
+
+    response.data.payments.forEach((payment) => {
+      html += `
 
         <tr>
 
-            <td>1</td>
+          <td>${payment.id}</td>
 
-            <td>Total Revenue</td>
+          <td>
+            ${payment.patient_name || payment.patient}
+          </td>
 
-            <td>₹ ${response.data.payments}</td>
+          <td>
+            ₹ ${payment.amount}
+          </td>
 
-            <td>Received</td>
+          <td>
+            <span class="badge bg-success">
+              ${payment.payment_status}
+            </span>
+          </td>
 
         </tr>
 
         `;
+    });
+
+    document.getElementById("paymentTable").innerHTML = html;
   } catch (error) {
-    console.log("Payment Error:", error.response?.data || error);
+    // console.log("Payment Error:", error.response?.data || error);
   }
 }
 

@@ -72,7 +72,7 @@ class DoctorProfile(models.Model):
     experience = models.PositiveIntegerField()
     bio = models.TextField(blank=True, null=True)
 
-    consultation_fee = models.DecimalField(max_digits=8, decimal_places=2)
+    consultation_fee = models.DecimalField(max_digits=10,decimal_places=2,default=500)
 
     available_start_time = models.TimeField(blank=True, null=True)
     available_end_time = models.TimeField(blank=True, null=True)
@@ -148,28 +148,39 @@ class Payment(models.Model):
         ('wallet', 'Wallet'),
     )
 
-    appointment = models.ForeignKey(Appointment, on_delete=models.CASCADE, related_name='payments')
+    appointment = models.ForeignKey(
+        Appointment,
+        on_delete=models.CASCADE,
+        related_name='payments'
+    )
 
     patient = models.ForeignKey(
         PatientProfile,
-        on_delete=models.CASCADE , related_name='payments'
+        on_delete=models.CASCADE,
+        related_name='payments'
     )
 
     doctor = models.ForeignKey(
         DoctorProfile,
-        on_delete=models.CASCADE, related_name='payments'
+        on_delete=models.CASCADE,
+        related_name='payments'
     )
 
-    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    amount = models.DecimalField(
+        max_digits=10,
+        decimal_places=2
+    )
 
     payment_status = models.CharField(
         max_length=10,
-        choices=PAYMENT_STATUS
+        choices=PAYMENT_STATUS,
+        default='unpaid'
     )
 
     payment_method = models.CharField(
         max_length=10,
-        choices=PAYMENT_METHOD
+        choices=PAYMENT_METHOD,
+        blank=True
     )
 
     transaction_id = models.CharField(
@@ -177,7 +188,22 @@ class Payment(models.Model):
         blank=True
     )
 
-    created_at = models.DateTimeField(auto_now_add=True) 
+    razorpay_order_id = models.CharField(
+        max_length=200,
+        blank=True
+    )
+
+    razorpay_payment_id = models.CharField(
+        max_length=200,
+        blank=True
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
+
+    def __str__(self):
+        return f"{self.patient} - {self.amount}"
 
     # =========================================
 # PRESCRIPTION MODEL
