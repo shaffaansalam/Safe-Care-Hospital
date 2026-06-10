@@ -93,6 +93,132 @@ REPORTS
     word-break: break-word;
 }
 
+/* ======================================
+   PAYMENT HISTORY
+====================================== */
+
+.payment-table {
+
+    width: 100%;
+
+    border-collapse: collapse;
+
+    overflow: hidden;
+
+    border-radius: 15px;
+
+    background: white;
+
+}
+
+.payment-table thead {
+
+    background: #2563eb;
+
+    color: white;
+
+}
+
+.payment-table th {
+
+    padding: 15px;
+
+    text-align: left;
+
+    font-weight: 600;
+
+}
+
+.payment-table td {
+
+    padding: 15px;
+
+    border-bottom: 1px solid #e5e7eb;
+
+}
+
+.payment-table tr:hover {
+
+    background: #f8fafc;
+
+}
+
+.status-paid {
+
+    color: #16a34a;
+
+    font-weight: 700;
+
+}
+
+
+
+.invoice-btn{
+
+    background:#2563eb;
+
+    color:white;
+
+    border:none;
+
+    padding:8px 16px;
+
+    border-radius:8px;
+
+    font-weight:600;
+
+    transition:.3s;
+
+}
+
+.invoice-btn:hover{
+
+    background:#1d4ed8;
+
+    transform:translateY(-2px);
+
+}
+
+.status-paid{
+
+    background:#dcfce7;
+
+    color:#15803d;
+
+    padding:6px 12px;
+
+    border-radius:20px;
+
+    font-weight:600;
+
+}
+
+.status-unpaid{
+
+    background:#fee2e2;
+
+    color:#dc2626;
+
+    padding:6px 12px;
+
+    border-radius:20px;
+
+    font-weight:600;
+
+}
+
+
+@media(max-width:768px){
+
+    .payment-table {
+
+        min-width: 700px;
+
+    }
+
+}
+
+
 /* ==========================
 TABLET
 ========================== */

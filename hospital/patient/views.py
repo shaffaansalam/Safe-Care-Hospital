@@ -232,6 +232,68 @@ class PatientAppointmentsAPIView(APIView):
 
         return Response(serializer.data)
     
+class CancelAppointmentAPIView(APIView):
+
+    permission_classes = [
+        permissions.IsAuthenticated
+    ]
+
+    def patch(self, request, appointment_id):
+
+        try:
+
+            appointment = Appointment.objects.get(
+
+                id=appointment_id,
+
+                patient=request.user.patient
+
+            )
+
+        except Appointment.DoesNotExist:
+
+            return Response(
+
+                {
+                    "error":
+                    "Appointment not found"
+                },
+
+                status=404
+
+            )
+
+        if appointment.status in [
+
+            "completed",
+
+            "cancelled"
+
+        ]:
+
+            return Response(
+
+                {
+                    "error":
+                    "Cannot cancel this appointment"
+                },
+
+                status=400
+
+            )
+
+        appointment.status = "cancelled"
+
+        appointment.save()
+
+        return Response(
+
+            {
+                "message":
+                "Appointment cancelled successfully"
+            }
+
+        )
 
     # =========================================
 # PATIENT PRESCRIPTIONS

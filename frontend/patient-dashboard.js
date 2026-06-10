@@ -52,6 +52,8 @@ document.addEventListener("DOMContentLoaded", () => {
   loadPrescriptions();
   loadTests();
   loadReports();
+  loadAppointments();
+  loadPayments();
 });
 
 // =====================================
@@ -71,8 +73,6 @@ async function loadPatientDashboard() {
     );
 
     const patient = response.data;
-
-    
 
     let imageUrl = patient.profile_image;
 
@@ -315,8 +315,6 @@ async function updatePatientProfile() {
     //  → hide edit form after update
     document.getElementById("patientEditForm").style.display = "none";
   } catch (error) {
-
-
     // console.log(error);
 
     // console.log("Backend Error:", error.response?.data);
@@ -346,26 +344,47 @@ async function loadPrescriptions() {
     response.data.forEach((item) => {
       html += `
 
-      <div class="border p-4 rounded mb-4">
+<div class="border p-4 rounded mb-4">
 
-        <p>
-          <strong>Diagnosis:</strong>
-          ${item.diagnosis}
-        </p>
+    <p>
 
-        <p>
-          <strong>Medicines:</strong>
-          ${item.medicines}
-        </p>
+        <strong>Diagnosis:</strong>
 
-        <p>
-          <strong>Notes:</strong>
-          ${item.notes}
-        </p>
+        ${item.diagnosis}
 
-      </div>
+    </p>
 
-      `;
+    <p>
+
+        <strong>Medicines:</strong>
+
+        ${item.medicines}
+
+    </p>
+
+    <p>
+
+        <strong>Notes:</strong>
+
+        ${item.notes}
+
+    </p>
+
+    <button
+
+        class="invoice-btn mt-3"
+
+        onclick="downloadPrescription(${item.id})">
+
+        <i class="fa-solid fa-file-pdf"></i>
+
+        Download Prescription
+
+    </button>
+
+</div>
+
+`;
     });
 
     document.getElementById("prescriptionsContainer").innerHTML = html;
@@ -536,6 +555,333 @@ async function loadReports() {
     alert("Failed to load reports");
   }
 }
+
+// =====================================
+// LOAD APPOINTMENTS
+// =====================================
+
+async function loadAppointments() {
+
+    try {
+
+        const response = await axios.get(
+
+            "http://127.0.0.1:8001/auth/appointments/my/",
+
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            }
+
+        );
+
+        let html = "";
+
+        response.data.forEach(item => {
+
+            html += `
+
+            <div class="border p-4 rounded mb-4">
+
+                <p>
+
+                    <strong>Doctor:</strong>
+
+                    ${item.doctor_name}
+
+                </p>
+
+                <p>
+
+                    <strong>Date:</strong>
+
+                    ${item.appointment_date}
+
+                </p>
+
+                <p>
+
+                    <strong>Time:</strong>
+
+                    ${item.appointment_time}
+
+                </p>
+
+                <p>
+
+                    <strong>Reason:</strong>
+
+                    ${item.reason}
+
+                </p>
+
+                <p>
+
+                    <strong>Status:</strong>
+
+                    ${item.status}
+
+                </p>
+
+                ${
+                    item.status === "pending" ||
+                    item.status === "accepted"
+
+                    ?
+
+                    `
+
+                    <button
+
+                        class="btn btn-danger mt-3"
+
+                        onclick="cancelAppointment(${item.id})">
+
+                        Cancel Appointment
+
+                    </button>
+
+                    `
+
+                    :
+
+                    ""
+
+                }
+
+            </div>
+
+            `;
+
+        });
+
+        document.getElementById(
+            "appointmentsContainer"
+        ).innerHTML = html;
+
+    }
+
+    catch(error){
+
+        console.log(error);
+
+    }
+
+}
+
+async function cancelAppointment(id){
+
+    if(
+        !confirm(
+            "Are you sure you want to cancel this appointment?"
+        )
+    ){
+        return;
+    }
+
+    try{
+
+        await axios.patch(
+
+            `http://127.0.0.1:8001/auth/appointments/cancel/${id}/`,
+
+            {},
+
+            {
+                headers:{
+                    Authorization:`Bearer ${token}`
+                }
+            }
+
+        );
+
+        alert(
+            "Appointment cancelled successfully"
+        );
+
+        loadAppointments();
+
+    }
+
+    catch(error){
+
+        console.log(error);
+
+        alert(
+            "Cancellation failed"
+        );
+
+    }
+
+}
+
+
+
+async function loadPayments() {
+  try {
+    const response = await axios.get(
+      "http://127.0.0.1:8001/auth/payments/history/",
+
+      {
+        headers: {
+          Authorization: "Bearer " + localStorage.getItem("access"),
+        },
+      },
+    );
+
+    const payments = response.data;
+
+    const table = document.getElementById("paymentTable");
+
+    if (!table) return;
+
+    table.innerHTML = "";
+
+    payments.forEach((payment) => {
+      table.innerHTML += `
+
+            <tr>
+
+                <td>
+                    ${new Date(payment.created_at).toLocaleDateString()}
+                </td>
+
+                <td>
+                    ${payment.doctor_name}
+                </td>
+
+                <td>
+                    ₹${payment.amount}
+                </td>
+
+<td>
+
+<span class="
+${payment.payment_status === "paid" ? "status-paid" : "status-unpaid"}
+">
+
+${payment.payment_status}
+
+</span>
+
+</td>
+
+<td>
+
+    <button
+        class="invoice-btn"
+        onclick="downloadInvoice(${payment.id})">
+
+        <i class="fa-solid fa-file-pdf"></i>
+
+        Download Invoice
+
+    </button>
+
+</td>
+
+            </tr>
+
+            `;
+    });
+  } catch (error) {
+    console.log("Payment History Error:", error);
+  }
+}
+
+function downloadInvoice(id) {
+  const token = localStorage.getItem("access");
+
+  fetch(
+    `http://127.0.0.1:8001/auth/payments/invoice/${id}/`,
+
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  )
+    .then((response) => response.blob())
+
+    .then((blob) => {
+      const url = window.URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+
+      a.href = url;
+
+      a.download = `invoice_${id}.pdf`;
+
+      a.click();
+    })
+
+    .catch((error) => {
+      console.log(error);
+
+      alert("Invoice download failed");
+    });
+}
+
+function downloadPrescription(id){
+
+    const token =
+        localStorage.getItem("access");
+
+    fetch(
+
+        `http://127.0.0.1:8001/auth/prescription/pdf/${id}/`,
+
+        {
+
+            headers: {
+
+                Authorization:
+                    `Bearer ${token}`
+
+            }
+
+        }
+
+    )
+
+    .then(response => response.blob())
+
+    .then(blob => {
+
+        const url =
+            window.URL.createObjectURL(blob);
+
+        const a =
+            document.createElement("a");
+
+        a.href = url;
+
+        a.download =
+            `Prescription_${id}.pdf`;
+
+        document.body.appendChild(a);
+
+        a.click();
+
+        a.remove();
+
+        window.URL.revokeObjectURL(url);
+
+    })
+
+    .catch(error => {
+
+        console.log(error);
+
+        alert(
+            "Failed to download prescription"
+        );
+
+    });
+
+}
+
 
 // =====================================
 // LOGOUT

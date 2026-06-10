@@ -20,6 +20,12 @@ from patient.serializers import (PatientProfileSerializer,AppointmentSerializer,
 from django.conf import settings
 from .payment_utils import client
 
+from django.http import HttpResponse
+
+from reportlab.pdfgen import canvas
+
+from reportlab.lib.pagesizes import letter
+
 from django.views.generic import TemplateView
 
 
@@ -572,6 +578,36 @@ class VerifyPaymentAPIView(APIView):
 
         })        
 
+class PatientPaymentHistoryAPIView(APIView):
+
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+
+        try:
+
+            patient = PatientProfile.objects.get(
+                user=request.user
+            )
+
+        except PatientProfile.DoesNotExist:
+
+            return Response(
+                {"error": "Patient not found"},
+                status=404
+            )
+
+        payments = Payment.objects.filter(
+            patient=patient
+        ).order_by("-created_at")
+
+        serializer = PaymentSerializer(
+            payments,
+            many=True
+        )
+
+        return Response(serializer.data)
+    
 
     
 
@@ -601,6 +637,126 @@ class AdminPaymentListAPIView(APIView):
             total_revenue
 
         })
+
+class DownloadInvoiceAPIView(APIView):
+
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, payment_id):
+
+        try:
+
+            payment = Payment.objects.get(
+                id=payment_id
+            )
+
+        except Payment.DoesNotExist:
+
+            return Response(
+                {
+                    "error": "Payment not found"
+                },
+                status=404
+            )
+
+        response = HttpResponse(
+            content_type='application/pdf'
+        )
+
+        response[
+            'Content-Disposition'
+        ] = f'attachment; filename="invoice_{payment.id}.pdf"'
+
+        pdf = canvas.Canvas(
+            response,
+            pagesize=letter
+        )
+
+        pdf.setTitle(
+            "Safe Care Invoice"
+        )
+
+        pdf.setFont(
+            "Helvetica-Bold",
+            20
+        )
+
+        pdf.drawString(
+            200,
+            760,
+            "SAFE CARE HOSPITAL"
+        )
+
+        pdf.setFont(
+            "Helvetica",
+            12
+        )
+
+        pdf.drawString(
+            50,
+            700,
+            f"Invoice ID : {payment.id}"
+        )
+
+        pdf.drawString(
+            50,
+            675,
+            f"Patient : {payment.patient.user.get_full_name()}"
+        )
+
+        pdf.drawString(
+            50,
+            650,
+            f"Doctor : {payment.doctor.user.get_full_name()}"
+        )
+
+        pdf.drawString(
+            50,
+            625,
+            f"Amount : ₹{payment.amount}"
+        )
+
+        pdf.drawString(
+            50,
+            600,
+            f"Status : {payment.payment_status}"
+        )
+
+        pdf.drawString(
+            50,
+            575,
+            f"Payment Method : {payment.payment_method}"
+        )
+
+        pdf.drawString(
+            50,
+            550,
+            f"Transaction ID : {payment.transaction_id}"
+        )
+
+        pdf.drawString(
+            50,
+            525,
+            f"Date : {payment.created_at.strftime('%d-%m-%Y %H:%M')}"
+        )
+
+        pdf.line(
+            50,
+            500,
+            550,
+            500
+        )
+
+        pdf.drawString(
+            50,
+            470,
+            "Thank you for choosing Safe Care Hospital."
+        )
+
+        pdf.save()
+
+        return response
+        
 
 class DoctorDashboardTemplateView(TemplateView):
 

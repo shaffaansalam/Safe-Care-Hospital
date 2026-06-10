@@ -14,6 +14,8 @@ from django.conf import settings
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.parsers import MultiPartParser, FormParser
+from django.http import HttpResponse
+from reportlab.pdfgen import canvas
 
 
 from django.views.generic import TemplateView
@@ -565,7 +567,126 @@ class AddPrescriptionAPIView(APIView):
                 "Prescription Updated Successfully and Email Sent"
             },
             status=status.HTTP_200_OK
-        )    
+        )
+
+
+class PrescriptionPDFAPIView(APIView):
+
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, pk):
+
+        try:
+
+            prescription = Prescription.objects.get(
+                id=pk
+            )
+
+        except Prescription.DoesNotExist:
+
+            return Response(
+                {
+                    "error": "Prescription not found"
+                },
+                status=404
+            )
+
+        response = HttpResponse(
+            content_type="application/pdf"
+        )
+
+        response[
+            "Content-Disposition"
+        ] = f'attachment; filename="Prescription_{pk}.pdf"'
+
+        p = canvas.Canvas(response)
+
+        p.setFont(
+            "Helvetica-Bold",
+            18
+        )
+
+        p.drawString(
+            180,
+            800,
+            "SAFE CARE HOSPITAL"
+        )
+
+        p.setFont(
+            "Helvetica",
+            12
+        )
+
+        p.drawString(
+            50,
+            740,
+            f"Prescription ID : {prescription.id}"
+        )
+
+        p.drawString(
+            50,
+            710,
+            f"Date : {prescription.created_at.strftime('%d-%m-%Y')}"
+        )
+
+        p.drawString(
+            50,
+            680,
+            f"Patient : {prescription.appointment.patient.user.get_full_name()}"
+        )
+
+        p.drawString(
+            50,
+            650,
+            f"Doctor : {prescription.appointment.doctor.user.get_full_name()}"
+        )
+
+        p.drawString(
+            50,
+            600,
+            "Diagnosis :"
+        )
+
+        p.drawString(
+            150,
+            600,
+            prescription.diagnosis
+        )
+
+        p.drawString(
+            50,
+            550,
+            "Medicines :"
+        )
+
+        p.drawString(
+            150,
+            550,
+            prescription.medicines
+        )
+
+        p.drawString(
+            50,
+            500,
+            "Notes :"
+        )
+
+        p.drawString(
+            150,
+            500,
+            prescription.notes
+        )
+
+        p.drawString(
+            50,
+            420,
+            "Get Well Soon!"
+        )
+
+        p.save()
+
+        return response
+            
 
     # =========================================
 # PATIENT MEDICAL HISTORY

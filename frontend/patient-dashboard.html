@@ -175,6 +175,49 @@
       </div>
     </div>
 
+    <!-- PAYMENT HISTORY -->
+
+    <div class="patient-dashboard-container">
+      <div class="dashboard-section">
+        <div class="section-header">
+          <h2 class="section-title">
+            <i class="fa-solid fa-credit-card"></i>
+            Payment History
+          </h2>
+        </div>
+
+        <div class="table-responsive">
+          <table class="payment-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+
+                <th>Doctor</th>
+
+                <th>Amount</th>
+
+                <th>Status</th>
+
+                <th>Invoice</th>
+              </tr>
+            </thead>
+
+            <tbody id="paymentTable"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- MY APPOINTMENTS -->
+
+    <div class="patient-dashboard-container">
+      <div class="dashboard-section">
+        <h2 class="section-title">My Appointments</h2>
+
+        <div id="appointmentsContainer"></div>
+      </div>
+    </div>
+
     <!--  Only one script -->
 
     <script src="patient-dashboard.js"></script>

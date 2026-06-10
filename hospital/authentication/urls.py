@@ -57,6 +57,8 @@ path('doctor/<int:doctor_id>/slots/', DoctorAvailableSlotsAPIView.as_view()),
 path('appointments/book/', BookAppointmentAPIView.as_view()),
 
 path('appointments/my/', PatientAppointmentsAPIView.as_view()),
+path('appointments/cancel/<int:appointment_id>/',CancelAppointmentAPIView.as_view()),
+
 path('departments/dropdown/',DepartmentDropdownAPIView.as_view(),),
 
 path('departments/<int:department_id>/doctors/',DepartmentDoctorsAPIView.as_view(),),
@@ -71,10 +73,12 @@ path('doctor/patient-history/<int:patient_id>/',PatientMedicalHistoryAPIView.as_
 
 path('patient/prescriptions/',PatientPrescriptionsAPIView.as_view()),
 
+path('prescription/pdf/<int:pk>/',PrescriptionPDFAPIView.as_view()),
+
 path('patient/reports/',PatientReportsAPIView.as_view()),
 
-
 path('doctor/request-test/<int:appointment_id>/',RequestMedicalTestAPIView.as_view()),
+
 path('patient/test-requests/',PatientTestRequestsAPIView.as_view()),
 
 path('patient/upload-report/<int:test_request_id>/',PatientUploadReportAPIView.as_view()),
@@ -92,6 +96,10 @@ path('doctor/profile/',DoctorProfileAPIView.as_view(),name='doctor-profile'),
 path("payments/create-order/",CreateRazorpayOrderAPIView.as_view()),
 
 path("payments/verify/",VerifyPaymentAPIView.as_view()),
+
+path("payments/history/",PatientPaymentHistoryAPIView.as_view()),
+
+path("payments/invoice/<int:payment_id>/",DownloadInvoiceAPIView.as_view()),
 
 
 
