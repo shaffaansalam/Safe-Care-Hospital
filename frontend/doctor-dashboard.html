@@ -126,6 +126,19 @@
         ></div>
       </div>
 
+      <!-- ACCEPTED / UPCOMING APPOINTMENTS -->
+
+      <div class="dashboard-section">
+        <h2 class="text-2xl font-bold text-blue-600 mb-5">
+          Accepted / Upcoming Appointments
+        </h2>
+
+        <div
+          id="acceptedAppointmentsContainer"
+          class="appointments-scroll"
+        ></div>
+      </div>
+
       <!-- COMPLETED APPOINTMENTS -->
 
       <div class="dashboard-section">
@@ -210,6 +223,8 @@
 
           let pendingHtml = "";
 
+          let acceptedHtml = "";
+
           let completedHtml = "";
 
           appointments.forEach((item) => {
@@ -217,211 +232,298 @@
 
             const appointmentCard = `
 
-            <div class="appointment-card">
+                  <div class="appointment-card">
 
-                <div class="flex justify-between">
+                      <div class="flex justify-between">
 
-                    <div>
+                          <div>
 
-                        <h3 class="patient-name mb-3">
+                              <h3 class="patient-name mb-3">
 
-                            ${item.patient_name}
+                                  ${item.patient_name}
 
-                        </h3>
+                              </h3>
 
-                        <p class="mb-1">
+                              <p class="mb-1">
 
-                            <strong>Appointment ID:</strong>
+                                  <strong>Appointment ID:</strong>
 
-                            ${item.appointment_id}
+                                  ${item.appointment_id}
 
-                        </p>
+                              </p>
 
-                        <p class="mb-1">
+                              <p class="mb-1">
 
-                            <strong>Age:</strong>
+                                  <strong>Age:</strong>
 
-                            ${item.patient_age}
+                                  ${item.patient_age}
 
-                        </p>
+                              </p>
 
-                        <p class="mb-1">
+                              <p class="mb-1">
 
-                            <strong>Gender:</strong>
+                                  <strong>Gender:</strong>
 
-                            ${item.patient_gender}
+                                  ${item.patient_gender}
 
-                        </p>
+                              </p>
 
-                        <p class="mb-1">
+                              <p class="mb-1">
 
-                            <strong>Blood Group:</strong>
+                                  <strong>Blood Group:</strong>
 
-                            ${item.patient_blood_group || "N/A"}
+                                  ${item.patient_blood_group || "N/A"}
 
-                        </p>
+                              </p>
 
-                        <p class="mb-1">
+                              <p class="mb-1">
 
-                            <strong>Medical History:</strong>
+                                  <strong>Medical History:</strong>
 
-                            ${item.medical_history || "No history"}
+                                  ${item.medical_history || "No history"}
 
-                        </p>
+                              </p>
 
-                        <p class="mb-1">
+                              <p class="mb-1">
 
-                            <strong>Date:</strong>
+                                  <strong>Date:</strong>
 
-                            ${item.appointment_date}
+                                  ${item.appointment_date}
 
-                        </p>
+                              </p>
 
-                        <p class="mb-1">
+                              <p class="mb-1">
 
-                            <strong>Time:</strong>
+                                  <strong>Time:</strong>
 
-                            ${item.appointment_time}
+                                  ${item.appointment_time}
 
-                        </p>
+                              </p>
 
-                        <p class="mb-1">
+                              <p class="mb-1">
 
-                            <strong>Reason:</strong>
+                                  <strong>Reason:</strong>
 
-                            ${item.reason}
+                                  ${item.reason}
 
-                        </p>
+                              </p>
 
 
 
-                        <p class="mb-3">
+                              <p class="mb-3">
 
-                            <strong>Status:</strong>
+          <strong>Status:</strong>
 
-                            <span class="${
-                              item.status === "completed"
-                                ? "text-green-600 bg-green-100 px-3 py-1 rounded-full"
-                                : item.status === "pending"
-                                  ? "text-orange-600 bg-orange-100 px-3 py-1 rounded-full"
-                                  : item.status === "cancelled"
-                                    ? "text-red-600 bg-red-100 px-3 py-1 rounded-full"
-                                    : "text-blue-600 bg-blue-100 px-3 py-1 rounded-full"
-                            }">
+          <span class="${
+            item.status === "completed"
+              ? "text-green-600 bg-green-100 px-3 py-1 rounded-full"
+              : item.status === "pending"
+                ? "text-orange-600 bg-orange-100 px-3 py-1 rounded-full"
+                : item.status === "accepted"
+                  ? "text-blue-600 bg-blue-100 px-3 py-1 rounded-full"
+                  : item.status === "rejected"
+                    ? "text-red-600 bg-red-100 px-3 py-1 rounded-full"
+                    : item.status === "cancelled"
+                      ? "text-red-600 bg-red-100 px-3 py-1 rounded-full"
+                      : "text-gray-600 bg-gray-100 px-3 py-1 rounded-full"
+          }">
 
-                                ${item.status}
+              ${item.status}
 
-                            </span>
+          </span>
 
-                        </p>
+      </p>
 
-                    </div>
+                          </div>
 
-                </div>
+                      </div>
 
+                      ${
+                        item.status === "pending"
+                          ? `
 
+      <div class="mb-4">
 
-                <!-- PRESCRIPTION -->
+      <button
 
-                <div class="mt-6 border-t pt-5">
+      onclick="updateAppointmentStatus(
+      ${item.appointment_id},
+      'accepted'
+      )"
 
-                    <h4 class="text-xl font-bold mb-4 text-green-700">
+      class="btn btn-success me-2">
 
-                        Add Prescription
+      Accept
 
-                    </h4>
+      </button>
 
-                    <textarea
-                        id="diagnosis-${item.appointment_id}"
-                        placeholder="Diagnosis"
-                        class="w-full border p-3 rounded mb-3"
-                    ></textarea>
+      <button
 
-                    <textarea
-                        id="medicines-${item.appointment_id}"
-                        placeholder="Medicines"
-                        class="w-full border p-3 rounded mb-3"
-                    ></textarea>
+      onclick="updateAppointmentStatus(
+      ${item.appointment_id},
+      'rejected'
+      )"
 
-                    <textarea
-                        id="notes-${item.appointment_id}"
-                        placeholder="Notes"
-                        class="w-full border p-3 rounded mb-3"
-                    ></textarea>
+      class="btn btn-danger">
 
-    <button onclick="addPrescription(${item.appointment_id})"
-    class="dashboard-btn bg-green-600 hover:bg-green-700 text-white px-5 py-2"> Save Prescription </button>
+      Reject
 
-                </div>
+      </button>
 
+      </div>
 
+      `
+                          : ""
+                      }
 
-                <!-- REQUEST TEST -->
 
-                <div class="mt-6 border-t pt-5">
+      ${
+        item.status === "accepted"
+          ? `
 
-                    <h4 class="text-xl font-bold mb-4 text-blue-700">
+      <div class="mt-4 border-top pt-4">
 
-                        Request Test
+      <h5 class="mb-3 text-warning">
+      Reschedule Appointment
+      </h5>
 
-                    </h4>
+      <input
+      type="date"
+      id="reschedule-date-${item.appointment_id}"
+      class="form-control mb-2"
+      />
 
-                    <input
-                        type="text"
-                        id="test-${item.appointment_id}"
-                        placeholder="Blood Test / MRI / Scan"
-                        class="w-full border p-3 rounded mb-3"
-                    >
+      <input
+      type="time"
+      id="reschedule-time-${item.appointment_id}"
+      class="form-control mb-2"
+      />
 
-                    <textarea
-                        id="instruction-${item.appointment_id}"
-                        placeholder="Instructions"
-                        class="w-full border p-3 rounded mb-3"
-                    ></textarea>
+      <button
+      onclick="rescheduleAppointment(${item.appointment_id})"
+      class="btn btn-warning">
 
-                   <button
-    onclick="requestTest(${item.appointment_id})"
-    class="dashboard-btn bg-blue-600 hover:bg-blue-700 text-white px-5 py-2">
-    Request Test
-</button>
+      Reschedule
 
-                </div>
+      </button>
 
+      </div>
 
+      `
+          : ""
+      }
 
-                <!-- REPORTS -->
 
-                <div class="mt-6 border-t pt-5">
 
-                    <h4 class="text-xl font-bold mb-4 text-purple-700">
 
-                        Uploaded Reports
 
-                    </h4>
+                      <!-- PRESCRIPTION -->
 
- <button onclick="viewReports(${item.patient_id})"
- class="dashboard-btn bg-purple-600 hover:bg-purple-700 text-white px-5 py-2"> View Reports </button>
+                      <div class="mt-6 border-t pt-5">
 
+                          <h4 class="text-xl font-bold mb-4 text-green-700">
 
-                    <div
-                        id="reports-${item.patient_id}"
-                        class="mt-4"
-                    ></div>
+                              Add Prescription
 
-                </div>
+                          </h4>
 
-            </div>
+                          <textarea
+                              id="diagnosis-${item.appointment_id}"
+                              placeholder="Diagnosis"
+                              class="w-full border p-3 rounded mb-3"
+                          ></textarea>
 
-            `;
+                          <textarea
+                              id="medicines-${item.appointment_id}"
+                              placeholder="Medicines"
+                              class="w-full border p-3 rounded mb-3"
+                          ></textarea>
+
+                          <textarea
+                              id="notes-${item.appointment_id}"
+                              placeholder="Notes"
+                              class="w-full border p-3 rounded mb-3"
+                          ></textarea>
+
+          <button onclick="addPrescription(${item.appointment_id})"
+          class="dashboard-btn bg-green-600 hover:bg-green-700 text-white px-5 py-2"> Save Prescription </button>
+
+                      </div>
+
+
+
+                      <!-- REQUEST TEST -->
+
+                      <div class="mt-6 border-t pt-5">
+
+                          <h4 class="text-xl font-bold mb-4 text-blue-700">
+
+                              Request Test
+
+                          </h4>
+
+                          <input
+                              type="text"
+                              id="test-${item.appointment_id}"
+                              placeholder="Blood Test / MRI / Scan"
+                              class="w-full border p-3 rounded mb-3"
+                          >
+
+                          <textarea
+                              id="instruction-${item.appointment_id}"
+                              placeholder="Instructions"
+                              class="w-full border p-3 rounded mb-3"
+                          ></textarea>
+
+                         <button
+          onclick="requestTest(${item.appointment_id})"
+          class="dashboard-btn bg-blue-600 hover:bg-blue-700 text-white px-5 py-2">
+          Request Test
+      </button>
+
+                      </div>
+
+
+
+                      <!-- REPORTS -->
+
+                      <div class="mt-6 border-t pt-5">
+
+                          <h4 class="text-xl font-bold mb-4 text-purple-700">
+
+                              Uploaded Reports
+
+                          </h4>
+
+       <button onclick="viewReports(${item.patient_id})"
+       class="dashboard-btn bg-purple-600 hover:bg-purple-700 text-white px-5 py-2"> View Reports </button>
+
+
+                          <div
+                              id="reports-${item.patient_id}"
+                              class="mt-4"
+                          ></div>
+
+                      </div>
+
+                  </div>
+
+                  `;
 
             // =========================================
             // SEPARATE PENDING & COMPLETED
             // =========================================
 
-            if (item.status === "completed") {
-              completedHtml += appointmentCard;
-            } else {
+            if (item.status === "pending") {
               pendingHtml += appointmentCard;
+            } else if (item.status === "accepted") {
+              acceptedHtml += appointmentCard;
+            } else if (
+              item.status === "completed" ||
+              item.status === "rejected" ||
+              item.status === "cancelled"
+            ) {
+              completedHtml += appointmentCard;
             }
           });
 
@@ -432,25 +534,37 @@
           if (!pendingHtml) {
             pendingHtml = `
 
+                    <div class="text-center text-gray-500 py-10">
+
+                      No Pending Appointments
+
+                    </div>
+
+                  `;
+          }
+
+          if (!acceptedHtml) {
+            acceptedHtml = `
+
               <div class="text-center text-gray-500 py-10">
 
-                No Pending Appointments
+                  No Accepted Appointments
 
               </div>
 
-            `;
+          `;
           }
 
           if (!completedHtml) {
             completedHtml = `
 
-              <div class="text-center text-gray-500 py-10">
+                    <div class="text-center text-gray-500 py-10">
 
-                No Completed Appointments
+                      No Completed Appointments
 
-              </div>
+                    </div>
 
-            `;
+                  `;
           }
 
           // =========================================
@@ -460,6 +574,9 @@
           document.getElementById("pendingAppointmentsContainer").innerHTML =
             pendingHtml;
 
+          document.getElementById("acceptedAppointmentsContainer").innerHTML =
+            acceptedHtml;
+
           document.getElementById("completedAppointmentsContainer").innerHTML =
             completedHtml;
         } catch (error) {
@@ -468,6 +585,79 @@
           console.log(error.response?.data);
 
           // alert("Failed to load appointments");
+        }
+      }
+
+      async function updateAppointmentStatus(appointmentId, status) {
+        try {
+          const response = await axios.post(
+            `http://127.0.0.1:8001/auth/doctor/appointment-status/${appointmentId}/`,
+
+            {
+              status: status,
+            },
+
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            },
+          );
+
+          console.log(response.data);
+
+          showToast(`Appointment ${status} successfully`, "#16a34a");
+
+          loadAppointments();
+        } catch (error) {
+          console.log(error);
+
+          console.log(error.response?.data);
+
+          alert(error.response?.data?.error || "Failed to update appointment");
+        }
+      }
+
+      async function rescheduleAppointment(appointmentId) {
+        const appointment_date = document.getElementById(
+          `reschedule-date-${appointmentId}`,
+        ).value;
+
+        const appointment_time = document.getElementById(
+          `reschedule-time-${appointmentId}`,
+        ).value;
+
+        if (!appointment_date || !appointment_time) {
+          alert("Select date and time");
+
+          return;
+        }
+
+        try {
+          const response = await axios.post(
+            `http://127.0.0.1:8001/auth/doctor/reschedule-appointment/${appointmentId}/`,
+
+            {
+              appointment_date,
+              appointment_time,
+            },
+
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            },
+          );
+
+          showToast("Appointment Rescheduled Successfully", "#f59e0b");
+
+          loadAppointments();
+        } catch (error) {
+          console.log("FULL ERROR:", error);
+          console.log("STATUS:", error.response?.status);
+          console.log("DATA:", error.response?.data);
+
+          alert(JSON.stringify(error.response?.data) || "Reschedule Failed");
         }
       }
 
@@ -497,78 +687,78 @@
 
           document.getElementById("doctorProfileContainer").innerHTML = `
 
-<div class="row align-items-center">
+      <div class="row align-items-center">
 
-    <div class="col-lg-3 text-center">
+          <div class="col-lg-3 text-center">
 
-        <img
-            src="${imageUrl}"
-            class="doctor-profile-image"
-        >
+              <img
+                  src="${imageUrl}"
+                  class="doctor-profile-image"
+              >
 
-    </div>
+          </div>
 
-    <div class="col-lg-9">
+          <div class="col-lg-9">
 
-        <h2 class="profile-name">
-            ${doctor.user.name}
-        </h2>
+              <h2 class="profile-name">
+                  ${doctor.user.name}
+              </h2>
 
-        <div class="row mt-3">
+              <div class="row mt-3">
 
-            <div class="col-md-6">
+                  <div class="col-md-6">
 
-                <p><strong>Department :</strong> ${doctor.department || "N/A"}</p>
+                      <p><strong>Department :</strong> ${doctor.department || "N/A"}</p>
 
-                <p><strong>Specialization :</strong> ${doctor.specialization || "N/A"}</p>
+                      <p><strong>Specialization :</strong> ${doctor.specialization || "N/A"}</p>
 
-                <p><strong>Qualification :</strong> ${doctor.qualification || "N/A"}</p>
+                      <p><strong>Qualification :</strong> ${doctor.qualification || "N/A"}</p>
 
-                <p><strong>Experience :</strong> ${doctor.experience || 0} Years</p>
+                      <p><strong>Experience :</strong> ${doctor.experience || 0} Years</p>
 
-            </div>
+                  </div>
 
-            <div class="col-md-6">
+                  <div class="col-md-6">
 
-                <p><strong>Phone :</strong> ${doctor.phone || "N/A"}</p>
+                      <p><strong>Phone :</strong> ${doctor.phone || "N/A"}</p>
 
-                <p><strong>Fee :</strong> ₹${doctor.consultation_fee || 0}</p>
+                      <p><strong>Fee :</strong> ₹${doctor.consultation_fee || 0}</p>
 
-                <p><strong>Available :</strong>
-                ${doctor.available_start_time || "--"}
-                -
-                ${doctor.available_end_time || "--"}
-                </p>
+                      <p><strong>Available :</strong>
+                      ${doctor.available_start_time || "--"}
+                      -
+                      ${doctor.available_end_time || "--"}
+                      </p>
 
-            </div>
+                  </div>
 
-        </div>
+              </div>
 
-        <hr>
+              <hr>
 
-        <p>${doctor.bio || "No Bio Available"}</p>
+              <p>${doctor.bio || "No Bio Available"}</p>
 
-        <button
-            class="btn btn-primary mt-3"
-            onclick="toggleDoctorEditForm()">
+              <button
+                  class="btn btn-primary mt-3"
+                  onclick="toggleDoctorEditForm()">
 
-            <i class="fa-solid fa-user-pen"></i>
-            Edit Profile
+                  <i class="fa-solid fa-user-pen"></i>
+                  Edit Profile
 
-        </button>
+              </button>
 
-    </div>
+          </div>
 
-</div>
+      </div>
 
-<div
-    id="doctorEditForm"
-    style="display:none;"
-    class="mt-4 border-top pt-4">
+      <div
+          id="doctorEditForm"
+          style="display:none;"
+          class="mt-4 border-top pt-4">
 
-</div>
+      </div>
 
-`;
+      `;
         } catch (error) {
           console.log(error);
         }
@@ -604,87 +794,87 @@
 
           document.getElementById("doctorEditForm").innerHTML = `
 
-<h4 class="mb-4">
-    Update Doctor Profile
-</h4>
+      <h4 class="mb-4">
+          Update Doctor Profile
+      </h4>
 
-<input
-    id="doctorPhone"
-    class="form-control mb-3"
-    value="${doctor.phone || ""}"
-    placeholder="Phone">
+      <input
+          id="doctorPhone"
+          class="form-control mb-3"
+          value="${doctor.phone || ""}"
+          placeholder="Phone">
 
-<input
-    id="doctorDepartment"
-    class="form-control mb-3"
-    value="${doctor.department || ""}"
-    placeholder="Department">
+      <input
+          id="doctorDepartment"
+          class="form-control mb-3"
+          value="${doctor.department || ""}"
+          placeholder="Department">
 
-<input
-    id="doctorQualification"
-    class="form-control mb-3"
-    value="${doctor.qualification || ""}"
-    placeholder="Qualification">
+      <input
+          id="doctorQualification"
+          class="form-control mb-3"
+          value="${doctor.qualification || ""}"
+          placeholder="Qualification">
 
-<input
-    id="doctorSpecialization"
-    class="form-control mb-3"
-    value="${doctor.specialization || ""}"
-    placeholder="Specialization">
+      <input
+          id="doctorSpecialization"
+          class="form-control mb-3"
+          value="${doctor.specialization || ""}"
+          placeholder="Specialization">
 
-<input
-    id="doctorExperience"
-    type="number"
-    class="form-control mb-3"
-    value="${doctor.experience || ""}"
-    placeholder="Experience">
+      <input
+          id="doctorExperience"
+          type="number"
+          class="form-control mb-3"
+          value="${doctor.experience || ""}"
+          placeholder="Experience">
 
-<input
-    id="doctorFee"
-    type="number"
-    class="form-control mb-3"
-    value="${doctor.consultation_fee || ""}"
-    placeholder="Consultation Fee">
+      <input
+          id="doctorFee"
+          type="number"
+          class="form-control mb-3"
+          value="${doctor.consultation_fee || ""}"
+          placeholder="Consultation Fee">
 
-<label class="mb-1">
-    Available Start Time
-</label>
+      <label class="mb-1">
+          Available Start Time
+      </label>
 
-<input
-    id="doctorStartTime"
-    type="time"
-    class="form-control mb-3"
-    value="${doctor.available_start_time || ""}">
+      <input
+          id="doctorStartTime"
+          type="time"
+          class="form-control mb-3"
+          value="${doctor.available_start_time || ""}">
 
-<label class="mb-1">
-    Available End Time
-</label>
+      <label class="mb-1">
+          Available End Time
+      </label>
 
-<input
-    id="doctorEndTime"
-    type="time"
-    class="form-control mb-3"
-    value="${doctor.available_end_time || ""}">
+      <input
+          id="doctorEndTime"
+          type="time"
+          class="form-control mb-3"
+          value="${doctor.available_end_time || ""}">
 
-<textarea
-    id="doctorBio"
-    class="form-control mb-3"
-    placeholder="Bio">${doctor.bio || ""}</textarea>
+      <textarea
+          id="doctorBio"
+          class="form-control mb-3"
+          placeholder="Bio">${doctor.bio || ""}</textarea>
 
-<input
-    type="file"
-    id="doctorImage"
-    class="form-control mb-3">
+      <input
+          type="file"
+          id="doctorImage"
+          class="form-control mb-3">
 
-<button
-    onclick="updateDoctorProfile()"
-    class="btn btn-success">
+      <button
+          onclick="updateDoctorProfile()"
+          class="btn btn-success">
 
-    Update Profile
+          Update Profile
 
-</button>
+      </button>
 
-`;
+      `;
         } catch (error) {
           console.log(error);
         }
@@ -798,38 +988,38 @@
           if (reports.length === 0) {
             html = `
 
-              <p class="text-gray-500">
+                    <p class="text-gray-500">
 
-                No reports uploaded
+                      No reports uploaded
 
-              </p>
+                    </p>
 
-            `;
+                  `;
           }
 
           reports.forEach((report) => {
             html += `
 
-            <div class="report-card border p-4 rounded mb-3 bg-white">
+                  <div class="report-card border p-4 rounded mb-3 bg-white">
 
-                <p class="font-bold mb-2">
+                      <p class="font-bold mb-2">
 
-                    ${report.report_title}
+                          ${report.report_title}
 
-                </p>
+                      </p>
 
-                <a
-                    href="${report.report_file}"
-                    target="_blank"
-                    class="text-blue-600 underline">
+                      <a
+                          href="${report.report_file}"
+                          target="_blank"
+                          class="text-blue-600 underline">
 
-                    View Report
+                          View Report
 
-                </a>
+                      </a>
 
-            </div>
+                  </div>
 
-            `;
+                  `;
           });
 
           document.getElementById(`reports-${patientId}`).innerHTML = html;

@@ -288,6 +288,150 @@ class DoctorAppointmentsAPIView(APIView):
         return Response(data)
     
 
+class UpdateAppointmentStatusAPIView(APIView):
+
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, appointment_id):
+
+        if request.user.profile.role != "doctor":
+
+            return Response(
+                {"error": "Only doctors allowed"},
+                status=403
+            )
+
+        try:
+
+            appointment = Appointment.objects.get(
+                id=appointment_id,
+                doctor=request.user.doctor
+            )
+
+        except Appointment.DoesNotExist:
+
+            return Response(
+                {"error": "Appointment not found"},
+                status=404
+            )
+
+        status_value = request.data.get("status")
+
+        if status_value not in ["accepted", "rejected"]:
+
+            return Response(
+                {"error": "Invalid status"},
+                status=400
+            )
+
+        appointment.status = status_value
+
+        appointment.save()
+
+        return Response({
+
+            "message":
+            f"Appointment {status_value} successfully"
+
+        })
+    
+class RescheduleAppointmentAPIView(APIView):
+
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, appointment_id):
+
+        if request.user.profile.role != "doctor":
+
+            return Response(
+                {"error": "Only doctors allowed"},
+                status=403
+            )
+
+        try:
+
+            appointment = Appointment.objects.get(
+                id=appointment_id,
+                doctor=request.user.doctor
+            )
+
+        except Appointment.DoesNotExist:
+
+            return Response(
+                {"error": "Appointment not found"},
+                status=404
+            )
+
+        if appointment.status != "accepted":
+
+            return Response(
+                {
+                    "error":
+                    "Only accepted appointments can be rescheduled"
+                },
+                status=400
+            )
+
+        new_date = request.data.get("appointment_date")
+
+        new_time = request.data.get("appointment_time")
+
+        if not new_date or not new_time:
+
+            return Response(
+                {
+                    "error":
+                    "Date and time required"
+                },
+                status=400
+            )
+
+        # Check slot availability
+
+        existing = Appointment.objects.filter(
+            doctor=appointment.doctor,
+            appointment_date=new_date,
+            appointment_time=new_time
+        ).exclude(id=appointment.id)
+
+        if existing.exists():
+
+            return Response(
+                {
+                    "error":
+                    "Selected slot already booked"
+                },
+                status=400
+            )
+
+
+
+        appointment.old_appointment_date = appointment.appointment_date
+
+        appointment.old_appointment_time = appointment.appointment_time
+
+        appointment.appointment_date = new_date
+
+        appointment.appointment_time = new_time
+
+        appointment.rescheduled = True
+
+        appointment.save()
+
+        return Response({
+
+            "message":
+            "Appointment rescheduled successfully",
+
+            "appointment_date":
+            appointment.appointment_date,
+
+            "appointment_time":
+            appointment.appointment_time
+
+        })
+    
+
     # =========================================
 # ADD PRESCRIPTION
 # =========================================

@@ -561,26 +561,21 @@ async function loadReports() {
 // =====================================
 
 async function loadAppointments() {
+  try {
+    const response = await axios.get(
+      "http://127.0.0.1:8001/auth/appointments/my/",
 
-    try {
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
 
-        const response = await axios.get(
+    let html = "";
 
-            "http://127.0.0.1:8001/auth/appointments/my/",
-
-            {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            }
-
-        );
-
-        let html = "";
-
-        response.data.forEach(item => {
-
-            html += `
+    response.data.forEach((item) => {
+      html += `
 
             <div class="border p-4 rounded mb-4">
 
@@ -592,21 +587,75 @@ async function loadAppointments() {
 
                 </p>
 
-                <p>
+              
 
-                    <strong>Date:</strong>
+                ${
+                  item.rescheduled
+                    ? `
 
-                    ${item.appointment_date}
+    <div class="alert alert-warning mb-3">
 
-                </p>
+        <strong>
+        Appointment Rescheduled By Doctor
+        </strong>
 
-                <p>
+        <hr>
 
-                    <strong>Time:</strong>
+        <p>
 
-                    ${item.appointment_time}
+            <strong>Old Date:</strong>
 
-                </p>
+            ${item.old_appointment_date}
+
+        </p>
+
+        <p>
+
+            <strong>Old Time:</strong>
+
+            ${item.old_appointment_time}
+
+        </p>
+
+        <p class="text-success">
+
+            <strong>New Date:</strong>
+
+            ${item.appointment_date}
+
+        </p>
+
+        <p class="text-success">
+
+            <strong>New Time:</strong>
+
+            ${item.appointment_time}
+
+        </p>
+
+    </div>
+
+    `
+                    : `
+
+    <p>
+
+        <strong>Date:</strong>
+
+        ${item.appointment_date}
+
+    </p>
+
+    <p>
+
+        <strong>Time:</strong>
+
+        ${item.appointment_time}
+
+    </p>
+
+    `
+                }
 
                 <p>
 
@@ -625,12 +674,8 @@ async function loadAppointments() {
                 </p>
 
                 ${
-                    item.status === "pending" ||
-                    item.status === "accepted"
-
-                    ?
-
-                    `
+                  item.status === "pending" || item.status === "accepted"
+                    ? `
 
                     <button
 
@@ -643,80 +688,77 @@ async function loadAppointments() {
                     </button>
 
                     `
-
-                    :
-
-                    ""
-
+                    : ""
                 }
 
             </div>
 
             `;
+    });
 
-        });
-
-        document.getElementById(
-            "appointmentsContainer"
-        ).innerHTML = html;
-
-    }
-
-    catch(error){
-
-        console.log(error);
-
-    }
-
+    document.getElementById("appointmentsContainer").innerHTML = html;
+  } catch (error) {
+    console.log(error);
+  }
 }
 
-async function cancelAppointment(id){
+async function updateAppointmentStatus(appointmentId, status) {
+  try {
+    await axios.post(
+      `http://127.0.0.1:8001/auth/doctor/appointment-status/${appointmentId}/`,
 
-    if(
-        !confirm(
-            "Are you sure you want to cancel this appointment?"
-        )
-    ){
-        return;
-    }
+      {
+        status: status,
+      },
 
-    try{
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
 
-        await axios.patch(
+    showToast(
+      `Appointment ${status}`,
 
-            `http://127.0.0.1:8001/auth/appointments/cancel/${id}/`,
+      "#16a34a",
+    );
 
-            {},
+    loadAppointments();
+  } catch (error) {
+    console.log(error);
 
-            {
-                headers:{
-                    Authorization:`Bearer ${token}`
-                }
-            }
-
-        );
-
-        alert(
-            "Appointment cancelled successfully"
-        );
-
-        loadAppointments();
-
-    }
-
-    catch(error){
-
-        console.log(error);
-
-        alert(
-            "Cancellation failed"
-        );
-
-    }
-
+    alert("Failed to update appointment");
+  }
 }
 
+async function cancelAppointment(id) {
+  if (!confirm("Are you sure you want to cancel this appointment?")) {
+    return;
+  }
 
+  try {
+    await axios.patch(
+      `http://127.0.0.1:8001/auth/appointments/cancel/${id}/`,
+
+      {},
+
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    alert("Appointment cancelled successfully");
+
+    loadAppointments();
+  } catch (error) {
+    console.log(error);
+
+    alert("Cancellation failed");
+  }
+}
 
 async function loadPayments() {
   try {
@@ -823,65 +865,44 @@ function downloadInvoice(id) {
     });
 }
 
-function downloadPrescription(id){
+function downloadPrescription(id) {
+  const token = localStorage.getItem("access");
 
-    const token =
-        localStorage.getItem("access");
+  fetch(
+    `http://127.0.0.1:8001/auth/prescription/pdf/${id}/`,
 
-    fetch(
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  )
+    .then((response) => response.blob())
 
-        `http://127.0.0.1:8001/auth/prescription/pdf/${id}/`,
+    .then((blob) => {
+      const url = window.URL.createObjectURL(blob);
 
-        {
+      const a = document.createElement("a");
 
-            headers: {
+      a.href = url;
 
-                Authorization:
-                    `Bearer ${token}`
+      a.download = `Prescription_${id}.pdf`;
 
-            }
+      document.body.appendChild(a);
 
-        }
+      a.click();
 
-    )
+      a.remove();
 
-    .then(response => response.blob())
-
-    .then(blob => {
-
-        const url =
-            window.URL.createObjectURL(blob);
-
-        const a =
-            document.createElement("a");
-
-        a.href = url;
-
-        a.download =
-            `Prescription_${id}.pdf`;
-
-        document.body.appendChild(a);
-
-        a.click();
-
-        a.remove();
-
-        window.URL.revokeObjectURL(url);
-
+      window.URL.revokeObjectURL(url);
     })
 
-    .catch(error => {
+    .catch((error) => {
+      console.log(error);
 
-        console.log(error);
-
-        alert(
-            "Failed to download prescription"
-        );
-
+      alert("Failed to download prescription");
     });
-
 }
-
 
 // =====================================
 // LOGOUT

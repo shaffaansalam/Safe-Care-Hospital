@@ -214,7 +214,7 @@ class BookAppointmentAPIView(APIView):
         
     
                 
-
+    
 class PatientAppointmentsAPIView(APIView):
 
     permission_classes = [permissions.IsAuthenticated]
@@ -222,15 +222,23 @@ class PatientAppointmentsAPIView(APIView):
     def get(self, request):
 
         if not hasattr(request.user, 'patient'):
-            return Response({"error": "Only patients allowed"}, status=403)
+            return Response(
+                {"error": "Only patients allowed"},
+                status=403
+            )
 
         appointments = Appointment.objects.filter(
             patient=request.user.patient
         ).select_related("doctor")
 
-        serializer = AppointmentSerializer(appointments, many=True)
+        serializer = AppointmentSerializer(
+            appointments,
+            many=True
+        )
 
-        return Response(serializer.data)
+        return Response(serializer.data)    
+    
+
     
 class CancelAppointmentAPIView(APIView):
 
@@ -294,6 +302,62 @@ class CancelAppointmentAPIView(APIView):
             }
 
         )
+    
+
+class RequestRescheduleAPIView(APIView):
+
+    permission_classes = [
+        permissions.IsAuthenticated
+    ]
+
+    def patch(self, request, appointment_id):
+
+        try:
+
+            appointment = Appointment.objects.get(
+
+                id=appointment_id,
+
+                patient=request.user.patient
+
+            )
+
+        except Appointment.DoesNotExist:
+
+            return Response(
+                {"error":"Appointment not found"},
+                status=404
+            )
+
+        if appointment.status != "accepted":
+
+            return Response(
+                {
+                    "error":
+                    "Only accepted appointments can be rescheduled"
+                },
+                status=400
+            )
+
+        appointment.requested_date = request.data.get(
+            "requested_date"
+        )
+
+        appointment.requested_time = request.data.get(
+            "requested_time"
+        )
+
+        appointment.status = "reschedule_requested"
+
+        appointment.save()
+
+        return Response(
+            {
+                "message":
+                "Reschedule request sent"
+            }
+        )
+    
 
     # =========================================
 # PATIENT PRESCRIPTIONS

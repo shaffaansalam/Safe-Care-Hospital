@@ -249,38 +249,46 @@ class AppointmentSerializer(serializers.ModelSerializer):
         read_only=True
     )
 
-    class Meta:
+    old_appointment_date = serializers.DateField(
+    read_only=True
+)
 
+    old_appointment_time = serializers.TimeField(
+    read_only=True
+)
+
+    rescheduled = serializers.BooleanField(
+    read_only=True
+)
+
+    class Meta:
         model = Appointment
 
         fields = [
 
             'id',
-
             'doctor',
-
             'doctor_name',
 
             'patient_id',
-
             'patient_name',
-
             'patient_age',
-
             'patient_gender',
-
             'patient_blood_group',
-
             'medical_history',
 
             'appointment_date',
-
             'appointment_time',
 
+            'requested_date',
+            'requested_time',
+
+            'rescheduled',
+            'old_appointment_date',
+            'old_appointment_time',
+
             'reason',
-
             'status',
-
             'created_at'
         ]
 
@@ -289,16 +297,7 @@ class AppointmentSerializer(serializers.ModelSerializer):
             'status'
         ]
 
-    def create(self, validated_data):
 
-        request = self.context['request']
-
-        patient = request.user.patient
-
-        return Appointment.objects.create(
-            patient=patient,
-            **validated_data
-        )
     
     from authentication.models import Prescription, MedicalReport
 

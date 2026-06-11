@@ -96,6 +96,7 @@ class Appointment(models.Model):
     STATUS_CHOICES = [
         ('pending', 'Pending'),
         ('accepted', 'Accepted'),
+        ('reschedule_requested', 'Reschedule Requested'),
         ('rejected', 'Rejected'),
         ('completed', 'Completed'),
         ('cancelled', 'Cancelled'),
@@ -123,6 +124,27 @@ class Appointment(models.Model):
 
     appointment_date = models.DateField()
     appointment_time = models.TimeField()
+
+    requested_date = models.DateField(
+    null=True,
+    blank=True
+)
+
+    requested_time = models.TimeField(
+    null=True,
+    blank=True
+)
+    rescheduled = models.BooleanField(default=False)
+
+    old_appointment_date = models.DateField(
+    null=True,
+    blank=True
+)
+
+    old_appointment_time = models.TimeField(
+    null=True,
+    blank=True
+)
 
     created_at = models.DateTimeField(auto_now_add=True)
 

@@ -23,10 +23,6 @@ urlpatterns = [
 
 
 
-
-    
-
-
     # ADMIN ROUTES
 
 
@@ -58,6 +54,7 @@ path('appointments/book/', BookAppointmentAPIView.as_view()),
 
 path('appointments/my/', PatientAppointmentsAPIView.as_view()),
 path('appointments/cancel/<int:appointment_id>/',CancelAppointmentAPIView.as_view()),
+path('appointments/reschedule/<int:appointment_id>/',RequestRescheduleAPIView.as_view()),
 
 path('departments/dropdown/',DepartmentDropdownAPIView.as_view(),),
 
@@ -66,6 +63,8 @@ path('departments/<int:department_id>/doctors/',DepartmentDoctorsAPIView.as_view
 path('doctors/search/',DoctorSearchAPIView.as_view(),name='doctor-search'),
 
 path('doctor/appointments/',DoctorAppointmentsAPIView.as_view()),
+path('doctor/appointment-status/<int:appointment_id>/',UpdateAppointmentStatusAPIView.as_view()),
+path('doctor/reschedule-appointment/<int:appointment_id>/',RescheduleAppointmentAPIView.as_view()),
 
 path('doctor/prescription/<int:appointment_id>/',AddPrescriptionAPIView.as_view()),
 
