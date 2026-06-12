@@ -84,6 +84,18 @@
           <a href="login.html">Login</a>
         </li>
 
+        <li id="notificationNav" style="display: none; position: relative">
+          <a href="#" id="notificationBell">
+            <i class="fa-solid fa-bell"></i>
+
+            <span id="notificationCount">0</span>
+          </a>
+
+          <div id="notificationDropdown" class="notification-dropdown">
+            <div id="notificationList"></div>
+          </div>
+        </li>
+
         <!-- LOGOUT -->
         <li id="logoutNav" style="display: none">
           <a href="#" onclick="logoutUser()"> Logout </a>
@@ -95,6 +107,8 @@
         </li>
       </ul>
     </header>
+
+  
 
     <div class="navbar-space"></div>
 
@@ -218,7 +232,9 @@
       </div>
     </div>
 
-    <!--  Only one script -->
+    
+    
+    <script src="notification.js"></script>
 
     <script src="patient-dashboard.js"></script>
 

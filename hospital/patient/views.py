@@ -6,7 +6,7 @@ from rest_framework import permissions
 from doctor.serializers import *
 from patient.serializers import *
 from django.db import IntegrityError
-from authentication.models import Prescription,MedicalReport,TestRequest
+from authentication.models import Prescription,MedicalReport,TestRequest,Notification
 from .serializers import PrescriptionSerializer,MedicalReportSerializer,PatientProfileUpdateSerializer
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
@@ -79,7 +79,9 @@ class BookAppointmentAPIView(APIView):
 
         print("REQUEST DATA:", request.data)
 
-        # Role check
+        # =====================================
+        # ROLE CHECK
+        # =====================================
 
         try:
 
@@ -105,7 +107,9 @@ class BookAppointmentAPIView(APIView):
                 status=400
             )
 
-        # Patient check
+        # =====================================
+        # PATIENT CHECK
+        # =====================================
 
         try:
 
@@ -123,6 +127,53 @@ class BookAppointmentAPIView(APIView):
                 },
                 status=400
             )
+
+        # =====================================
+        # DOCTOR CHECK
+        # =====================================
+
+        doctor_id = request.data.get("doctor")
+
+        if not doctor_id:
+
+            return Response(
+                {
+                    "error": "Doctor ID is required"
+                },
+                status=400
+            )
+
+        try:
+
+            doctor = DoctorProfile.objects.get(
+                id=doctor_id
+            )
+
+        except DoctorProfile.DoesNotExist:
+
+            return Response(
+                {
+                    "error": "Doctor not found"
+                },
+                status=404
+            )
+
+        # =====================================
+        # AVAILABILITY CHECK
+        # =====================================
+
+        if not doctor.is_available:
+
+            return Response(
+                {
+                    "error": "Doctor is currently unavailable"
+                },
+                status=400
+            )
+
+        # =====================================
+        # SERIALIZER VALIDATION
+        # =====================================
 
         serializer = AppointmentSerializer(
             data=request.data,
@@ -143,11 +194,26 @@ class BookAppointmentAPIView(APIView):
             )
 
         print("VALIDATED DATA:")
+
         print(serializer.validated_data)
+
+        # =====================================
+        # SAVE APPOINTMENT
+        # =====================================
 
         try:
 
             appointment = serializer.save()
+
+            Notification.objects.create(
+
+            user=request.user,
+
+            title="Appointment Booked",
+
+            message=f"Your appointment with Dr. {doctor.user.get_full_name()} has been booked."
+
+)
 
             print("APPOINTMENT CREATED SUCCESSFULLY")
 
@@ -165,31 +231,32 @@ class BookAppointmentAPIView(APIView):
 
             return Response({
 
-    "message": "Appointment booked successfully",
+                "message":
+                "Appointment booked successfully",
 
-    "appointment_id":
-    appointment.id,
+                "appointment_id":
+                appointment.id,
 
-    "appointment": {
+                "appointment": {
 
-        "id":
-        appointment.id,
+                    "id":
+                    appointment.id,
 
-        "doctor":
-        appointment.doctor.user.get_full_name(),
+                    "doctor":
+                    appointment.doctor.user.get_full_name(),
 
-        "date":
-        appointment.appointment_date,
+                    "date":
+                    appointment.appointment_date,
 
-        "time":
-        appointment.appointment_time,
+                    "time":
+                    appointment.appointment_time,
 
-        "status":
-        appointment.status
+                    "status":
+                    appointment.status
 
-    }
+                }
 
-}, status=201)
+            }, status=201)
 
         except IntegrityError as e:
 
@@ -211,6 +278,7 @@ class BookAppointmentAPIView(APIView):
                 "error": str(e)
 
             }, status=400)
+        
         
     
                 
@@ -292,7 +360,21 @@ class CancelAppointmentAPIView(APIView):
 
         appointment.status = "cancelled"
 
+
+
         appointment.save()
+
+        Notification.objects.create(
+
+        user=appointment.patient.user,
+
+        title="Appointment Cancelled",
+
+        message="Your appointment has been cancelled successfully."
+
+        )
+
+
 
         return Response(
 
@@ -350,6 +432,16 @@ class RequestRescheduleAPIView(APIView):
         appointment.status = "reschedule_requested"
 
         appointment.save()
+
+        Notification.objects.create(
+
+        user=appointment.doctor.user,
+
+        title="Reschedule Request",
+
+        message=f"{appointment.patient.user.get_full_name()} requested appointment rescheduling."
+
+        )
 
         return Response(
             {

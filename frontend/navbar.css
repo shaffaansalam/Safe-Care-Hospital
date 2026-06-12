@@ -145,6 +145,117 @@
     cursor:pointer;
 }
 
+/* ==========================
+   NOTIFICATION BELL
+========================== */
+
+#notificationNav{
+    position:relative;
+}
+
+#notificationBell{
+    position:relative;
+    font-size:20px;
+    color:#007bff;
+    text-decoration:none;
+}
+
+#notificationCount{
+
+    position:absolute;
+
+    top:-8px;
+    right:-10px;
+
+    background:red;
+
+    color:white;
+
+    font-size:11px;
+
+    font-weight:bold;
+
+    min-width:18px;
+
+    height:18px;
+
+    border-radius:50%;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+}
+
+/* ==========================
+   DROPDOWN
+========================== */
+
+.notification-dropdown{
+
+    display:none;
+
+    position:absolute;
+
+    top:45px;
+
+    right:0;
+
+    width:350px;
+
+    max-height:400px;
+
+    overflow-y:auto;
+
+    background:#ffffff;
+
+    border:1px solid #d1d5db;
+
+    border-radius:10px;
+
+    box-shadow:0 10px 25px rgba(0,0,0,0.15);
+
+    z-index:9999;
+
+    padding:10px;
+}
+
+.notification-dropdown.show{
+
+    display:block;
+}
+
+.notification-item{
+
+    padding:12px;
+
+    border-bottom:1px solid #e5e7eb;
+
+    background:#f8fafc;
+
+    border-radius:6px;
+
+    margin-bottom:8px;
+}
+
+.notification-item strong{
+
+    display:block;
+
+    color:#111827;
+
+    font-size:14px;
+}
+
+.notification-item p{
+
+    margin:5px 0 0;
+
+    color:#4b5563;
+
+    font-size:13px;
+}
 /* =========================================
    PAGE SPACE
 ========================================= */

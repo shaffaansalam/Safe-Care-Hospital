@@ -10,10 +10,10 @@ from rest_framework.permissions import AllowAny, IsAdminUser
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.exceptions import TokenError
 # Models
-from authentication.models import (DoctorProfile,PatientProfile,Department,Appointment,Payment)
+from authentication.models import (DoctorProfile,PatientProfile,Department,Appointment,Payment,Notification)
 # Serializers
 from authentication.serializers import (LogoutSerializer,LoginSerializer,RefreshTokenSerializer,
-PaymentSerializer)
+PaymentSerializer,NotificationSerializer)
 from doctor.serializers import (DoctorProfileSerializer,DepartmentSerializer)
 from patient.serializers import (PatientProfileSerializer,AppointmentSerializer,UserRegSerializer)
 
@@ -757,6 +757,66 @@ class DownloadInvoiceAPIView(APIView):
 
         return response
         
+        
+class PatientNotificationsAPIView(APIView):
+
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+
+        notifications = Notification.objects.filter(
+
+            user=request.user
+
+        ).order_by("-created_at")
+
+        serializer = NotificationSerializer(
+
+            notifications,
+            many=True
+        )
+
+        return Response(serializer.data)    
+    
+
+class MarkNotificationReadAPIView(
+    APIView
+):
+
+    permission_classes = [
+        permissions.IsAuthenticated
+    ]
+
+    def patch(self, request, pk):
+
+        try:
+
+            notification = Notification.objects.get(
+                id=pk,
+                user=request.user
+            )
+
+        except Notification.DoesNotExist:
+
+            return Response(
+                {
+                    "error": "Notification not found"
+                },
+                status=404
+            )
+
+        notification.is_read = True
+
+        notification.save()
+
+        return Response(
+            {
+                "message": "Notification marked as read"
+            }
+        )
+    
+
+
 
 class DoctorDashboardTemplateView(TemplateView):
 

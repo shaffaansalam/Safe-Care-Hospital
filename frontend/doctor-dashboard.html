@@ -448,6 +448,25 @@
           <button onclick="addPrescription(${item.appointment_id})"
           class="dashboard-btn bg-green-600 hover:bg-green-700 text-white px-5 py-2"> Save Prescription </button>
 
+          ${
+            item.status === "accepted"
+              ? `
+
+<button
+
+onclick="completeAppointment(${item.appointment_id})"
+
+class="dashboard-btn bg-success text-white px-5 py-2 ms-2">
+
+Complete Appointment
+
+</button>
+
+`
+              : ""
+          }
+
+
                       </div>
 
 
@@ -724,11 +743,41 @@
 
                       <p><strong>Fee :</strong> ₹${doctor.consultation_fee || 0}</p>
 
-                      <p><strong>Available :</strong>
-                      ${doctor.available_start_time || "--"}
-                      -
-                      ${doctor.available_end_time || "--"}
-                      </p>
+                      <p>
+    <strong>Available Time :</strong>
+
+    ${doctor.available_start_time || "--"}
+    -
+    ${doctor.available_end_time || "--"}
+</p>
+
+<p>
+
+    <strong>Status :</strong>
+
+    ${
+      doctor.is_available
+        ? `<span class="text-success fw-bold">
+          🟢 Available
+       </span>`
+        : `<span class="text-danger fw-bold">
+          🔴 Offline
+       </span>`
+    }
+
+</p>
+
+<button
+
+    class="btn ${doctor.is_available ? "btn-danger" : "btn-success"} mt-2"
+
+    onclick="toggleAvailability()">
+
+    ${doctor.is_available ? "Go Offline" : "Go Online"}
+
+</button>
+
+
 
                   </div>
 
@@ -765,6 +814,36 @@
       }
 
       loadDoctorProfile();
+
+      async function toggleAvailability() {
+        try {
+          const response = await axios.patch(
+            "http://127.0.0.1:8001/auth/doctor/toggle-availability/",
+
+            {},
+
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            },
+          );
+
+          showToast(
+            response.data.is_available
+              ? "Doctor is now Available"
+              : "Doctor is now Offline",
+
+            "#16a34a",
+          );
+
+          loadDoctorProfile();
+        } catch (error) {
+          console.log(error);
+
+          alert("Failed to update availability");
+        }
+      }
 
       function toggleDoctorEditForm() {
         const form = document.getElementById("doctorEditForm");
@@ -1084,6 +1163,40 @@
           console.log(error.response?.data);
 
           alert("Prescription Failed");
+        }
+      }
+
+      async function completeAppointment(appointmentId) {
+        const confirmComplete = confirm("Mark this appointment as completed?");
+
+        if (!confirmComplete) {
+          return;
+        }
+
+        try {
+          await axios.post(
+            `http://127.0.0.1:8001/auth/doctor/appointment-status/${appointmentId}/`,
+
+            {
+              status: "completed",
+            },
+
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            },
+          );
+
+          showToast("Appointment Completed", "#16a34a");
+
+          loadAppointments();
+        } catch (error) {
+          console.log(error);
+
+          alert(
+            error.response?.data?.error || "Failed to complete appointment",
+          );
         }
       }
 

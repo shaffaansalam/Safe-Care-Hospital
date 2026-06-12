@@ -6,7 +6,7 @@ from doctor.serializers import *
 from patient.serializers import *
 from datetime import datetime, timedelta
 from rest_framework.views import APIView
-from authentication.models import DoctorProfile, Appointment,Department,Prescription,MedicalReport
+from authentication.models import DoctorProfile, Appointment,Department,Prescription,MedicalReport,Notification
 from .serializers import DoctorProfileSerializer,DoctorProfileUpdateSerializer
 from patient.serializers import PrescriptionSerializer,MedicalReportSerializer
 from django.core.mail import send_mail,EmailMultiAlternatives
@@ -78,6 +78,36 @@ class DoctorProfileAPIView(APIView):
         serializer = DoctorProfileSerializer(doctor)
 
         return Response(serializer.data)
+    
+
+class DoctorAvailabilityToggleAPIView(APIView):
+
+    permission_classes = [permissions.IsAuthenticated]
+
+    def patch(self, request):
+
+        if request.user.profile.role != "doctor":
+
+            return Response(
+                {"error": "Only doctors allowed"},
+                status=403
+            )
+
+        doctor = request.user.doctor
+
+        doctor.is_available = not doctor.is_available
+
+        doctor.save()
+
+        return Response({
+
+            "message": "Availability updated",
+
+            "is_available": doctor.is_available
+
+        })
+    
+
     
 
 class DepartmentListCreateAPIView(APIView):
@@ -317,7 +347,7 @@ class UpdateAppointmentStatusAPIView(APIView):
 
         status_value = request.data.get("status")
 
-        if status_value not in ["accepted", "rejected"]:
+        if status_value not in ["accepted", "rejected","completed"]:
 
             return Response(
                 {"error": "Invalid status"},
@@ -327,6 +357,35 @@ class UpdateAppointmentStatusAPIView(APIView):
         appointment.status = status_value
 
         appointment.save()
+
+        if status_value == "accepted":
+             
+             print(
+                  "PATIENT USER:",
+                  appointment.patient.user.id
+                   )
+
+             Notification.objects.create(
+
+             user=appointment.patient.user,
+
+             title="Appointment Accepted",
+
+             message=f"Dr. {appointment.doctor.user.get_full_name()} accepted your appointment."
+
+             )
+
+        elif status_value == "rejected":
+
+          Notification.objects.create(
+
+          user=appointment.patient.user,
+
+          title="Appointment Rejected",
+
+           message=f"Dr. {appointment.doctor.user.get_full_name()} rejected your appointment."
+
+          )
 
         return Response({
 
@@ -363,6 +422,16 @@ class RescheduleAppointmentAPIView(APIView):
             )
 
         if appointment.status != "accepted":
+
+            Notification.objects.create(
+
+            user=appointment.patient.user,
+
+           title="Appointment Accepted",
+
+           message=f"Dr. {appointment.doctor.user.get_full_name()} accepted your appointment."
+
+        )
 
             return Response(
                 {
@@ -476,11 +545,16 @@ class AddPrescriptionAPIView(APIView):
             }
         )
 
-        # MARK APPOINTMENT COMPLETED
+        Notification.objects.create(
 
-        appointment.status = "completed"
+        user=appointment.patient.user,
 
-        appointment.save()
+        title="Prescription Uploaded",
+
+        message=f"Dr. {appointment.doctor.user.get_full_name()} uploaded your prescription."
+
+        )
+
 
         # =========================================
         # SEND PROFESSIONAL HTML EMAIL

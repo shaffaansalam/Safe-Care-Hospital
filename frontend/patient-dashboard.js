@@ -54,6 +54,7 @@ document.addEventListener("DOMContentLoaded", () => {
   loadReports();
   loadAppointments();
   loadPayments();
+  loadNotifications();
 });
 
 // =====================================
@@ -556,6 +557,7 @@ async function loadReports() {
   }
 }
 
+
 // =====================================
 // LOAD APPOINTMENTS
 // =====================================
@@ -759,6 +761,11 @@ async function cancelAppointment(id) {
     alert("Cancellation failed");
   }
 }
+
+a
+
+
+
 
 async function loadPayments() {
   try {

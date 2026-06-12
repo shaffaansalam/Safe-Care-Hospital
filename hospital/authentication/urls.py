@@ -91,6 +91,7 @@ path('doctor/profile/update/',DoctorProfileUpdateAPIView.as_view(),name='doctor-
 path('patient/profile/',PatientProfileAPIView.as_view(),name='patient-profile'),
 
 path('doctor/profile/',DoctorProfileAPIView.as_view(),name='doctor-profile'),
+path('doctor/toggle-availability/',DoctorAvailabilityToggleAPIView.as_view()),
 
 path("payments/create-order/",CreateRazorpayOrderAPIView.as_view()),
 
@@ -100,6 +101,10 @@ path("payments/history/",PatientPaymentHistoryAPIView.as_view()),
 
 path("payments/invoice/<int:payment_id>/",DownloadInvoiceAPIView.as_view()),
 
+
+path('notifications/read/<int:pk>/',MarkNotificationReadAPIView.as_view()),
+
+path("patient/notifications/",PatientNotificationsAPIView.as_view())
 
 
 ]
