@@ -197,23 +197,49 @@ class BookAppointmentAPIView(APIView):
 
         print(serializer.validated_data)
 
+                # =====================================
+        # SLOT CHECK
+        # =====================================
+
+        already_booked = Appointment.objects.filter(
+            doctor=doctor,
+            appointment_date=serializer.validated_data["appointment_date"],
+            appointment_time=serializer.validated_data["appointment_time"],
+            status__in=[
+                "pending",
+                "accepted",
+                "completed"
+            ]
+        ).exists()
+
+        if already_booked:
+
+            return Response(
+                {
+                    "error": "This slot is already booked"
+                },
+                status=400
+            )
+
         # =====================================
         # SAVE APPOINTMENT
         # =====================================
 
         try:
 
-            appointment = serializer.save()
+            appointment = serializer.save(
+                patient=patient
+            )
 
             Notification.objects.create(
 
-            user=request.user,
+                user=request.user,
 
-            title="Appointment Booked",
+                title="Appointment Booked",
 
-            message=f"Your appointment with Dr. {doctor.user.get_full_name()} has been booked."
+                message=f"Your appointment with Dr. {doctor.user.get_full_name()} has been booked."
 
-)
+            )
 
             print("APPOINTMENT CREATED SUCCESSFULLY")
 
@@ -229,55 +255,61 @@ class BookAppointmentAPIView(APIView):
 
             print("=====================================\n")
 
-            return Response({
+            return Response(
 
-                "message":
-                "Appointment booked successfully",
+                {
+                    "message": "Appointment booked successfully",
 
-                "appointment_id":
-                appointment.id,
+                    "appointment_id": appointment.id,
 
-                "appointment": {
+                    "appointment": {
 
-                    "id":
-                    appointment.id,
+                        "id": appointment.id,
 
-                    "doctor":
-                    appointment.doctor.user.get_full_name(),
+                        "doctor": appointment.doctor.user.get_full_name(),
 
-                    "date":
-                    appointment.appointment_date,
+                        "date": appointment.appointment_date,
 
-                    "time":
-                    appointment.appointment_time,
+                        "time": appointment.appointment_time,
 
-                    "status":
-                    appointment.status
+                        "status": appointment.status
 
-                }
+                    }
 
-            }, status=201)
+                },
+
+                status=201
+
+            )
 
         except IntegrityError as e:
 
             print("INTEGRITY ERROR:", str(e))
 
-            return Response({
+            return Response(
 
-                "error":
-                "This appointment slot is already booked"
+                {
+                    "error": str(e)
+                },
 
-            }, status=400)
+                status=400
+
+            )
 
         except Exception as e:
 
             print("SAVE ERROR:", str(e))
 
-            return Response({
+            return Response(
 
-                "error": str(e)
+                {
+                    "error": str(e)
+                },
 
-            }, status=400)
+                status=400
+
+            )
+
         
         
     

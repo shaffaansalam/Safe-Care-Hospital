@@ -163,10 +163,15 @@ class DoctorAvailableSlotsAPIView(APIView):
 
             # check if booked
             is_booked = Appointment.objects.filter(
-                doctor=doctor,
-                appointment_date=date_obj,
-                appointment_time=slot_time
-            ).exists()
+            doctor=doctor,
+            appointment_date=date_obj,
+            appointment_time=slot_time,
+            status__in=[
+               "pending",
+               "accepted",
+               "completed"
+        ]
+    ).exists()
 
             if not is_booked:
                 slots.append(slot_time.strftime("%H:%M"))
